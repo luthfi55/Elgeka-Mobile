@@ -1,0 +1,5 @@
+package mailresponse
+
+func SentSuccessResponse() {
+
+}
