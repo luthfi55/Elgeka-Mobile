@@ -14,7 +14,7 @@ func RegisterFailedResponse(c *gin.Context, message string, data models.User, li
 		Link: link,
 	}
 
-	response := models.SignupFailledResponse{
+	response := models.RegisterUserFailledResponse{
 		Message: message,
 		Link:    []models.LinkItem{linkItem},
 	}
@@ -32,7 +32,7 @@ func RegisterSuccessResponse(c *gin.Context, message string, data models.User, l
 		Link: link,
 	}
 
-	response := models.SignupSuccesResponse{
+	response := models.RegisterUserSuccessResponse{
 		Message: message,
 		Data:    []models.Data{datas},
 		Link:    []models.LinkItem{linkItem},

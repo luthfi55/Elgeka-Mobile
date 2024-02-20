@@ -12,7 +12,7 @@ func LoginFailedResponse(c *gin.Context, message string, data models.User, link 
 		Link: link,
 	}
 
-	response := models.SignupFailledResponse{
+	response := models.LoginUserFailledResponse{
 		Message: message,
 		Link:    []models.LinkItem{linkItem},
 	}
@@ -30,7 +30,7 @@ func LoginSuccessResponse(c *gin.Context, message string, data string, link stri
 		Link: link,
 	}
 
-	response := models.SignupSuccesResponse{
+	response := models.LoginUserSuccessResponse{
 		Message: message,
 		Data:    []models.Data{datas},
 		Link:    []models.LinkItem{linkItem},

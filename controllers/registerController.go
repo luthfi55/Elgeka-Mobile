@@ -3,6 +3,7 @@ package controllers
 import (
 	"elgeka-mobile/initializers"
 	"elgeka-mobile/models"
+	doctorresponse "elgeka-mobile/response/DoctorResponse"
 	otpresponse "elgeka-mobile/response/OtpResponse"
 	userresponse "elgeka-mobile/response/UserResponse"
 	"errors"
@@ -21,7 +22,9 @@ import (
 
 func RegisterController(r *gin.Engine) {
 	r.POST("api/user/register", UserRegister)
+	r.POST("api/doctor/register", DoctorRegister)
 	r.POST("api/user/activate/:user_id", Activate)
+	r.POST("api/doctor/activate/:user_id", ActivateDoctor)
 	r.POST("api/user/refresh_code/:user_id", RefreshOtpCode)
 }
 
@@ -46,6 +49,13 @@ func UserRegister(c *gin.Context) {
 		data := body
 		activationLink := "http://localhost:3000/api/user/register"
 		userresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
+		return
+	}
+
+	if !isEmailUnique(body.Email) {
+		data := body
+		activationLink := "http://localhost:3000/api/user/register"
+		userresponse.RegisterFailedResponse(c, "Email Already Use", data, activationLink, http.StatusBadRequest)
 		return
 	}
 
@@ -89,6 +99,65 @@ func UserRegister(c *gin.Context) {
 	data := body
 	activationLink := "http://localhost:3000/api/user/activate/" + newUUID.String()
 	userresponse.RegisterSuccessResponse(c, "Register Success", data, activationLink)
+}
+
+func DoctorRegister(c *gin.Context) {
+	var body models.Doctor
+
+	if c.Bind(&body) != nil {
+		data := body
+		activationLink := "http://localhost:3000/api/doctor/register"
+		doctorresponse.RegisterFailedResponse(c, "Failed To Read Body", data, activationLink, http.StatusBadRequest)
+
+		return
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(body); err != nil {
+		var validationErrors []string
+		for _, err := range err.(validator.ValidationErrors) {
+			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
+		}
+		errorMessage := strings.Join(validationErrors, ", ")
+		data := body
+		activationLink := "http://localhost:3000/api/doctor/register"
+		doctorresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
+		return
+	}
+
+	if !isEmailUnique(body.Email) {
+		data := body
+		activationLink := "http://localhost:3000/api/doctor/register"
+		doctorresponse.RegisterFailedResponse(c, "Email Already Use", data, activationLink, http.StatusBadRequest)
+		return
+	}
+
+	//hash the password
+	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
+	if err != nil {
+		data := body
+		activationLink := "http://localhost:3000/api/doctor/register"
+		doctorresponse.RegisterFailedResponse(c, "Failed To Hash Password", data, activationLink, http.StatusBadRequest)
+		return
+	}
+
+	//create the doctor
+	newUUID := uuid.New()
+	doctor := models.Doctor{ID: newUUID, Name: body.Name, PolyName: body.PolyName, HospitalName: body.HospitalName, Email: body.Email, Password: string(hash)}
+
+	if err := initializers.DB.Create(&doctor).Error; err != nil {
+		data := body
+		activationLink := "http://localhost:3000/api/doctor/register"
+		doctorresponse.RegisterFailedResponse(c, err.Error(), data, activationLink, http.StatusConflict)
+		return
+	}
+
+	//send activate notification to admin
+
+	//respond
+	data := body
+	activationLink := "http://localhost:3000/api/doctor/activate/" + newUUID.String()
+	doctorresponse.RegisterSuccessResponse(c, "Register Success", data, activationLink)
 }
 
 func Activate(c *gin.Context) {
@@ -157,6 +226,46 @@ func Activate(c *gin.Context) {
 	}
 }
 
+func ActivateDoctor(c *gin.Context) {
+	doctorID := c.Param("user_id")
+	data := doctorID
+
+	var doctor models.Doctor
+
+	// Find the user by ID
+	result := initializers.DB.First(&doctor, "id = ?", doctorID)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			activationLink := "http://localhost:3000/api/user/register"
+			otpresponse.FailedResponse(c, "Doctor Not Found", data, activationLink, http.StatusNotFound)
+
+			return
+		} else {
+			activationLink := "http://localhost:3000/api/user/register"
+			otpresponse.FailedResponse(c, "Database Error", data, activationLink, http.StatusInternalServerError)
+
+			return
+		}
+	}
+
+	if doctor.IsActive {
+		activationLink := "http://localhost:3000/api/user/register"
+		otpresponse.FailedResponse(c, "Doctor Account Already Active", data, activationLink, http.StatusUnauthorized)
+
+		return
+	}
+	doctor.IsActive = true
+	// Save the updated user
+	if err := initializers.DB.Save(&doctor).Error; err != nil {
+		activationLink := "http://localhost:3000/api/user/register"
+		otpresponse.FailedResponse(c, "Failed to Activate", data, activationLink, http.StatusInternalServerError)
+		return
+	}
+
+	activationLink := "http://localhost:3000/api/user/login"
+	otpresponse.SuccessResponse(c, "Doctor Activated Successfully", data, activationLink, http.StatusOK)
+}
+
 func RefreshOtpCode(c *gin.Context) {
 	userID := c.Param("user_id")
 	data := userID
@@ -204,8 +313,21 @@ func getValidationErrorTagMessage(tag string) string {
 	case "email":
 		return "Must Be a Valid Email Address"
 	case "min":
-		return "Password Must Be At Least 6 Letters"
+		return "Password Must Be At Least 8 Letters"
 	default:
 		return fmt.Sprintf("validation Failed for Tag: %s", tag)
 	}
+}
+
+func isEmailUnique(email string) bool {
+	var userCount, doctorCount int64
+
+	// Pengecekan email di tabel User
+	initializers.DB.Model(&models.User{}).Where("email = ?", email).Count(&userCount)
+
+	// Pengecekan email di tabel Doctor
+	initializers.DB.Model(&models.Doctor{}).Where("email = ?", email).Count(&doctorCount)
+
+	// Jika jumlah lebih dari 0, email sudah ada di salah satu tabel
+	return (userCount + doctorCount) == 0
 }

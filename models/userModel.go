@@ -13,7 +13,7 @@ type User struct {
 	Address      string    `validate:"required"`
 	PhoneNumber  string    `validate:"required"`
 	Email        string    `gorm:"unique" validate:"required,email"`
-	Password     string    `validate:"required,min=6"`
+	Password     string    `validate:"required,min=8"`
 	IsActive     bool
 	OtpCode      string
 	OtpCreatedAt time.Time
@@ -29,13 +29,25 @@ type LinkItem struct {
 	Link string `json:"Link"`
 }
 
-type SignupSuccesResponse struct {
+type RegisterUserSuccessResponse struct {
 	Message string     `json:"Message"`
 	Data    []Data     `json:"Data"`
 	Link    []LinkItem `json:"Link"`
 }
 
-type SignupFailledResponse struct {
+type RegisterUserFailledResponse struct {
+	Message string     `json:"Message"`
+	Data    []Data     `json:"Data"`
+	Link    []LinkItem `json:"Link"`
+}
+
+type LoginUserSuccessResponse struct {
+	Message string     `json:"Message"`
+	Data    []Data     `json:"Data"`
+	Link    []LinkItem `json:"Link"`
+}
+
+type LoginUserFailledResponse struct {
 	Message string     `json:"Message"`
 	Data    []Data     `json:"Data"`
 	Link    []LinkItem `json:"Link"`
