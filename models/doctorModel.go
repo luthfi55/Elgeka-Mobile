@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -12,18 +14,28 @@ type Doctor struct {
 	HospitalName string    `validate:"required"`
 	Email        string    `gorm:"unique" validate:"required,email"`
 	Password     string    `validate:"required,min=8"`
+	EmailActive  bool
 	IsActive     bool
+	OtpCode      string
+	OtpCreatedAt time.Time
 	gorm.Model
 }
 
-// type Data struct {
-// 	Email string `json:"Email"`
-// }
+type DoctorData struct {
+	ID   uuid.UUID `json:"ID"`
+	Name string    `json:"Name"`
+}
 
 // type LinkItem struct {
 // 	Name string `json:"Name"`
 // 	Link string `json:"Link"`
 // }
+
+type GetListDoctorSuccessResponse struct {
+	Message string       `json:"Message"`
+	Data    []DoctorData `json:"Data"`
+	Link    []LinkItem   `json:"Link"`
+}
 
 type RegisterDoctorSuccessResponse struct {
 	Message string     `json:"Message"`

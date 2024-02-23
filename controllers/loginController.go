@@ -20,6 +20,7 @@ import (
 func LoginController(r *gin.Engine) {
 	r.POST("api/user/login", UserLogin)
 	r.GET("api/user/validate", middleware.RequireAuth, Validate)
+	r.GET("api/doctor/validate", middleware.RequireAuth, ValidateDoctor)
 }
 
 func UserLogin(c *gin.Context) {
@@ -42,10 +43,51 @@ func UserLogin(c *gin.Context) {
 	initializers.DB.First(&user, "email = ?", body.Email)
 
 	if user.ID == uuid.Nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid email or password",
+		var doctor models.Doctor
+		initializers.DB.First(&doctor, "email = ?", body.Email)
+
+		if doctor.ID == uuid.Nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Invalid email or password",
+			})
+			return
+		}
+		err := bcrypt.CompareHashAndPassword([]byte(doctor.Password), []byte(body.Password))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Invalid email or password",
+			})
+			return
+		}
+		// c.JSON(http.StatusBadRequest, gin.H{
+		// 	"error": "Login Doctor Success",
+		// })
+		//generate a jwt token
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"sub": doctor.ID,
+			// "exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+			"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
 		})
 
+		// Sign and get the complete encoded token as a string using the secret
+		tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Invalid to create token",
+			})
+
+			return
+		}
+
+		//send it back
+		c.SetSameSite(http.SameSiteLaxMode)
+		//expire set with second
+		c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
+
+		c.JSON(http.StatusOK, gin.H{})
+		activationLink := "http://localhost:3000"
+		loginresponse.LoginSuccessResponse(c, "Login Doctor Success", body.Email, activationLink, http.StatusOK)
 		return
 	}
 
@@ -56,7 +98,6 @@ func UserLogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid email or password",
 		})
-
 		return
 	}
 
@@ -102,6 +143,12 @@ func Validate(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": user,
 	})
+}
 
-	return
+func ValidateDoctor(c *gin.Context) {
+	doctor, _ := c.Get("doctor")
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": doctor,
+	})
 }

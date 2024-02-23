@@ -20,6 +20,7 @@ func main() {
 
 	controllers.LoginController(r)
 	controllers.RegisterController(r)
+	controllers.ActivateAccountController(r)
 
 	r.Run(os.Getenv("PORT"))
 }

@@ -43,6 +43,7 @@ func RequireAuth(c *gin.Context) {
 		}
 		//find the user with token sub
 		var user models.User
+		var doctor models.Doctor
 		sub, subIsString := claims["sub"].(string)
 
 		if !subIsString {
@@ -53,7 +54,12 @@ func RequireAuth(c *gin.Context) {
 		initializers.DB.Where("id = ?", sub).First(&user)
 
 		if user.ID == uuid.Nil {
-			c.AbortWithStatus(http.StatusUnauthorized)
+			initializers.DB.Where("id = ?", sub).First(&doctor)
+			//attach to req
+			c.Set("doctor", doctor.ID)
+
+			//continue
+			c.Next()
 		}
 
 		//attach to req

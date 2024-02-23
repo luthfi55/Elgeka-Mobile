@@ -31,7 +31,7 @@ func SuccessResponse(c *gin.Context, message string, data string, link string, s
 	}
 
 	linkItem := models.LinkItem{
-		Name: "Register",
+		Name: "Login",
 		Link: link,
 	}
 

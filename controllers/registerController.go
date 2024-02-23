@@ -4,12 +4,11 @@ import (
 	"elgeka-mobile/initializers"
 	"elgeka-mobile/models"
 	doctorresponse "elgeka-mobile/response/DoctorResponse"
-	otpresponse "elgeka-mobile/response/OtpResponse"
 	userresponse "elgeka-mobile/response/UserResponse"
-	"errors"
 	"fmt"
 	"math/rand"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -17,15 +16,23 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 func RegisterController(r *gin.Engine) {
+	//user
 	r.POST("api/user/register", UserRegister)
+	//doctor
 	r.POST("api/doctor/register", DoctorRegister)
-	r.POST("api/user/activate/:user_id", Activate)
-	r.POST("api/doctor/activate/:user_id", ActivateDoctor)
-	r.POST("api/user/refresh_code/:user_id", RefreshOtpCode)
+}
+
+func isPasswordValid(password string) bool {
+	// Use separate checks for uppercase letter, digit, and special character
+	hasUppercase, _ := regexp.MatchString(`[A-Z]`, password)
+	hasDigit, _ := regexp.MatchString(`\d`, password)
+	hasSpecialChar, _ := regexp.MatchString(`[^\w\d\s]`, password)
+
+	// Ensure that the password contains at least 1 uppercase letter, 1 digit, and 1 special character
+	return hasUppercase && hasDigit && hasSpecialChar
 }
 
 func UserRegister(c *gin.Context) {
@@ -59,6 +66,14 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
+	if !isPasswordValid(body.Password) {
+		errorMessage := "Password must contain at least 1 uppercase letter, 1 digit, and 1 symbol."
+		data := body
+		activationLink := "http://localhost:3000/api/user/register"
+		userresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
+		return
+	}
+
 	//hash the password
 	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
 	if err != nil {
@@ -73,9 +88,8 @@ func UserRegister(c *gin.Context) {
 	user := models.User{ID: newUUID, Name: body.Name, Address: body.Address, PhoneNumber: body.PhoneNumber, Email: body.Email, Password: string(hash)}
 
 	if err := initializers.DB.Create(&user).Error; err != nil {
-		data := body
 		activationLink := "http://localhost:3000/api/user/register"
-		userresponse.RegisterFailedResponse(c, "Email Already Use", data, activationLink, http.StatusConflict)
+		userresponse.RegisterFailedResponse(c, "Email Already Use", user, activationLink, http.StatusConflict)
 		return
 	}
 
@@ -87,18 +101,16 @@ func UserRegister(c *gin.Context) {
 	user.OtpCreatedAt = time.Now().Add(2 * time.Minute)
 
 	if err := initializers.DB.Save(&user).Error; err != nil {
-		data := body
 		activationLink := "http://localhost:3000/api/user/refresh_code/" + newUUID.String()
-		userresponse.RegisterFailedResponse(c, "Failed To Update Otp Code", data, activationLink, http.StatusInternalServerError)
+		userresponse.RegisterFailedResponse(c, "Failed To Update Otp Code", user, activationLink, http.StatusInternalServerError)
 		return
 	}
 
 	SendEmailWithGmail(body.Email, otpCode)
 
 	//respond
-	data := body
 	activationLink := "http://localhost:3000/api/user/activate/" + newUUID.String()
-	userresponse.RegisterSuccessResponse(c, "Register Success", data, activationLink)
+	userresponse.RegisterSuccessResponse(c, "Register Success", user, activationLink)
 }
 
 func DoctorRegister(c *gin.Context) {
@@ -132,6 +144,14 @@ func DoctorRegister(c *gin.Context) {
 		return
 	}
 
+	if !isPasswordValid(body.Password) {
+		errorMessage := "Password must contain at least 1 uppercase letter, 1 digit, and 1 symbol."
+		data := body
+		activationLink := "http://localhost:3000/api/user/register"
+		doctorresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
+		return
+	}
+
 	//hash the password
 	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
 	if err != nil {
@@ -146,188 +166,24 @@ func DoctorRegister(c *gin.Context) {
 	doctor := models.Doctor{ID: newUUID, Name: body.Name, PolyName: body.PolyName, HospitalName: body.HospitalName, Email: body.Email, Password: string(hash)}
 
 	if err := initializers.DB.Create(&doctor).Error; err != nil {
-		data := body
 		activationLink := "http://localhost:3000/api/doctor/register"
-		doctorresponse.RegisterFailedResponse(c, err.Error(), data, activationLink, http.StatusConflict)
+		doctorresponse.RegisterFailedResponse(c, err.Error(), doctor, activationLink, http.StatusConflict)
 		return
 	}
-
-	//send activate notification to admin
-
-	//respond
-	data := body
-	activationLink := "http://localhost:3000/api/doctor/activate/" + newUUID.String()
-	doctorresponse.RegisterSuccessResponse(c, "Register Success", data, activationLink)
-}
-
-func Activate(c *gin.Context) {
-	userID := c.Param("user_id")
-	data := userID
-
-	var body struct {
-		OtpCode string `json:"OtpCode"`
-	}
-
-	if c.Bind(&body) != nil {
-		activationLink := "http://localhost:3000/api/user/register"
-		otpresponse.FailedResponse(c, "Failed To Read Body", data, activationLink, http.StatusBadRequest)
-
-		return
-	}
-
-	var user models.User
-
-	// Find the user by ID
-	result := initializers.DB.First(&user, "id = ?", userID)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			activationLink := "http://localhost:3000/api/user/register"
-			otpresponse.FailedResponse(c, "User Not Found", data, activationLink, http.StatusNotFound)
-
-			return
-		} else {
-			activationLink := "http://localhost:3000/api/user/register"
-			otpresponse.FailedResponse(c, "Database Error", data, activationLink, http.StatusInternalServerError)
-
-			return
-		}
-	}
-
-	if user.IsActive {
-		activationLink := "http://localhost:3000/api/user/register"
-		otpresponse.FailedResponse(c, "User Account Already Active", data, activationLink, http.StatusUnauthorized)
-
-		return
-	}
-
-	if user.OtpCode != body.OtpCode {
-		activationLink := "http://localhost:3000/api/user/register"
-		otpresponse.FailedResponse(c, "Incorrect OTP code", data, activationLink, http.StatusUnauthorized)
-		return
-	} else {
-		// 1 minute expired
-		if time.Since(user.OtpCreatedAt) > time.Minute {
-			activationLink := "http://localhost:3000/api/user/register"
-			otpresponse.FailedResponse(c, "OTP Code Expired", data, activationLink, http.StatusUnauthorized)
-			return
-		}
-
-		user.IsActive = true
-		// Save the updated user
-		if err := initializers.DB.Save(&user).Error; err != nil {
-			activationLink := "http://localhost:3000/api/user/register"
-			otpresponse.FailedResponse(c, "Failed to Activate", data, activationLink, http.StatusInternalServerError)
-			return
-		}
-
-		activationLink := "http://localhost:3000/api/user/login"
-		otpresponse.SuccessResponse(c, "User Activated Successfully", data, activationLink, http.StatusOK)
-		return
-	}
-}
-
-func ActivateDoctor(c *gin.Context) {
-	doctorID := c.Param("user_id")
-	data := doctorID
-
-	var doctor models.Doctor
-
-	// Find the user by ID
-	result := initializers.DB.First(&doctor, "id = ?", doctorID)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			activationLink := "http://localhost:3000/api/user/register"
-			otpresponse.FailedResponse(c, "Doctor Not Found", data, activationLink, http.StatusNotFound)
-
-			return
-		} else {
-			activationLink := "http://localhost:3000/api/user/register"
-			otpresponse.FailedResponse(c, "Database Error", data, activationLink, http.StatusInternalServerError)
-
-			return
-		}
-	}
-
-	if doctor.IsActive {
-		activationLink := "http://localhost:3000/api/user/register"
-		otpresponse.FailedResponse(c, "Doctor Account Already Active", data, activationLink, http.StatusUnauthorized)
-
-		return
-	}
-	doctor.IsActive = true
-	// Save the updated user
-	if err := initializers.DB.Save(&doctor).Error; err != nil {
-		activationLink := "http://localhost:3000/api/user/register"
-		otpresponse.FailedResponse(c, "Failed to Activate", data, activationLink, http.StatusInternalServerError)
-		return
-	}
-
-	activationLink := "http://localhost:3000/api/user/login"
-	otpresponse.SuccessResponse(c, "Doctor Activated Successfully", data, activationLink, http.StatusOK)
-}
-
-func RefreshOtpCode(c *gin.Context) {
-	userID := c.Param("user_id")
-	data := userID
-
-	var user models.User
-	initializers.DB.First(&user, "id = ?", userID)
-	result := initializers.DB.First(&user, "id = ?", userID)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			activationLink := "http://localhost:3000/api/user/register"
-			otpresponse.FailedResponse(c, "User Not Found", data, activationLink, http.StatusNotFound)
-
-			return
-		} else {
-			activationLink := "http://localhost:3000/api/user/register"
-			otpresponse.FailedResponse(c, "Database Error", data, activationLink, http.StatusInternalServerError)
-
-			return
-		}
-	}
-
 	rand.Seed(time.Now().UnixNano())
 	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
+	doctor.OtpCode = otpCode
+	doctor.OtpCreatedAt = time.Now().Add(2 * time.Minute)
 
-	user.OtpCode = otpCode
-	user.OtpCreatedAt = time.Now().Add(time.Minute)
-
-	if err := initializers.DB.Save(&user).Error; err != nil {
-		activationLink := "http://localhost:3000/api/user/register"
-		otpresponse.FailedResponse(c, "Failed to Update Otp Code", data, activationLink, http.StatusInternalServerError)
+	if err := initializers.DB.Save(&doctor).Error; err != nil {
+		activationLink := "http://localhost:3000/api/doctor/refresh_code/" + newUUID.String()
+		doctorresponse.RegisterFailedResponse(c, "Failed To Update Otp Code", doctor, activationLink, http.StatusInternalServerError)
 		return
 	}
 
-	SendEmailWithGmail(user.Email, otpCode)
+	SendEmailWithGmail(doctor.Email, otpCode)
 
-	activationLink := "http://localhost:3000/api/user/activate/" + userID
-	otpresponse.SuccessResponse(c, "Refresh OTP Successfully", data, activationLink, http.StatusOK)
-}
-
-func getValidationErrorTagMessage(tag string) string {
-	// Definisi pesan kustom untuk tag validasi tertentu
-	switch tag {
-	case "required":
-		return "Cant Be Empty"
-	case "email":
-		return "Must Be a Valid Email Address"
-	case "min":
-		return "Password Must Be At Least 8 Letters"
-	default:
-		return fmt.Sprintf("validation Failed for Tag: %s", tag)
-	}
-}
-
-func isEmailUnique(email string) bool {
-	var userCount, doctorCount int64
-
-	// Pengecekan email di tabel User
-	initializers.DB.Model(&models.User{}).Where("email = ?", email).Count(&userCount)
-
-	// Pengecekan email di tabel Doctor
-	initializers.DB.Model(&models.Doctor{}).Where("email = ?", email).Count(&doctorCount)
-
-	// Jika jumlah lebih dari 0, email sudah ada di salah satu tabel
-	return (userCount + doctorCount) == 0
+	//respond
+	activationLink := "http://localhost:3000/api/doctor/activate/" + newUUID.String()
+	doctorresponse.RegisterSuccessResponse(c, "Register Success", doctor, activationLink)
 }

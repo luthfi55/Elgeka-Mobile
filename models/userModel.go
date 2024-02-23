@@ -21,7 +21,9 @@ type User struct {
 }
 
 type Data struct {
-	Email string `json:"Email"`
+	ID      uuid.UUID `json:"ID"`
+	Email   string    `json:"Email"`
+	OtpCode string    `json="OtpCode"`
 }
 
 type LinkItem struct {
