@@ -85,7 +85,6 @@ func UserLogin(c *gin.Context) {
 		//expire set with second
 		c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 
-		c.JSON(http.StatusOK, gin.H{})
 		activationLink := "http://localhost:3000"
 		loginresponse.LoginSuccessResponse(c, "Login Doctor Success", body.Email, activationLink, http.StatusOK)
 		return
