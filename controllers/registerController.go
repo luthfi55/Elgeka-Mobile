@@ -26,6 +26,9 @@ func RegisterController(r *gin.Engine) {
 }
 
 func isPasswordValid(password string) bool {
+	if len(password) < 8 {
+		return false
+	}
 	// Use separate checks for uppercase letter, digit, and special character
 	hasUppercase, _ := regexp.MatchString(`[A-Z]`, password)
 	hasDigit, _ := regexp.MatchString(`\d`, password)

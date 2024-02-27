@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"elgeka-mobile/initializers"
 	"elgeka-mobile/middleware"
 	"elgeka-mobile/models"
+	"encoding/base64"
 
 	otpresponse "elgeka-mobile/response/OtpResponse"
 	loginresponse "elgeka-mobile/response/UserResponse"
@@ -18,6 +20,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 func LoginController(r *gin.Engine) {
@@ -25,6 +28,8 @@ func LoginController(r *gin.Engine) {
 	r.POST("api/user/forgot_password", ForgotPassword)
 	r.GET("api/user/validate", middleware.RequireAuth, Validate)
 	r.GET("api/doctor/validate", middleware.RequireAuth, ValidateDoctor)
+	r.POST("api/user/check_otp/:user_id", CheckOtp)
+	r.POST("api/user/change_password/:user_id/:otp_code", ChangePassword)
 }
 
 func UserLogin(c *gin.Context) {
@@ -169,9 +174,9 @@ func ForgotPassword(c *gin.Context) {
 	}
 
 	if c.Bind(&body) != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to read body",
-		})
+
+		activationLink := "http://localhost:3000/api/user/register"
+		otpresponse.FailedResponse(c, "Failed to read body", body.Email, activationLink, http.StatusBadRequest)
 
 		return
 	}
@@ -198,7 +203,7 @@ func ForgotPassword(c *gin.Context) {
 
 		if err := initializers.DB.Save(&doctor).Error; err != nil {
 			activationLink := "http://localhost:3000/api/doctor/register"
-			otpresponse.FailedResponse(c, "Failed to Send Otp Code", doctor.ID.String(), activationLink, http.StatusInternalServerError)
+			otpresponse.FailedResponse(c, "Failed to Send Otp Code", body.Email, activationLink, http.StatusInternalServerError)
 			return
 		}
 
@@ -222,7 +227,7 @@ func ForgotPassword(c *gin.Context) {
 
 	if err := initializers.DB.Save(&user).Error; err != nil {
 		activationLink := "http://localhost:3000/api/user/register"
-		otpresponse.FailedResponse(c, "Failed to Send Otp Code", user.ID.String(), activationLink, http.StatusInternalServerError)
+		otpresponse.FailedResponse(c, "Failed to Send Otp Code", body.Email, activationLink, http.StatusInternalServerError)
 		return
 	}
 
@@ -232,8 +237,224 @@ func ForgotPassword(c *gin.Context) {
 	data.Email = user.Email
 	data.OtpCode = otpCode
 
-	activationLink := "http://localhost:3000"
+	activationLink := "http://localhost:3000/api/user/check_otp/" + data.ID
 	otpresponse.ForgotPasswordUserSuccessResponse(c, "Success to Send Otp Code", user, activationLink, http.StatusOK)
-	return
+}
 
+func CheckOtp(c *gin.Context) {
+	userID := c.Param("user_id")
+
+	var data struct {
+		ID      string
+		Email   string
+		OtpCode string
+	}
+
+	var body struct {
+		OtpCode string
+	}
+
+	if c.Bind(&body) != nil {
+		activationLink := "http://localhost:3000"
+		otpresponse.FailedCheckOtpResponse(c, "Failed to read body", body.OtpCode, activationLink, http.StatusBadRequest)
+
+		return
+	}
+
+	var user models.User
+	var doctor models.Doctor
+
+	result := initializers.DB.First(&user, "id = ?", userID)
+
+	if result.Error != nil {
+		result := initializers.DB.First(&doctor, "id = ?", userID)
+		if result.Error != nil {
+			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+				activationLink := "http://localhost:3000/api/user/forgot_password"
+				otpresponse.FailedResponse(c, "User Not Found", user.Email, activationLink, http.StatusNotFound)
+				return
+			} else {
+				activationLink := "http://localhost:3000/api/user/forgot_password"
+				otpresponse.FailedResponse(c, "Database Error", user.Email, activationLink, http.StatusInternalServerError)
+				return
+			}
+		}
+		if !doctor.IsActive {
+			activationLink := "http://localhost:3000/api/doctor/activate_account/" + userID
+			otpresponse.FailedResponse(c, "Doctor Account Must Active", user.Email, activationLink, http.StatusUnauthorized)
+			return
+		}
+
+		if doctor.OtpCode != body.OtpCode {
+			activationLink := "http://localhost:3000/api/user/register"
+			otpresponse.FailedResponse(c, "Incorrect OTP code", user.Email, activationLink, http.StatusUnauthorized)
+			return
+		} else {
+			if time.Since(doctor.OtpCreatedAt) > time.Minute {
+				activationLink := "http://localhost:3000/api/user/register"
+				otpresponse.FailedResponse(c, "OTP Code Expired", user.Email, activationLink, http.StatusUnauthorized)
+				return
+			}
+
+			if doctor.OtpType != "ForgotPassword" {
+				activationLink := "http://localhost:3000/api/user/register"
+				otpresponse.FailedResponse(c, "Incorrect OTP code", user.Email, activationLink, http.StatusUnauthorized)
+				return
+			}
+
+			hashOtp, err := bcrypt.GenerateFromPassword([]byte(body.OtpCode), 10)
+			if err != nil {
+				activationLink := "http://localhost:3000/api/user/register"
+				otpresponse.FailedResponse(c, "Failed To Hash Password", user.Email, activationLink, http.StatusBadRequest)
+				return
+			}
+			encodedHash := base64.URLEncoding.EncodeToString(hashOtp)
+
+			doctor.ForgotPasswordCode = encodedHash
+			if err := initializers.DB.Save(&doctor).Error; err != nil {
+				activationLink := "http://localhost:3000/api/user/register"
+				otpresponse.FailedResponse(c, "Failed To Update Forgot Password Code", user.Email, activationLink, http.StatusBadRequest)
+				return
+			}
+
+			data.Email = doctor.Email
+			data.ID = userID
+			data.OtpCode = encodedHash
+
+			activationLink := "http://localhost:3000/api/user/change_password/" + userID + "/" + encodedHash
+			otpresponse.SuccessCheckOtpResponse(c, "Check Otp Successfully", data, activationLink, http.StatusOK)
+			return
+		}
+	}
+
+	if !user.IsActive {
+		activationLink := "http://localhost:3000/api/user/activate/" + userID
+		otpresponse.FailedResponse(c, "User Email Account Must Active", user.Email, activationLink, http.StatusUnauthorized)
+		return
+	}
+
+	if user.OtpCode != body.OtpCode {
+		activationLink := "http://localhost:3000/api/user/register"
+		otpresponse.FailedResponse(c, "Incorrect OTP code", user.Email, activationLink, http.StatusUnauthorized)
+		return
+	} else {
+		if time.Since(user.OtpCreatedAt) > time.Minute {
+			activationLink := "http://localhost:3000/api/user/register"
+			otpresponse.FailedResponse(c, "OTP Code Expired", user.Email, activationLink, http.StatusUnauthorized)
+			return
+		}
+
+		if user.OtpType != "ForgotPassword" {
+			activationLink := "http://localhost:3000/api/user/register"
+			otpresponse.FailedResponse(c, "Incorrect OTP code", user.Email, activationLink, http.StatusUnauthorized)
+			return
+		}
+
+		hashOtp, err := bcrypt.GenerateFromPassword([]byte(body.OtpCode), 10)
+		if err != nil {
+			activationLink := "http://localhost:3000/api/user/register"
+			otpresponse.FailedResponse(c, "Failed To Hash Password", user.Email, activationLink, http.StatusBadRequest)
+			return
+		}
+		encodedHash := base64.URLEncoding.EncodeToString(hashOtp)
+
+		user.ForgotPasswordCode = encodedHash
+		if err := initializers.DB.Save(&user).Error; err != nil {
+			activationLink := "http://localhost:3000/api/user/register"
+			otpresponse.FailedResponse(c, "Failed To Update Forgot Password Code", user.Email, activationLink, http.StatusBadRequest)
+			return
+		}
+
+		data.Email = user.Email
+		data.ID = userID
+		data.OtpCode = encodedHash
+
+		activationLink := "http://localhost:3000/api/user/change_password/" + userID + "/" + encodedHash
+		otpresponse.SuccessCheckOtpResponse(c, "Check Otp Successfully", data, activationLink, http.StatusOK)
+		return
+	}
+
+}
+
+func ChangePassword(c *gin.Context) {
+	userID := c.Param("user_id")
+	otpCode := c.Param("otp_code")
+
+	var body struct {
+		Password             string
+		PasswordConfirmation string
+	}
+
+	if c.Bind(&body) != nil {
+		activationLink := "http://localhost:3000"
+		otpresponse.FailedCheckOtpResponse(c, "Failed to read body", otpCode, activationLink, http.StatusBadRequest)
+
+		return
+	}
+
+	var user models.User
+	var doctor models.Doctor
+
+	result := initializers.DB.First(&user, "id = ?", userID)
+	if result.Error != nil {
+		result := initializers.DB.First(&doctor, "id = ?", userID)
+		if result.Error != nil {
+			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+				activationLink := "http://localhost:3000/api/user/forgot_password"
+				otpresponse.FailedResponse(c, "User Not Found", userID, activationLink, http.StatusNotFound)
+				return
+			} else {
+				activationLink := "http://localhost:3000/api/user/forgot_password"
+				otpresponse.FailedResponse(c, "Database Error", userID, activationLink, http.StatusInternalServerError)
+				return
+			}
+		}
+		if doctor.ForgotPasswordCode != otpCode {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Failed to match",
+			})
+			return
+		}
+		c.JSON(http.StatusAccepted, gin.H{
+			"message": "Succes",
+		})
+		return
+	}
+	if user.ForgotPasswordCode != otpCode {
+		activationLink := "http://localhost:3000/api/user/forgot_password"
+		otpresponse.FailedResponse(c, "Incorect Otp Code", user.Email, activationLink, http.StatusBadRequest)
+		return
+	}
+
+	if body.Password != body.PasswordConfirmation {
+		activationLink := "http://localhost:3000/api/user/forgot_password"
+		otpresponse.FailedResponse(c, "Password Confirmation Must Same as Password", user.Email, activationLink, http.StatusBadRequest)
+		return
+	}
+
+	if !isPasswordValid(body.Password) {
+		errorMessage := "Password must contain at least 8 character, 1 uppercase letter, 1 digit, and 1 symbol."
+		activationLink := "http://localhost:3000/api/user/forgot_password"
+		otpresponse.FailedResponse(c, errorMessage, user.Email, activationLink, http.StatusBadRequest)
+		return
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
+	if err != nil {
+		activationLink := "http://localhost:3000/api/user/forgot_password"
+		otpresponse.FailedResponse(c, "Failed to Hash Password", user.Email, activationLink, http.StatusBadRequest)
+		return
+	}
+
+	user.Password = string(hash)
+
+	if err := initializers.DB.Save(&user).Error; err != nil {
+		activationLink := "http://localhost:3000/api/user/register"
+		otpresponse.FailedResponse(c, "Failed To Update Password", user.Email, activationLink, http.StatusBadRequest)
+		return
+	}
+
+	activationLink := "http://localhost:3000/api/user/login"
+	otpresponse.SuccessResponse(c, "Update Password Successfully", user.Email, activationLink, http.StatusOK)
+	return
 }

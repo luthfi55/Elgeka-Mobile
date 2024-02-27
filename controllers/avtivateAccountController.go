@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -353,7 +352,7 @@ func ListActivateDoctor(c *gin.Context) {
 	}
 
 	activationLink := "http://localhost:3000/api/user/activate/:user_id"
-	doctorresponse.GetInactiveDoctorSuccessResponse(c, os.Getenv("GMAIL_SENDER"), response, activationLink, http.StatusOK)
+	doctorresponse.GetInactiveDoctorSuccessResponse(c, "Get Data Successfully", response, activationLink, http.StatusOK)
 }
 
 func RejectDoctor(c *gin.Context) {

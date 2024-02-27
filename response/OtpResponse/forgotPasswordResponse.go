@@ -14,7 +14,7 @@ func ForgotPasswordUserSuccessResponse(c *gin.Context, message string, data mode
 	}
 
 	linkItem := models.LinkItem{
-		Name: "Activate Account",
+		Name: "Check Otp",
 		Link: link,
 	}
 

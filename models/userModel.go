@@ -8,16 +8,17 @@ import (
 )
 
 type User struct {
-	ID           uuid.UUID `gorm:"type:uuid;primaryKey;"`
-	Name         string    `validate:"required"`
-	Address      string    `validate:"required"`
-	PhoneNumber  string    `validate:"required"`
-	Email        string    `gorm:"unique" validate:"required,email"`
-	Password     string    `validate:"required,min=8"`
-	IsActive     bool
-	OtpCode      string
-	OtpCreatedAt time.Time
-	OtpType      string
+	ID                 uuid.UUID `gorm:"type:uuid;primaryKey;"`
+	Name               string    `validate:"required"`
+	Address            string    `validate:"required"`
+	PhoneNumber        string    `validate:"required"`
+	Email              string    `gorm:"unique" validate:"required,email"`
+	Password           string    `validate:"required,min=8"`
+	IsActive           bool
+	OtpCode            string
+	OtpCreatedAt       time.Time
+	OtpType            string
+	ForgotPasswordCode string
 	gorm.Model
 }
 
@@ -60,6 +61,16 @@ type OtpData struct {
 	Email string `json:"Email"`
 }
 
+type CheckOtpData struct {
+	OtpCode string `json:"OtpCode"`
+}
+
+type CheckSuccessOtpData struct {
+	ID      string
+	Email   string
+	OtpCode string
+}
+
 type OtpFailledResponse struct {
 	ErrorMessage string
 	Data         []OtpData  `json:"Data"`
@@ -70,4 +81,16 @@ type OtpSuccessResponse struct {
 	Message string
 	Data    []OtpData  `json:"OtpData"`
 	Link    []LinkItem `json:"Link"`
+}
+
+type CheckOtpFailledResponse struct {
+	ErrorMessage string
+	Data         []CheckOtpData `json:"Data"`
+	Link         []LinkItem     `json:"Link"`
+}
+
+type CheckOtpSuccessResponse struct {
+	Message string
+	Data    []CheckSuccessOtpData `json:"OtpData"`
+	Link    []LinkItem            `json:"Link"`
 }

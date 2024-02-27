@@ -8,17 +8,18 @@ import (
 )
 
 type Doctor struct {
-	ID           uuid.UUID `gorm:"type:uuid;primaryKey;"`
-	Name         string    `validate:"required"`
-	PolyName     string    `validate:"required"`
-	HospitalName string    `validate:"required"`
-	Email        string    `gorm:"unique" validate:"required,email"`
-	Password     string    `validate:"required,min=8"`
-	EmailActive  bool
-	IsActive     bool
-	OtpCode      string
-	OtpCreatedAt time.Time
-	OtpType      string
+	ID                 uuid.UUID `gorm:"type:uuid;primaryKey;"`
+	Name               string    `validate:"required"`
+	PolyName           string    `validate:"required"`
+	HospitalName       string    `validate:"required"`
+	Email              string    `gorm:"unique" validate:"required,email"`
+	Password           string    `validate:"required,min=8"`
+	EmailActive        bool
+	IsActive           bool
+	OtpCode            string
+	OtpCreatedAt       time.Time
+	OtpType            string
+	ForgotPasswordCode string
 	gorm.Model
 }
 
