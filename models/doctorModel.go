@@ -18,6 +18,7 @@ type Doctor struct {
 	IsActive     bool
 	OtpCode      string
 	OtpCreatedAt time.Time
+	OtpType      string
 	gorm.Model
 }
 
@@ -44,9 +45,9 @@ type RegisterDoctorSuccessResponse struct {
 }
 
 type RegisterDoctorFailledResponse struct {
-	Message string     `json:"Message"`
-	Data    []Data     `json:"Data"`
-	Link    []LinkItem `json:"Link"`
+	ErrorMessage string     `json:"Message"`
+	Data         []Data     `json:"Data"`
+	Link         []LinkItem `json:"Link"`
 }
 
 // type OtpData struct {

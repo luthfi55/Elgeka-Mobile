@@ -8,7 +8,7 @@ import (
 
 func FailedResponse(c *gin.Context, message string, data string, link string, status int) {
 	otpData := models.OtpData{
-		Id: data,
+		Email: data,
 	}
 
 	linkItem := models.LinkItem{
@@ -17,17 +17,17 @@ func FailedResponse(c *gin.Context, message string, data string, link string, st
 	}
 
 	response := models.OtpFailledResponse{
-		Message: message,
-		Data:    []models.OtpData{otpData},
-		Link:    []models.LinkItem{linkItem},
+		ErrorMessage: message,
+		Data:         []models.OtpData{otpData},
+		Link:         []models.LinkItem{linkItem},
 	}
 
 	c.JSON(status, response)
 }
 
 func SuccessResponse(c *gin.Context, message string, data string, link string, status int) {
-	otpData := models.OtpData{
-		Id: data,
+	Data := models.OtpData{
+		Email: data,
 	}
 
 	linkItem := models.LinkItem{
@@ -35,9 +35,9 @@ func SuccessResponse(c *gin.Context, message string, data string, link string, s
 		Link: link,
 	}
 
-	response := models.OtpFailledResponse{
+	response := models.OtpSuccessResponse{
 		Message: message,
-		Data:    []models.OtpData{otpData},
+		Data:    []models.OtpData{Data},
 		Link:    []models.LinkItem{linkItem},
 	}
 

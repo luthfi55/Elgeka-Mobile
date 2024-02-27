@@ -13,8 +13,8 @@ func GetInactiveDoctorFailedResponse(c *gin.Context, message string, data []mode
 	}
 
 	response := models.RegisterDoctorFailledResponse{
-		Message: message,
-		Link:    []models.LinkItem{linkItem},
+		ErrorMessage: message,
+		Link:         []models.LinkItem{linkItem},
 	}
 
 	c.JSON(status, response)

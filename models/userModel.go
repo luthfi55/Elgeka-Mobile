@@ -17,6 +17,7 @@ type User struct {
 	IsActive     bool
 	OtpCode      string
 	OtpCreatedAt time.Time
+	OtpType      string
 	gorm.Model
 }
 
@@ -38,9 +39,9 @@ type RegisterUserSuccessResponse struct {
 }
 
 type RegisterUserFailledResponse struct {
-	Message string     `json:"Message"`
-	Data    []Data     `json:"Data"`
-	Link    []LinkItem `json:"Link"`
+	ErrorMessage string     `json:"Message"`
+	Data         []Data     `json:"Data"`
+	Link         []LinkItem `json:"Link"`
 }
 
 type LoginUserSuccessResponse struct {
@@ -50,16 +51,22 @@ type LoginUserSuccessResponse struct {
 }
 
 type LoginUserFailledResponse struct {
-	Message string     `json:"Message"`
-	Data    []Data     `json:"Data"`
-	Link    []LinkItem `json:"Link"`
+	ErrorMessage string     `json:"Message"`
+	Data         []Data     `json:"Data"`
+	Link         []LinkItem `json:"Link"`
 }
 
 type OtpData struct {
-	Id string `json:"User ID"`
+	Email string `json:"Email"`
 }
 
 type OtpFailledResponse struct {
+	ErrorMessage string
+	Data         []OtpData  `json:"Data"`
+	Link         []LinkItem `json:"Link"`
+}
+
+type OtpSuccessResponse struct {
 	Message string
 	Data    []OtpData  `json:"OtpData"`
 	Link    []LinkItem `json:"Link"`

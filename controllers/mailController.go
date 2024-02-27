@@ -34,3 +34,32 @@ func SendEmailWithGmail(emailTo string, OtpCode string) {
 
 	fmt.Println("Email sent successfully")
 }
+
+func SendEmailForgotPassword(emailTo string, OtpCode string) {
+	sender := models.NewGmailSender(os.Getenv("GMAIL_SENDER"), os.Getenv("PASSWORD_SENDER"))
+
+	subject := "Your One-Time Password (OTP) for Forgot Password"
+	content := fmt.Sprintf(`
+    <html>
+        <body>
+            <p style="color: black;">Dear User,</p>
+            <p style="color: black;">It happens to the best of us! If you've forgotten your password, don't worry. Please use the following One-Time Password (OTP) to reset your password:</p>
+            <p style="color: black;">Your One-Time Password:</p>
+            <h1 style="color: black;">%s</h1>
+            <p style="color: black;">Please note that this password is valid for only one minute for security reasons. Enter this code on the password reset screen to proceed.</p>
+            <p style="color: black;">If you didn't request this code or if you're having trouble, please contact our support team immediately.</p>
+            <p style="color: black;">Thank you!</p>
+        </body>
+    </html>
+    `, OtpCode)
+
+	to := []string{emailTo}
+
+	err := sender.SendEmail(subject, content, to, nil, nil)
+	if err != nil {
+		fmt.Println("Error sending email:", err)
+		return
+	}
+
+	fmt.Println("Email sent successfully")
+}

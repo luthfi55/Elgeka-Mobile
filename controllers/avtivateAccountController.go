@@ -80,6 +80,12 @@ func Activate(c *gin.Context) {
 			return
 		}
 
+		if user.OtpType != "Activation" {
+			activationLink := "http://localhost:3000/api/user/register"
+			otpresponse.FailedResponse(c, "Incorrect OTP code", data, activationLink, http.StatusUnauthorized)
+			return
+		}
+
 		user.IsActive = true
 		// Save the updated user
 		if err := initializers.DB.Save(&user).Error; err != nil {
@@ -122,6 +128,14 @@ func ActivateDoctor(c *gin.Context) {
 
 		return
 	}
+
+	if !doctor.EmailActive {
+		activationLink := "http://localhost:3000/api/user/register"
+		otpresponse.FailedResponse(c, "Doctor Email Account Must Active", data, activationLink, http.StatusUnauthorized)
+
+		return
+	}
+
 	doctor.IsActive = true
 	// Save the updated user
 	if err := initializers.DB.Save(&doctor).Error; err != nil {
@@ -186,6 +200,12 @@ func ActivateEmailDoctor(c *gin.Context) {
 			return
 		}
 
+		if doctor.OtpType != "Activation" {
+			activationLink := "http://localhost:3000/api/doctor/register"
+			otpresponse.FailedResponse(c, "Incorrect OTP code", data, activationLink, http.StatusUnauthorized)
+			return
+		}
+
 		doctor.EmailActive = true
 		// Save the updated doctor
 		if err := initializers.DB.Save(&doctor).Error; err != nil {
@@ -226,6 +246,7 @@ func RefreshOtpCode(c *gin.Context) {
 
 	user.OtpCode = otpCode
 	user.OtpCreatedAt = time.Now().Add(time.Minute)
+	user.OtpType = "Activation"
 
 	if err := initializers.DB.Save(&user).Error; err != nil {
 		activationLink := "http://localhost:3000/api/user/register"
@@ -265,6 +286,7 @@ func RefreshDoctorOtpCode(c *gin.Context) {
 
 	doctor.OtpCode = otpCode
 	doctor.OtpCreatedAt = time.Now().Add(time.Minute)
+	doctor.OtpType = "Activation"
 
 	if err := initializers.DB.Save(&doctor).Error; err != nil {
 		activationLink := "http://localhost:3000/api/doctor/register"

@@ -13,8 +13,8 @@ func LoginFailedResponse(c *gin.Context, message string, data models.User, link 
 	}
 
 	response := models.LoginUserFailledResponse{
-		Message: message,
-		Link:    []models.LinkItem{linkItem},
+		ErrorMessage: message,
+		Link:         []models.LinkItem{linkItem},
 	}
 
 	c.JSON(status, response)
