@@ -101,7 +101,7 @@ func UserRegister(c *gin.Context) {
 
 	user.OtpCode = otpCode
 	//2 minute otp code expired
-	user.OtpCreatedAt = time.Now().Add(time.Minute)
+	user.OtpCreatedAt = time.Now().Add(2 * time.Minute)
 	user.OtpType = "Activation"
 
 	if err := initializers.DB.Save(&user).Error; err != nil {
@@ -177,7 +177,7 @@ func DoctorRegister(c *gin.Context) {
 	rand.Seed(time.Now().UnixNano())
 	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
 	doctor.OtpCode = otpCode
-	doctor.OtpCreatedAt = time.Now().Add(time.Minute)
+	doctor.OtpCreatedAt = time.Now().Add(2 * time.Minute)
 	doctor.OtpType = "Activation"
 
 	if err := initializers.DB.Save(&doctor).Error; err != nil {

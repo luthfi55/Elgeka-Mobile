@@ -198,7 +198,7 @@ func ForgotPassword(c *gin.Context) {
 		otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
 
 		doctor.OtpCode = otpCode
-		doctor.OtpCreatedAt = time.Now().Add(time.Minute)
+		doctor.OtpCreatedAt = time.Now().Add(2 * time.Minute)
 		doctor.OtpType = "ForgotPassword"
 
 		if err := initializers.DB.Save(&doctor).Error; err != nil {
@@ -222,7 +222,7 @@ func ForgotPassword(c *gin.Context) {
 	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
 
 	user.OtpCode = otpCode
-	user.OtpCreatedAt = time.Now().Add(time.Minute)
+	user.OtpCreatedAt = time.Now().Add(2 * time.Minute)
 	user.OtpType = "ForgotPassword"
 
 	if err := initializers.DB.Save(&user).Error; err != nil {
@@ -456,5 +456,4 @@ func ChangePassword(c *gin.Context) {
 
 	activationLink := "http://localhost:3000/api/user/login"
 	otpresponse.SuccessResponse(c, "Update Password Successfully", user.Email, activationLink, http.StatusOK)
-	return
 }
