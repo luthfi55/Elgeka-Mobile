@@ -6,7 +6,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func LoginFailedResponse(c *gin.Context, message string, data models.User, link string, status int) {
+func LoginFailedResponse(c *gin.Context, message string, data models.UserIdData, link string, status int) {
+	datas := models.UserIdData{
+		ID: data.ID,
+	}
+
 	linkItem := models.LinkItem{
 		Name: "Login",
 		Link: link,
@@ -14,6 +18,7 @@ func LoginFailedResponse(c *gin.Context, message string, data models.User, link 
 
 	response := models.LoginUserFailledResponse{
 		ErrorMessage: message,
+		Data:         []models.UserIdData{datas},
 		Link:         []models.LinkItem{linkItem},
 	}
 
@@ -21,7 +26,7 @@ func LoginFailedResponse(c *gin.Context, message string, data models.User, link 
 }
 
 func LoginSuccessResponse(c *gin.Context, message string, data string, link string, status int) {
-	datas := models.Data{
+	datas := models.Login{
 		Email: data,
 	}
 
@@ -32,7 +37,7 @@ func LoginSuccessResponse(c *gin.Context, message string, data string, link stri
 
 	response := models.LoginUserSuccessResponse{
 		Message: message,
-		Data:    []models.Data{datas},
+		Data:    []models.Login{datas},
 		Link:    []models.LinkItem{linkItem},
 	}
 

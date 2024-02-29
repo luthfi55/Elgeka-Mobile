@@ -47,6 +47,8 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 
+	var UserId models.UserIdData
+
 	//look up requested user
 	var user models.User
 	initializers.DB.First(&user, "email = ?", body.Email)
@@ -56,22 +58,29 @@ func UserLogin(c *gin.Context) {
 		initializers.DB.First(&doctor, "email = ?", body.Email)
 
 		if doctor.ID == uuid.Nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "Invalid email or password",
-			})
+			loginresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
 			return
 		}
 		err := bcrypt.CompareHashAndPassword([]byte(doctor.Password), []byte(body.Password))
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "Invalid email or password",
-			})
+			loginresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
 			return
 		}
 		// c.JSON(http.StatusBadRequest, gin.H{
 		// 	"error": "Login Doctor Success",
 		// })
 		//generate a jwt token
+		UserId.ID = doctor.ID
+		if !doctor.EmailActive {
+			loginresponse.LoginFailedResponse(c, "Email Account not Active", UserId, "http://localhost:3000/api/doctor/activate_email/"+doctor.ID.String(), http.StatusBadRequest)
+			return
+		}
+
+		if !doctor.IsActive {
+			loginresponse.LoginFailedResponse(c, "Account not Active", UserId, "http://localhost:3000/api/doctor/login", http.StatusBadRequest)
+			return
+		}
+
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 			"sub": doctor.ID,
 			// "exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
@@ -85,7 +94,7 @@ func UserLogin(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Invalid to create token",
 			})
-
+			loginresponse.LoginFailedResponse(c, "Invalid to create token", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
 			return
 		}
 
@@ -99,21 +108,18 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 
+	UserId.ID = user.ID
+
 	//compare sent in pass with saved user pass hash
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid email or password",
-		})
+		loginresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
 		return
 	}
 
 	if !user.IsActive {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Account not Active",
-		})
-
+		loginresponse.LoginFailedResponse(c, "Account not Active", UserId, "http://localhost:3000/api/user/activate/"+user.ID.String(), http.StatusBadRequest)
 		return
 	}
 
@@ -128,10 +134,7 @@ func UserLogin(c *gin.Context) {
 	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid to create token",
-		})
-
+		loginresponse.LoginFailedResponse(c, "Invalid to create token", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
 		return
 	}
 

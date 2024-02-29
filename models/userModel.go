@@ -19,6 +19,8 @@ type User struct {
 	OtpCreatedAt       time.Time
 	OtpType            string
 	ForgotPasswordCode string
+	BCR_ABL            []BCR_ABL `gorm:"foreignKey:UserID"`
+
 	gorm.Model
 }
 
@@ -26,6 +28,13 @@ type Data struct {
 	ID      uuid.UUID `json:"ID"`
 	Email   string    `json:"Email"`
 	OtpCode string    `json="OtpCode"`
+}
+type UserIdData struct {
+	ID uuid.UUID `json:"ID"`
+}
+
+type Login struct {
+	Email string `json:"Email"`
 }
 
 type LinkItem struct {
@@ -40,21 +49,21 @@ type RegisterUserSuccessResponse struct {
 }
 
 type RegisterUserFailledResponse struct {
-	ErrorMessage string     `json:"Message"`
+	ErrorMessage string     `json:"ErrorMessage"`
 	Data         []Data     `json:"Data"`
 	Link         []LinkItem `json:"Link"`
 }
 
 type LoginUserSuccessResponse struct {
 	Message string     `json:"Message"`
-	Data    []Data     `json:"Data"`
+	Data    []Login    `json:"Data"`
 	Link    []LinkItem `json:"Link"`
 }
 
 type LoginUserFailledResponse struct {
-	ErrorMessage string     `json:"Message"`
-	Data         []Data     `json:"Data"`
-	Link         []LinkItem `json:"Link"`
+	ErrorMessage string       `json:"ErrorMessage"`
+	Data         []UserIdData `json:"Data"`
+	Link         []LinkItem   `json:"Link"`
 }
 
 type OtpData struct {
