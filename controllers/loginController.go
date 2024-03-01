@@ -28,6 +28,7 @@ func LoginController(r *gin.Engine) {
 	r.POST("api/user/forgot_password", ForgotPassword)
 	r.GET("api/user/validate", middleware.RequireAuth, Validate)
 	r.GET("api/doctor/validate", middleware.RequireAuth, ValidateDoctor)
+	r.POST("api/user/refresh_code/forgot_password/:user_id", refreshForgotPasswordOtp)
 	r.POST("api/user/check_otp/:user_id", CheckOtp)
 	r.POST("api/user/change_password/:user_id/:otp_code", ChangePassword)
 }
@@ -143,8 +144,6 @@ func UserLogin(c *gin.Context) {
 	//expire set with second
 	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 
-	c.JSON(http.StatusOK, gin.H{})
-
 	activationLink := "http://localhost:3000"
 	loginresponse.LoginSuccessResponse(c, "Login Success", body.Email, activationLink, http.StatusOK)
 }
@@ -201,7 +200,7 @@ func ForgotPassword(c *gin.Context) {
 		otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
 
 		doctor.OtpCode = otpCode
-		doctor.OtpCreatedAt = time.Now().Add(2 * time.Minute)
+		doctor.OtpCreatedAt = time.Now().Add(3 * time.Minute)
 		doctor.OtpType = "ForgotPassword"
 
 		if err := initializers.DB.Save(&doctor).Error; err != nil {
@@ -225,7 +224,7 @@ func ForgotPassword(c *gin.Context) {
 	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
 
 	user.OtpCode = otpCode
-	user.OtpCreatedAt = time.Now().Add(2 * time.Minute)
+	user.OtpCreatedAt = time.Now().Add(3 * time.Minute)
 	user.OtpType = "ForgotPassword"
 
 	if err := initializers.DB.Save(&user).Error; err != nil {
@@ -459,4 +458,89 @@ func ChangePassword(c *gin.Context) {
 
 	activationLink := "http://localhost:3000/api/user/login"
 	otpresponse.SuccessResponse(c, "Update Password Successfully", user.Email, activationLink, http.StatusOK)
+}
+
+func refreshForgotPasswordOtp(c *gin.Context) {
+	userID := c.Param("user_id")
+
+	var data struct {
+		ID      string
+		Email   string
+		OtpCode string
+	}
+
+	var user models.User
+	var doctor models.Doctor
+
+	result := initializers.DB.First(&user, "id = ?", userID)
+	if result.Error != nil {
+		result := initializers.DB.First(&doctor, "id = ?", userID)
+		if result.Error != nil {
+			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+				activationLink := "http://localhost:3000/api/user/forgot_password"
+				otpresponse.FailedResponse(c, "User Not Found", userID, activationLink, http.StatusNotFound)
+				return
+			} else {
+				activationLink := "http://localhost:3000/api/user/forgot_password"
+				otpresponse.FailedResponse(c, "Database Error", userID, activationLink, http.StatusInternalServerError)
+				return
+			}
+		}
+		if !doctor.IsActive {
+			activationLink := "http://localhost:3000/api/doctor/activate_account/" + userID
+			otpresponse.FailedResponse(c, "Doctor Account Must Active", user.Email, activationLink, http.StatusUnauthorized)
+			return
+		}
+
+		rand.Seed(time.Now().UnixNano())
+		otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
+
+		doctor.OtpCode = otpCode
+		doctor.OtpCreatedAt = time.Now().Add(3 * time.Minute)
+		doctor.OtpType = "ForgotPassword"
+
+		if err := initializers.DB.Save(&doctor).Error; err != nil {
+			activationLink := "http://localhost:3000/api/doctor/register"
+			otpresponse.FailedResponse(c, "Failed to Send Otp Code", doctor.Email, activationLink, http.StatusInternalServerError)
+			return
+		}
+
+		SendEmailForgotPassword(doctor.Email, otpCode)
+
+		data.ID = doctor.ID.String()
+		data.Email = doctor.Email
+		data.OtpCode = otpCode
+
+		activationLink := "http://localhost:3000"
+		otpresponse.ForgotPasswordDoctorSuccessResponse(c, "Success to Send Otp Code", doctor, activationLink, http.StatusOK)
+		return
+	}
+
+	if !user.IsActive {
+		activationLink := "http://localhost:3000/api/user/activate/" + userID
+		otpresponse.FailedResponse(c, "User Email Account Must Active", user.Email, activationLink, http.StatusUnauthorized)
+		return
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
+
+	user.OtpCode = otpCode
+	user.OtpCreatedAt = time.Now().Add(3 * time.Minute)
+	user.OtpType = "ForgotPassword"
+
+	if err := initializers.DB.Save(&user).Error; err != nil {
+		activationLink := "http://localhost:3000/api/user/register"
+		otpresponse.FailedResponse(c, "Failed to Send Otp Code", user.Email, activationLink, http.StatusInternalServerError)
+		return
+	}
+
+	SendEmailForgotPassword(user.Email, otpCode)
+
+	data.ID = user.ID.String()
+	data.Email = user.Email
+	data.OtpCode = otpCode
+
+	activationLink := "http://localhost:3000/api/user/check_otp/" + data.ID
+	otpresponse.ForgotPasswordUserSuccessResponse(c, "Success to Send Otp Code", user, activationLink, http.StatusOK)
 }

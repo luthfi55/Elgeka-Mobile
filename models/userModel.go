@@ -8,18 +8,22 @@ import (
 )
 
 type User struct {
-	ID                 uuid.UUID `gorm:"type:uuid;primaryKey;"`
-	Name               string    `validate:"required"`
-	Address            string    `validate:"required"`
-	PhoneNumber        string    `validate:"required"`
-	Email              string    `gorm:"unique" validate:"required,email"`
-	Password           string    `validate:"required,min=8"`
-	IsActive           bool
-	OtpCode            string
-	OtpCreatedAt       time.Time
-	OtpType            string
-	ForgotPasswordCode string
-	BCR_ABL            []BCR_ABL `gorm:"foreignKey:UserID"`
+	ID                   uuid.UUID `gorm:"type:uuid;primaryKey;"`
+	Name                 string    `validate:"required"`
+	Address              string    `validate:"required"`
+	Gender               string    `validate:"required"`
+	BirthDate            string    `validate:"required"`
+	BloodGroup           string    `validate:"required"`
+	PhoneNumber          string    `validate:"required,max=13"`
+	Email                string    `gorm:"unique" validate:"required,email"`
+	Password             string    `validate:"required,min=8"`
+	PasswordConfirmation string    `validate:"required,eqfield=Password"`
+	IsActive             bool
+	OtpCode              string
+	OtpCreatedAt         time.Time
+	OtpType              string
+	ForgotPasswordCode   string
+	BCR_ABL              []BCR_ABL `gorm:"foreignKey:UserID"`
 
 	gorm.Model
 }
@@ -27,7 +31,7 @@ type User struct {
 type Data struct {
 	ID      uuid.UUID `json:"ID"`
 	Email   string    `json:"Email"`
-	OtpCode string    `json="OtpCode"`
+	OtpCode string    `json:"OtpCode"`
 }
 type UserIdData struct {
 	ID uuid.UUID `json:"ID"`

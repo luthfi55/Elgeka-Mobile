@@ -30,7 +30,6 @@ func ActivateAccountController(r *gin.Engine) {
 
 func Activate(c *gin.Context) {
 	userID := c.Param("user_id")
-	data := userID
 
 	var body struct {
 		OtpCode string `json:"OtpCode"`
@@ -38,7 +37,7 @@ func Activate(c *gin.Context) {
 
 	if c.Bind(&body) != nil {
 		activationLink := "http://localhost:3000/api/user/register"
-		otpresponse.FailedResponse(c, "Failed To Read Body", data, activationLink, http.StatusBadRequest)
+		otpresponse.FailedResponse(c, "Failed To Read Body", "", activationLink, http.StatusBadRequest)
 
 		return
 	}
@@ -50,12 +49,12 @@ func Activate(c *gin.Context) {
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			activationLink := "http://localhost:3000/api/user/register"
-			otpresponse.FailedResponse(c, "User Not Found", data, activationLink, http.StatusNotFound)
+			otpresponse.FailedResponse(c, "User Not Found", "", activationLink, http.StatusNotFound)
 
 			return
 		} else {
 			activationLink := "http://localhost:3000/api/user/register"
-			otpresponse.FailedResponse(c, "Database Error", data, activationLink, http.StatusInternalServerError)
+			otpresponse.FailedResponse(c, "Database Error", "", activationLink, http.StatusInternalServerError)
 
 			return
 		}
@@ -63,26 +62,26 @@ func Activate(c *gin.Context) {
 
 	if user.IsActive {
 		activationLink := "http://localhost:3000/api/user/register"
-		otpresponse.FailedResponse(c, "User Account Already Active", data, activationLink, http.StatusUnauthorized)
+		otpresponse.FailedResponse(c, "User Account Already Active", user.Email, activationLink, http.StatusUnauthorized)
 
 		return
 	}
 
 	if user.OtpCode != body.OtpCode {
 		activationLink := "http://localhost:3000/api/user/register"
-		otpresponse.FailedResponse(c, "Incorrect OTP code", data, activationLink, http.StatusUnauthorized)
+		otpresponse.FailedResponse(c, "Incorrect OTP code", user.Email, activationLink, http.StatusUnauthorized)
 		return
 	} else {
 		// 1 minute expired
 		if time.Since(user.OtpCreatedAt) > time.Minute {
 			activationLink := "http://localhost:3000/api/user/register"
-			otpresponse.FailedResponse(c, "OTP Code Expired", data, activationLink, http.StatusUnauthorized)
+			otpresponse.FailedResponse(c, "OTP Code Expired", user.Email, activationLink, http.StatusUnauthorized)
 			return
 		}
 
 		if user.OtpType != "Activation" {
 			activationLink := "http://localhost:3000/api/user/register"
-			otpresponse.FailedResponse(c, "Incorrect OTP code", data, activationLink, http.StatusUnauthorized)
+			otpresponse.FailedResponse(c, "Incorrect OTP code", user.Email, activationLink, http.StatusUnauthorized)
 			return
 		}
 
@@ -90,19 +89,18 @@ func Activate(c *gin.Context) {
 		// Save the updated user
 		if err := initializers.DB.Save(&user).Error; err != nil {
 			activationLink := "http://localhost:3000/api/user/register"
-			otpresponse.FailedResponse(c, "Failed to Activate", data, activationLink, http.StatusInternalServerError)
+			otpresponse.FailedResponse(c, "Failed to Activate", user.Email, activationLink, http.StatusInternalServerError)
 			return
 		}
 
 		activationLink := "http://localhost:3000/api/user/login"
-		otpresponse.SuccessResponse(c, "User Activated Successfully", data, activationLink, http.StatusOK)
+		otpresponse.SuccessResponse(c, "User Activated Successfully", user.Email, activationLink, http.StatusOK)
 		return
 	}
 }
 
 func ActivateDoctor(c *gin.Context) {
 	doctorID := c.Param("doctor_id")
-	data := doctorID
 
 	var doctor models.Doctor
 
@@ -111,12 +109,12 @@ func ActivateDoctor(c *gin.Context) {
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			activationLink := "http://localhost:3000/api/user/register"
-			otpresponse.FailedResponse(c, "Doctor Not Found", data, activationLink, http.StatusNotFound)
+			otpresponse.FailedResponse(c, "Doctor Not Found", "", activationLink, http.StatusNotFound)
 
 			return
 		} else {
 			activationLink := "http://localhost:3000/api/user/register"
-			otpresponse.FailedResponse(c, "Database Error", data, activationLink, http.StatusInternalServerError)
+			otpresponse.FailedResponse(c, "Database Error", "", activationLink, http.StatusInternalServerError)
 
 			return
 		}
@@ -124,14 +122,14 @@ func ActivateDoctor(c *gin.Context) {
 
 	if doctor.IsActive {
 		activationLink := "http://localhost:3000/api/user/register"
-		otpresponse.FailedResponse(c, "Doctor Account Already Active", data, activationLink, http.StatusUnauthorized)
+		otpresponse.FailedResponse(c, "Doctor Account Already Active", doctor.Email, activationLink, http.StatusUnauthorized)
 
 		return
 	}
 
 	if !doctor.EmailActive {
 		activationLink := "http://localhost:3000/api/user/register"
-		otpresponse.FailedResponse(c, "Doctor Email Account Must Active", data, activationLink, http.StatusUnauthorized)
+		otpresponse.FailedResponse(c, "Doctor Email Account Must Active", doctor.Email, activationLink, http.StatusUnauthorized)
 
 		return
 	}
@@ -140,17 +138,16 @@ func ActivateDoctor(c *gin.Context) {
 	// Save the updated user
 	if err := initializers.DB.Save(&doctor).Error; err != nil {
 		activationLink := "http://localhost:3000/api/user/register"
-		otpresponse.FailedResponse(c, "Failed to Activate", data, activationLink, http.StatusInternalServerError)
+		otpresponse.FailedResponse(c, "Failed to Activate", doctor.Email, activationLink, http.StatusInternalServerError)
 		return
 	}
 
 	activationLink := "http://localhost:3000/api/user/login"
-	otpresponse.SuccessResponse(c, "Doctor Activated Successfully", data, activationLink, http.StatusOK)
+	otpresponse.SuccessResponse(c, "Doctor Activated Successfully", doctor.Email, activationLink, http.StatusOK)
 }
 
 func ActivateEmailDoctor(c *gin.Context) {
 	doctorID := c.Param("doctor_id")
-	data := doctorID
 
 	var body struct {
 		OtpCode string `json:"OtpCode"`
@@ -158,7 +155,7 @@ func ActivateEmailDoctor(c *gin.Context) {
 
 	if c.Bind(&body) != nil {
 		activationLink := "http://localhost:3000/api/doctor/register"
-		otpresponse.FailedResponse(c, "Failed To Read Body", data, activationLink, http.StatusBadRequest)
+		otpresponse.FailedResponse(c, "Failed To Read Body", "", activationLink, http.StatusBadRequest)
 
 		return
 	}
@@ -170,12 +167,12 @@ func ActivateEmailDoctor(c *gin.Context) {
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			activationLink := "http://localhost:3000/api/doctor/register"
-			otpresponse.FailedResponse(c, "Doctor Not Found", data, activationLink, http.StatusNotFound)
+			otpresponse.FailedResponse(c, "Doctor Not Found", "", activationLink, http.StatusNotFound)
 
 			return
 		} else {
 			activationLink := "http://localhost:3000/api/doctor/register"
-			otpresponse.FailedResponse(c, "Database Error", data, activationLink, http.StatusInternalServerError)
+			otpresponse.FailedResponse(c, "Database Error", "", activationLink, http.StatusInternalServerError)
 
 			return
 		}
@@ -183,26 +180,26 @@ func ActivateEmailDoctor(c *gin.Context) {
 
 	if doctor.EmailActive {
 		activationLink := "http://localhost:3000/api/doctor/register"
-		otpresponse.FailedResponse(c, "Doctor Account Already Active", data, activationLink, http.StatusUnauthorized)
+		otpresponse.FailedResponse(c, "Doctor Account Already Active", doctor.Email, activationLink, http.StatusUnauthorized)
 
 		return
 	}
 
 	if doctor.OtpCode != body.OtpCode {
 		activationLink := "http://localhost:3000/api/doctor/register"
-		otpresponse.FailedResponse(c, "Incorrect OTP code", data, activationLink, http.StatusUnauthorized)
+		otpresponse.FailedResponse(c, "Incorrect OTP code", doctor.Email, activationLink, http.StatusUnauthorized)
 		return
 	} else {
 		// 1 minute expired
 		if time.Since(doctor.OtpCreatedAt) > time.Minute {
 			activationLink := "http://localhost:3000/api/doctor/register"
-			otpresponse.FailedResponse(c, "OTP Code Expired", data, activationLink, http.StatusUnauthorized)
+			otpresponse.FailedResponse(c, "OTP Code Expired", doctor.Email, activationLink, http.StatusUnauthorized)
 			return
 		}
 
 		if doctor.OtpType != "Activation" {
 			activationLink := "http://localhost:3000/api/doctor/register"
-			otpresponse.FailedResponse(c, "Incorrect OTP code", data, activationLink, http.StatusUnauthorized)
+			otpresponse.FailedResponse(c, "Incorrect OTP code", doctor.Email, activationLink, http.StatusUnauthorized)
 			return
 		}
 
@@ -210,12 +207,12 @@ func ActivateEmailDoctor(c *gin.Context) {
 		// Save the updated doctor
 		if err := initializers.DB.Save(&doctor).Error; err != nil {
 			activationLink := "http://localhost:3000/api/doctor/register"
-			otpresponse.FailedResponse(c, "Failed to Activate", data, activationLink, http.StatusInternalServerError)
+			otpresponse.FailedResponse(c, "Failed to Activate", doctor.Email, activationLink, http.StatusInternalServerError)
 			return
 		}
 
 		activationLink := "http://localhost:3000/api/doctor/login"
-		otpresponse.SuccessResponse(c, "Doctor Email Activated Successfully", data, activationLink, http.StatusOK)
+		otpresponse.SuccessResponse(c, "Doctor Email Activated Successfully", doctor.Email, activationLink, http.StatusOK)
 		return
 	}
 }
@@ -245,7 +242,7 @@ func RefreshOtpCode(c *gin.Context) {
 	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
 
 	user.OtpCode = otpCode
-	user.OtpCreatedAt = time.Now().Add(2 * time.Minute)
+	user.OtpCreatedAt = time.Now().Add(3 * time.Minute)
 	user.OtpType = "Activation"
 
 	if err := initializers.DB.Save(&user).Error; err != nil {
@@ -285,7 +282,7 @@ func RefreshDoctorOtpCode(c *gin.Context) {
 	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
 
 	doctor.OtpCode = otpCode
-	doctor.OtpCreatedAt = time.Now().Add(2 * time.Minute)
+	doctor.OtpCreatedAt = time.Now().Add(3 * time.Minute)
 	doctor.OtpType = "Activation"
 
 	if err := initializers.DB.Save(&doctor).Error; err != nil {
@@ -308,7 +305,11 @@ func getValidationErrorTagMessage(tag string) string {
 	case "email":
 		return "Must Be a Valid Email Address"
 	case "min":
-		return "Password Must Be At Least 8 Letters"
+		return "Must Be At Least 8 Letters"
+	case "max":
+		return "Must Be At Most 13 Letters"
+	case "eqfield":
+		return "Must Match Password"
 	default:
 		return fmt.Sprintf("validation Failed for Tag: %s", tag)
 	}

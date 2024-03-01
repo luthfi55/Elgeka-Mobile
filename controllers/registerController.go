@@ -38,6 +38,11 @@ func isPasswordValid(password string) bool {
 	return hasUppercase && hasDigit && hasSpecialChar
 }
 
+func isValidDateFormat(date string) bool {
+	_, err := time.Parse("2006-01-02", date)
+	return err == nil
+}
+
 func UserRegister(c *gin.Context) {
 	var body models.User
 
@@ -49,19 +54,6 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
-	validate := validator.New()
-	if err := validate.Struct(body); err != nil {
-		var validationErrors []string
-		for _, err := range err.(validator.ValidationErrors) {
-			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
-		}
-		errorMessage := strings.Join(validationErrors, ", ") // Join errors into a single string
-		data := body
-		activationLink := "http://localhost:3000/api/user/register"
-		userresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
-		return
-	}
-
 	if !isEmailUnique(body.Email) {
 		data := body
 		activationLink := "http://localhost:3000/api/user/register"
@@ -69,8 +61,45 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
+	validate := validator.New()
+	if err := validate.Struct(body); err != nil {
+		var validationErrors []string
+		for _, err := range err.(validator.ValidationErrors) {
+			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
+		}
+		errorMessage := strings.Join(validationErrors, ", ")
+		data := body
+		activationLink := "http://localhost:3000/api/user/register"
+		userresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
+		return
+	}
+
 	if !isPasswordValid(body.Password) {
 		errorMessage := "Password must contain at least 1 uppercase letter, 1 digit, and 1 symbol."
+		data := body
+		activationLink := "http://localhost:3000/api/user/register"
+		userresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
+		return
+	}
+
+	if body.Gender != "male" && body.Gender != "female" {
+		errorMessage := "Gender must male or female."
+		data := body
+		activationLink := "http://localhost:3000/api/user/register"
+		userresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
+		return
+	}
+
+	if body.BirthDate == "" || !isValidDateFormat(body.BirthDate) {
+		errorMessage := "Birthdate must be in the format 'Year-Month-Day'."
+		data := body
+		activationLink := "http://localhost:3000/api/user/register"
+		userresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
+		return
+	}
+
+	if body.BloodGroup != "A" && body.BloodGroup != "B" && body.BloodGroup != "AB" && body.BloodGroup != "O" {
+		errorMessage := "Blood Group must A, B, AB, or O."
 		data := body
 		activationLink := "http://localhost:3000/api/user/register"
 		userresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
@@ -88,7 +117,7 @@ func UserRegister(c *gin.Context) {
 
 	//create the user
 	newUUID := uuid.New()
-	user := models.User{ID: newUUID, Name: body.Name, Address: body.Address, PhoneNumber: body.PhoneNumber, Email: body.Email, Password: string(hash)}
+	user := models.User{ID: newUUID, Name: body.Name, Address: body.Address, Gender: body.Gender, BirthDate: body.BirthDate, BloodGroup: body.BloodGroup, PhoneNumber: body.PhoneNumber, Email: body.Email, Password: string(hash)}
 
 	if err := initializers.DB.Create(&user).Error; err != nil {
 		activationLink := "http://localhost:3000/api/user/register"
@@ -101,7 +130,7 @@ func UserRegister(c *gin.Context) {
 
 	user.OtpCode = otpCode
 	//2 minute otp code expired
-	user.OtpCreatedAt = time.Now().Add(2 * time.Minute)
+	user.OtpCreatedAt = time.Now().Add(3 * time.Minute)
 	user.OtpType = "Activation"
 
 	if err := initializers.DB.Save(&user).Error; err != nil {
@@ -156,6 +185,14 @@ func DoctorRegister(c *gin.Context) {
 		return
 	}
 
+	if body.Gender != "male" && body.Gender != "female" {
+		errorMessage := "Gender must male or female."
+		data := body
+		activationLink := "http://localhost:3000/api/user/register"
+		doctorresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
+		return
+	}
+
 	//hash the password
 	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
 	if err != nil {
@@ -167,7 +204,7 @@ func DoctorRegister(c *gin.Context) {
 
 	//create the doctor
 	newUUID := uuid.New()
-	doctor := models.Doctor{ID: newUUID, Name: body.Name, PolyName: body.PolyName, HospitalName: body.HospitalName, Email: body.Email, Password: string(hash)}
+	doctor := models.Doctor{ID: newUUID, Name: body.Name, PhoneNumber: body.PhoneNumber, Gender: body.Gender, PolyName: body.PolyName, HospitalName: body.HospitalName, Email: body.Email, Password: string(hash)}
 
 	if err := initializers.DB.Create(&doctor).Error; err != nil {
 		activationLink := "http://localhost:3000/api/doctor/register"
@@ -177,7 +214,7 @@ func DoctorRegister(c *gin.Context) {
 	rand.Seed(time.Now().UnixNano())
 	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
 	doctor.OtpCode = otpCode
-	doctor.OtpCreatedAt = time.Now().Add(2 * time.Minute)
+	doctor.OtpCreatedAt = time.Now().Add(3 * time.Minute)
 	doctor.OtpType = "Activation"
 
 	if err := initializers.DB.Save(&doctor).Error; err != nil {

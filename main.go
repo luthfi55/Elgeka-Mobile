@@ -23,12 +23,10 @@ func main() {
 	controllers.ActivateAccountController(r)
 	controllers.HealthStatusController(r)
 
-	// port := os.Getenv("PORT")
-	// if port == "" {
-	// 	port = "8080"
-	// }
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
-	// r.Run("0.0.0.0:" + port)
-
-	r.Run(os.Getenv("PORT"))
+	r.Run("0.0.0.0:" + port)
 }
