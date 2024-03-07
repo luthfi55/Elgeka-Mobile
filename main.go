@@ -30,22 +30,18 @@ func main() {
 	controllers.ActivateAccountController(r)
 	controllers.HealthStatusController(r)
 
-	// port := os.Getenv("PORT")
-	// if port == "" {
-	// 	port = "8080"
-	// }
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
-	// r.Run("0.0.0.0:" + port)
 	go func() {
-		// Wait for the termination signal
 		<-shutdownSignal
 
-		// Cleanup and shutdown your services here
 		initializers.DisconnectWhatsapp()
 
-		// Exit the program
 		os.Exit(0)
 	}()
 
-	r.Run(os.Getenv("PORT"))
+	r.Run("0.0.0.0:" + port)
 }
