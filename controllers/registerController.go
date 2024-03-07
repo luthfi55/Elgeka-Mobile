@@ -125,21 +125,21 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
-	rand.Seed(time.Now().UnixNano())
-	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
+	// rand.Seed(time.Now().UnixNano())
+	// otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
 
-	user.OtpCode = otpCode
-	//2 minute otp code expired
-	user.OtpCreatedAt = time.Now().Add(3 * time.Minute)
-	user.OtpType = "Activation"
+	// user.OtpCode = otpCode
+	// //2 minute otp code expired
+	// user.OtpCreatedAt = time.Now().Add(3 * time.Minute)
+	// user.OtpType = "Activation"
 
-	if err := initializers.DB.Save(&user).Error; err != nil {
-		activationLink := "http://localhost:3000/api/user/refresh_code/" + newUUID.String()
-		userresponse.RegisterFailedResponse(c, "Failed To Update Otp Code", user, activationLink, http.StatusInternalServerError)
-		return
-	}
+	// if err := initializers.DB.Save(&user).Error; err != nil {
+	// 	activationLink := "http://localhost:3000/api/user/refresh_code/" + newUUID.String()
+	// 	userresponse.RegisterFailedResponse(c, "Failed To Update Otp Code", user, activationLink, http.StatusInternalServerError)
+	// 	return
+	// }
 
-	SendEmailWithGmail(body.Email, otpCode)
+	// SendEmailWithGmail(body.Email, otpCode)
 
 	//respond
 	activationLink := "http://localhost:3000/api/user/activate/" + newUUID.String()
