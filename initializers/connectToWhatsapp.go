@@ -34,7 +34,7 @@ func SendMessageToUser(userNumber string, otp string) {
 
 func ConnectToWhatsapp() {
 	dbLog := waLog.Stdout("Database", "DEBUG", true)
-	container, err := sqlstore.New("sqlite3", "file:examplestore.db?_foreign_keys=on", dbLog)
+	container, err := sqlstore.New("sqlite3", "file:whatsapp.db?_foreign_keys=on", dbLog)
 	if err != nil {
 		panic(err)
 	}
