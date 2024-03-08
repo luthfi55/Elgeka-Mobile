@@ -1,5 +1,5 @@
 # Use an official Golang runtime as the base image
-FROM golang:1.21-alpine
+FROM golang:1.20-alpine
 
 # Set the working directory to /app
 WORKDIR /app
@@ -9,6 +9,9 @@ COPY . /app/.
 
 # Install build-essential package
 RUN apk add --no-cache build-base
+
+# Print the contents of the go.mod file
+RUN cat go.mod
 
 # Set the CGO_ENABLED environment variable to 1
 ENV CGO_ENABLED 1
