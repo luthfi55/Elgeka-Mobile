@@ -1,5 +1,5 @@
 # Use an official Golang runtime as the base image
-FROM golang:1.18-alpine
+FROM golang:1.21-alpine
 
 # Set the working directory to /app
 WORKDIR /app
@@ -10,9 +10,11 @@ COPY . /app/.
 # Install build-essential package
 RUN apk add --no-cache build-base
 
+# Set the CGO_ENABLED environment variable to 1
+ENV CGO_ENABLED 1
 
 # Compile the Go binary with CGO enabled
-RUN go build -o out
+RUN go build -v -o out && ls -l
 
 # Set the entrypoint to run the Go binary
 ENTRYPOINT ["./out"]
