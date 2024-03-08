@@ -18,7 +18,10 @@ import (
 func ActivateAccountController(r *gin.Engine) {
 	//user
 	r.POST("api/user/activate/:user_id", Activate)
-	r.POST("api/user/refresh_code/:user_id", RefreshOtpCode)
+	r.POST("api/user/email_otp/:user_id", SendEmailOtp)
+	r.POST("api/user/whatsapp_otp/:user_id", SendWhatsappOtp)
+	r.POST("api/user/email_refresh_code/:user_id", RefreshOtpCode)
+	r.POST("api/user/whatsapp_refresh_code/:user_id", RefreshWhatsappOtpCode)
 
 	//doctor
 	r.POST("api/doctor/activate_account/:doctor_id", ActivateDoctor)
@@ -26,6 +29,128 @@ func ActivateAccountController(r *gin.Engine) {
 	r.GET("api/doctor/list_activate", ListActivateDoctor)
 	r.POST("api/doctor/refresh_code/:doctor_id", RefreshDoctorOtpCode)
 	r.POST("api/doctor/reject_activation/:doctor_id", RejectDoctor)
+}
+
+func SendEmailOtp(c *gin.Context) {
+	userID := c.Param("user_id")
+	data := userID
+
+	var user models.User
+	initializers.DB.First(&user, "id = ?", userID)
+	result := initializers.DB.First(&user, "id = ?", userID)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			activationLink := "http://localhost:3000/api/user/register"
+			otpresponse.FailedResponse(c, "User Not Found", data, activationLink, http.StatusNotFound)
+
+			return
+		} else {
+			activationLink := "http://localhost:3000/api/user/register"
+			otpresponse.FailedResponse(c, "Database Error", data, activationLink, http.StatusInternalServerError)
+
+			return
+		}
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
+
+	user.OtpCode = otpCode
+	user.OtpCreatedAt = time.Now().Add(3 * time.Minute)
+	user.OtpType = "Activation"
+
+	if err := initializers.DB.Save(&user).Error; err != nil {
+		activationLink := "http://localhost:3000/api/user/register"
+		otpresponse.FailedResponse(c, "Failed to Update Otp Code", data, activationLink, http.StatusInternalServerError)
+		return
+	}
+
+	SendEmailWithGmail(user.Email, otpCode)
+
+	activationLink := "http://localhost:3000/api/user/activate/" + userID
+	otpresponse.SuccessResponse(c, "Send Email OTP Successfully", user.Email, activationLink, http.StatusOK)
+}
+
+func SendWhatsappOtp(c *gin.Context) {
+	userID := c.Param("user_id")
+	data := userID
+
+	var user models.User
+	initializers.DB.First(&user, "id = ?", userID)
+	result := initializers.DB.First(&user, "id = ?", userID)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			activationLink := "http://localhost:3000/api/user/register"
+			otpresponse.FailedResponse(c, "User Not Found", data, activationLink, http.StatusNotFound)
+
+			return
+		} else {
+			activationLink := "http://localhost:3000/api/user/register"
+			otpresponse.FailedResponse(c, "Database Error", data, activationLink, http.StatusInternalServerError)
+
+			return
+		}
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
+
+	user.OtpCode = otpCode
+	user.OtpCreatedAt = time.Now().Add(3 * time.Minute)
+	user.OtpType = "Activation"
+
+	if err := initializers.DB.Save(&user).Error; err != nil {
+		activationLink := "http://localhost:3000/api/user/register"
+		otpresponse.FailedResponse(c, "Failed to Update Otp Code", data, activationLink, http.StatusInternalServerError)
+		return
+	}
+
+	// Send Whatsapp Otp
+	initializers.SendMessageToUser(user.PhoneNumber, otpCode)
+
+	activationLink := "http://localhost:3000/api/user/activate/" + userID
+	otpresponse.SuccessResponse(c, "Send Whatsapp OTP Successfully", user.Email, activationLink, http.StatusOK)
+
+}
+
+func RefreshWhatsappOtpCode(c *gin.Context) {
+	userID := c.Param("user_id")
+	data := userID
+
+	var user models.User
+	initializers.DB.First(&user, "id = ?", userID)
+	result := initializers.DB.First(&user, "id = ?", userID)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			activationLink := "http://localhost:3000/api/user/register"
+			otpresponse.FailedResponse(c, "User Not Found", data, activationLink, http.StatusNotFound)
+
+			return
+		} else {
+			activationLink := "http://localhost:3000/api/user/register"
+			otpresponse.FailedResponse(c, "Database Error", data, activationLink, http.StatusInternalServerError)
+
+			return
+		}
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
+
+	user.OtpCode = otpCode
+	user.OtpCreatedAt = time.Now().Add(3 * time.Minute)
+	user.OtpType = "Activation"
+
+	if err := initializers.DB.Save(&user).Error; err != nil {
+		activationLink := "http://localhost:3000/api/user/register"
+		otpresponse.FailedResponse(c, "Failed to Update Otp Code", data, activationLink, http.StatusInternalServerError)
+		return
+	}
+
+	initializers.SendMessageToUser(user.PhoneNumber, otpCode)
+
+	activationLink := "http://localhost:3000/api/user/activate/" + userID
+	otpresponse.SuccessResponse(c, "Refresh Whatsapp OTP Successfully", data, activationLink, http.StatusOK)
 }
 
 func Activate(c *gin.Context) {
@@ -295,37 +420,6 @@ func RefreshDoctorOtpCode(c *gin.Context) {
 
 	activationLink := "http://localhost:3000/api/doctor/activate_email/" + doctorID
 	otpresponse.SuccessResponse(c, "Refresh OTP Successfully", data, activationLink, http.StatusOK)
-}
-
-func getValidationErrorTagMessage(tag string) string {
-	// Definisi pesan kustom untuk tag validasi tertentu
-	switch tag {
-	case "required":
-		return "Cant Be Empty"
-	case "email":
-		return "Must Be a Valid Email Address"
-	case "min":
-		return "Must Be At Least 8 Letters"
-	case "max":
-		return "Must Be At Most 13 Letters"
-	case "eqfield":
-		return "Must Match Password"
-	default:
-		return fmt.Sprintf("validation Failed for Tag: %s", tag)
-	}
-}
-
-func isEmailUnique(email string) bool {
-	var userCount, doctorCount int64
-
-	// Pengecekan email di tabel User
-	initializers.DB.Model(&models.User{}).Where("email = ?", email).Count(&userCount)
-
-	// Pengecekan email di tabel Doctor
-	initializers.DB.Model(&models.Doctor{}).Where("email = ?", email).Count(&doctorCount)
-
-	// Jika jumlah lebih dari 0, email sudah ada di salah satu tabel
-	return (userCount + doctorCount) == 0
 }
 
 func ListActivateDoctor(c *gin.Context) {

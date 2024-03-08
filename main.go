@@ -2,6 +2,8 @@ package main
 
 import (
 	"os"
+	"os/signal"
+	"syscall"
 
 	"elgeka-mobile/controllers"
 	"elgeka-mobile/initializers"
@@ -16,6 +18,11 @@ func init() {
 }
 
 func main() {
+	shutdownSignal := make(chan os.Signal, 1)
+	signal.Notify(shutdownSignal, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		initializers.ConnectToWhatsapp()
+	}()
 	r := gin.Default()
 
 	controllers.LoginController(r)
@@ -27,6 +34,14 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
+
+	go func() {
+		<-shutdownSignal
+
+		initializers.DisconnectWhatsapp()
+
+		os.Exit(0)
+	}()
 
 	r.Run("0.0.0.0:" + port)
 }
