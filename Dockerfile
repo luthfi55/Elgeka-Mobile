@@ -10,11 +10,9 @@ COPY . /app/.
 # Install build-essential package
 RUN apk add --no-cache build-base
 
-# Set the CGO_ENABLED environment variable to 1
-ENV CGO_ENABLED 1
 
 # Compile the Go binary with CGO enabled
-RUN go build -v -o out && ls -l
+RUN go build -o out
 
 # Set the entrypoint to run the Go binary
 ENTRYPOINT ["./out"]
