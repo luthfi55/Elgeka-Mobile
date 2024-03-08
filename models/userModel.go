@@ -35,9 +35,8 @@ type Data struct {
 }
 
 type RegisterData struct {
-	ID      uuid.UUID `json:"ID"`
-	Email   string    `json:"Email"`
-	OtpCode string    `json:"OtpCode"`
+	ID    uuid.UUID `json:"ID"`
+	Email string    `json:"Email"`
 }
 
 type UserIdData struct {
