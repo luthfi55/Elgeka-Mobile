@@ -43,6 +43,5 @@ func main() {
 		os.Exit(0)
 	}()
 
-	// r.Run("0.0.0.0:" + port)
-	r.Run(os.Getenv("PORT"))
+	r.Run("0.0.0.0:" + port)
 }
