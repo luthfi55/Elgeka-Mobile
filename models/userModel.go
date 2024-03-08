@@ -14,7 +14,7 @@ type User struct {
 	Gender               string    `validate:"required"`
 	BirthDate            string    `validate:"required"`
 	BloodGroup           string    `validate:"required"`
-	PhoneNumber          string    `validate:"required,max=13"`
+	PhoneNumber          string    `validate:"required,max=14"`
 	Email                string    `gorm:"unique" validate:"required,email"`
 	Password             string    `validate:"required,min=8"`
 	PasswordConfirmation string    `validate:"required,eqfield=Password"`

@@ -422,37 +422,6 @@ func RefreshDoctorOtpCode(c *gin.Context) {
 	otpresponse.SuccessResponse(c, "Refresh OTP Successfully", data, activationLink, http.StatusOK)
 }
 
-func getValidationErrorTagMessage(tag string) string {
-	// Definisi pesan kustom untuk tag validasi tertentu
-	switch tag {
-	case "required":
-		return "Cant Be Empty"
-	case "email":
-		return "Must Be a Valid Email Address"
-	case "min":
-		return "Must Be At Least 8 Letters"
-	case "max":
-		return "Must Be At Most 13 Letters"
-	case "eqfield":
-		return "Must Match Password"
-	default:
-		return fmt.Sprintf("validation Failed for Tag: %s", tag)
-	}
-}
-
-func isEmailUnique(email string) bool {
-	var userCount, doctorCount int64
-
-	// Pengecekan email di tabel User
-	initializers.DB.Model(&models.User{}).Where("email = ?", email).Count(&userCount)
-
-	// Pengecekan email di tabel Doctor
-	initializers.DB.Model(&models.Doctor{}).Where("email = ?", email).Count(&doctorCount)
-
-	// Jika jumlah lebih dari 0, email sudah ada di salah satu tabel
-	return (userCount + doctorCount) == 0
-}
-
 func ListActivateDoctor(c *gin.Context) {
 	var doctors []models.Doctor
 	var response []models.DoctorData
