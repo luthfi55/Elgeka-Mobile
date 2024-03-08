@@ -33,6 +33,13 @@ type Data struct {
 	Email   string    `json:"Email"`
 	OtpCode string    `json:"OtpCode"`
 }
+
+type RegisterData struct {
+	ID      uuid.UUID `json:"ID"`
+	Email   string    `json:"Email"`
+	OtpCode string    `json:"OtpCode"`
+}
+
 type UserIdData struct {
 	ID uuid.UUID `json:"ID"`
 }
@@ -47,9 +54,9 @@ type LinkItem struct {
 }
 
 type RegisterUserSuccessResponse struct {
-	Message string     `json:"Message"`
-	Data    []Data     `json:"Data"`
-	Link    []LinkItem `json:"Link"`
+	Message string         `json:"Message"`
+	Data    []RegisterData `json:"Data"`
+	Link    []LinkItem     `json:"Link"`
 }
 
 type RegisterUserFailledResponse struct {

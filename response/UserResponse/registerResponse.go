@@ -23,7 +23,7 @@ func RegisterFailedResponse(c *gin.Context, message string, data models.User, li
 }
 
 func RegisterSuccessResponse(c *gin.Context, message string, data models.User, link string) {
-	datas := models.Data{
+	datas := models.RegisterData{
 		ID:    data.ID,
 		Email: data.Email,
 	}
@@ -35,7 +35,7 @@ func RegisterSuccessResponse(c *gin.Context, message string, data models.User, l
 
 	response := models.RegisterUserSuccessResponse{
 		Message: message,
-		Data:    []models.Data{datas},
+		Data:    []models.RegisterData{datas},
 		Link:    []models.LinkItem{linkItem},
 	}
 
