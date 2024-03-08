@@ -14,7 +14,7 @@ RUN apk add --no-cache build-base
 ENV CGO_ENABLED 1
 
 # Compile the Go binary with CGO enabled
-RUN go build -o out && ls -l
+RUN go build -v -o out && ls -l
 
 # Set the entrypoint to run the Go binary
 ENTRYPOINT ["./out"]
