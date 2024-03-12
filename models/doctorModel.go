@@ -23,6 +23,7 @@ type Doctor struct {
 	OtpCreatedAt         time.Time
 	OtpType              string
 	ForgotPasswordCode   string
+	UserPersonalDoctor   []UserPersonalDoctor `gorm:"foreignKey:DoctorID"`
 	gorm.Model
 }
 

@@ -12,5 +12,6 @@ func SyncDatabase() {
 		&models.Hemoglobin{},
 		&models.HeartRate{},
 		&models.BloodPressure{},
+		&models.UserPersonalDoctor{},
 	)
 }

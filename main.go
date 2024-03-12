@@ -29,6 +29,7 @@ func main() {
 	controllers.RegisterController(r)
 	controllers.ActivateAccountController(r)
 	controllers.HealthStatusController(r)
+	controllers.UserProfileController(r)
 
 	port := os.Getenv("PORT")
 	if port == "" {

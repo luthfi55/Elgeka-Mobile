@@ -23,7 +23,8 @@ type User struct {
 	OtpCreatedAt         time.Time
 	OtpType              string
 	ForgotPasswordCode   string
-	BCR_ABL              []BCR_ABL `gorm:"foreignKey:UserID"`
+	BCR_ABL              []BCR_ABL            `gorm:"foreignKey:UserID"`
+	UserPersonalDoctor   []UserPersonalDoctor `gorm:"foreignKey:UserID"`
 
 	gorm.Model
 }
@@ -112,4 +113,16 @@ type CheckOtpSuccessResponse struct {
 	Message string
 	Data    []CheckSuccessOtpData `json:"OtpData"`
 	Link    []LinkItem            `json:"Link"`
+}
+
+type UpdateUserProfileSuccessResponse struct {
+	Message string       `json:"Message"`
+	Data    []UserIdData `json:"Data"`
+	Link    []LinkItem   `json:"Link"`
+}
+
+type UpdateUserProfileFailledResponse struct {
+	ErrorMessage string       `json:"ErrorMessage"`
+	Data         []UserIdData `json:"Data"`
+	Link         []LinkItem   `json:"Link"`
 }
