@@ -12,7 +12,7 @@ func GetInactiveDoctorFailedResponse(c *gin.Context, message string, data []mode
 		Link: link,
 	}
 
-	response := models.RegisterDoctorFailledResponse{
+	response := models.RegisterDoctorFailedResponse{
 		ErrorMessage: message,
 		Link:         []models.LinkItem{linkItem},
 	}

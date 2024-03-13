@@ -26,7 +26,7 @@ func ActivateAccountController(r *gin.Engine) {
 	//doctor
 	r.POST("api/doctor/activate_account/:doctor_id", ActivateDoctor)
 	r.POST("api/doctor/activate_email/:doctor_id", ActivateEmailDoctor)
-	r.GET("api/doctor/list_activate", ListActivateDoctor)
+	r.GET("api/doctor/list_inactive", ListInactiveDoctor)
 	r.POST("api/doctor/refresh_code/:doctor_id", RefreshDoctorOtpCode)
 	r.POST("api/doctor/reject_activation/:doctor_id", RejectDoctor)
 }
@@ -422,7 +422,7 @@ func RefreshDoctorOtpCode(c *gin.Context) {
 	otpresponse.SuccessResponse(c, "Refresh OTP Successfully", data, activationLink, http.StatusOK)
 }
 
-func ListActivateDoctor(c *gin.Context) {
+func ListInactiveDoctor(c *gin.Context) {
 	var doctors []models.Doctor
 	var response []models.DoctorData
 	result := initializers.DB.Where("is_active = ?", false).Where("email_active = ?", true).Find(&doctors)

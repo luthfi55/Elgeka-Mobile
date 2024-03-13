@@ -16,7 +16,7 @@ func FailedResponse(c *gin.Context, message string, data string, link string, st
 		Link: link,
 	}
 
-	response := models.OtpFailledResponse{
+	response := models.OtpFailedResponse{
 		ErrorMessage: message,
 		Data:         []models.OtpData{otpData},
 		Link:         []models.LinkItem{linkItem},
@@ -54,7 +54,7 @@ func FailedCheckOtpResponse(c *gin.Context, message string, data string, link st
 		Link: link,
 	}
 
-	response := models.CheckOtpFailledResponse{
+	response := models.CheckOtpFailedResponse{
 		ErrorMessage: message,
 		Data:         []models.CheckOtpData{otpData},
 		Link:         []models.LinkItem{linkItem},

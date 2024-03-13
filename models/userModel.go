@@ -25,6 +25,7 @@ type User struct {
 	ForgotPasswordCode   string
 	BCR_ABL              []BCR_ABL            `gorm:"foreignKey:UserID"`
 	UserPersonalDoctor   []UserPersonalDoctor `gorm:"foreignKey:UserID"`
+	Medicine             []Medicine           `gorm:"foreignKey:UserID"`
 
 	gorm.Model
 }
@@ -59,7 +60,7 @@ type RegisterUserSuccessResponse struct {
 	Link    []LinkItem     `json:"Link"`
 }
 
-type RegisterUserFailledResponse struct {
+type RegisterUserFailedResponse struct {
 	ErrorMessage string     `json:"ErrorMessage"`
 	Data         []Data     `json:"Data"`
 	Link         []LinkItem `json:"Link"`
@@ -71,7 +72,7 @@ type LoginUserSuccessResponse struct {
 	Link    []LinkItem `json:"Link"`
 }
 
-type LoginUserFailledResponse struct {
+type LoginUserFailedResponse struct {
 	ErrorMessage string       `json:"ErrorMessage"`
 	Data         []UserIdData `json:"Data"`
 	Link         []LinkItem   `json:"Link"`
@@ -91,7 +92,7 @@ type CheckSuccessOtpData struct {
 	OtpCode string
 }
 
-type OtpFailledResponse struct {
+type OtpFailedResponse struct {
 	ErrorMessage string
 	Data         []OtpData  `json:"Data"`
 	Link         []LinkItem `json:"Link"`
@@ -103,7 +104,7 @@ type OtpSuccessResponse struct {
 	Link    []LinkItem `json:"Link"`
 }
 
-type CheckOtpFailledResponse struct {
+type CheckOtpFailedResponse struct {
 	ErrorMessage string
 	Data         []CheckOtpData `json:"Data"`
 	Link         []LinkItem     `json:"Link"`
@@ -121,7 +122,7 @@ type UpdateUserProfileSuccessResponse struct {
 	Link    []LinkItem   `json:"Link"`
 }
 
-type UpdateUserProfileFailledResponse struct {
+type UpdateUserProfileFailedResponse struct {
 	ErrorMessage string       `json:"ErrorMessage"`
 	Data         []UserIdData `json:"Data"`
 	Link         []LinkItem   `json:"Link"`

@@ -49,18 +49,8 @@ type RegisterDoctorSuccessResponse struct {
 	Link    []LinkItem `json:"Link"`
 }
 
-type RegisterDoctorFailledResponse struct {
+type RegisterDoctorFailedResponse struct {
 	ErrorMessage string     `json:"Message"`
 	Data         []Data     `json:"Data"`
 	Link         []LinkItem `json:"Link"`
 }
-
-// type OtpData struct {
-// 	Id string `json:"User ID"`
-// }
-
-// type OtpFailledResponse struct {
-// 	Message string
-// 	Data    []OtpData  `json:"OtpData"`
-// 	Link    []LinkItem `json:"Link"`
-// }

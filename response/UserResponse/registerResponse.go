@@ -14,7 +14,7 @@ func RegisterFailedResponse(c *gin.Context, message string, data models.User, li
 		Link: link,
 	}
 
-	response := models.RegisterUserFailledResponse{
+	response := models.RegisterUserFailedResponse{
 		ErrorMessage: message,
 		Link:         []models.LinkItem{linkItem},
 	}

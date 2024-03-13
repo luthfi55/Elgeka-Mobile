@@ -14,7 +14,7 @@ func RegisterFailedResponse(c *gin.Context, message string, data models.Doctor, 
 		Link: link,
 	}
 
-	response := models.RegisterDoctorFailledResponse{
+	response := models.RegisterDoctorFailedResponse{
 		ErrorMessage: message,
 		Link:         []models.LinkItem{linkItem},
 	}

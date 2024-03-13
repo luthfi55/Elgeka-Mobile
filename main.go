@@ -30,6 +30,7 @@ func main() {
 	controllers.ActivateAccountController(r)
 	controllers.HealthStatusController(r)
 	controllers.UserProfileController(r)
+	controllers.MedicineController(r)
 
 	port := os.Getenv("PORT")
 	if port == "" {

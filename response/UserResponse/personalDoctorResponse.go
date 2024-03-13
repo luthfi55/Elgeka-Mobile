@@ -7,10 +7,6 @@ import (
 )
 
 func AddPersonalDoctorFailedResponse(c *gin.Context, message string, data string, link_name string, link string, status int) {
-	// datas := models.UserIdData{
-	// 	ID: data.ID,
-	// }
-
 	linkItem := models.LinkItem{
 		Name: link_name,
 		Link: link,
@@ -45,10 +41,6 @@ func AddPersonalDoctorSuccessResponse(c *gin.Context, message string, data strin
 }
 
 func GetPersonalDoctorFailedResponse(c *gin.Context, message string, data string, link_name string, link string, status int) {
-	// datas := models.UserIdData{
-	// 	ID: data.ID,
-	// }
-
 	linkItem := models.LinkItem{
 		Name: link_name,
 		Link: link,

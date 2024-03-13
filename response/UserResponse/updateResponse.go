@@ -16,7 +16,7 @@ func UpdateUserProfileFailedResponse(c *gin.Context, message string, data models
 		Link: link,
 	}
 
-	response := models.LoginUserFailledResponse{
+	response := models.LoginUserFailedResponse{
 		ErrorMessage: message,
 		Data:         []models.UserIdData{datas},
 		Link:         []models.LinkItem{linkItem},
