@@ -23,10 +23,9 @@ func RegisterFailedResponse(c *gin.Context, message string, data models.Doctor, 
 }
 
 func RegisterSuccessResponse(c *gin.Context, message string, data models.Doctor, link string) {
-	datas := models.Data{
-		ID:      data.ID,
-		Email:   data.Email,
-		OtpCode: data.OtpCode,
+	datas := models.RegisterData{
+		ID:    data.ID,
+		Email: data.Email,
 	}
 
 	linkItem := models.LinkItem{
@@ -36,7 +35,7 @@ func RegisterSuccessResponse(c *gin.Context, message string, data models.Doctor,
 
 	response := models.RegisterDoctorSuccessResponse{
 		Message: message,
-		Data:    []models.Data{datas},
+		Data:    []models.RegisterData{datas},
 		Link:    []models.LinkItem{linkItem},
 	}
 

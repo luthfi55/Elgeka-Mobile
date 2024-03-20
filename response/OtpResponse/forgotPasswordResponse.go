@@ -18,7 +18,7 @@ func ForgotPasswordUserSuccessResponse(c *gin.Context, message string, data mode
 		Link: link,
 	}
 
-	response := models.RegisterDoctorSuccessResponse{
+	response := models.ForgotPasswordUserSuccess{
 		Message: message,
 		Data:    []models.Data{datas},
 		Link:    []models.LinkItem{linkItem},
@@ -39,7 +39,7 @@ func ForgotPasswordDoctorSuccessResponse(c *gin.Context, message string, data mo
 		Link: link,
 	}
 
-	response := models.RegisterDoctorSuccessResponse{
+	response := models.ForgotPasswordUserSuccess{
 		Message: message,
 		Data:    []models.Data{datas},
 		Link:    []models.LinkItem{linkItem},

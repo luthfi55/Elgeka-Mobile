@@ -30,6 +30,17 @@ type User struct {
 	gorm.Model
 }
 
+type UserData struct {
+	ID          uuid.UUID `json:"ID"`
+	Name        string    `json:"Name"`
+	Email       string    `json:"Email"`
+	Address     string    `json:"Address"`
+	Gender      string    `json:"Gender"`
+	BirthDate   string    `json:"BirthDate"`
+	BloodGroup  string    `json:"BloodGroup"`
+	PhoneNumber string    `json:"PhoneNumber"`
+}
+
 type Data struct {
 	ID      uuid.UUID `json:"ID"`
 	Email   string    `json:"Email"`
@@ -46,6 +57,7 @@ type UserIdData struct {
 }
 
 type Login struct {
+	Name  string `json:"Name"`
 	Email string `json:"Email"`
 }
 
@@ -126,4 +138,16 @@ type UpdateUserProfileFailedResponse struct {
 	ErrorMessage string       `json:"ErrorMessage"`
 	Data         []UserIdData `json:"Data"`
 	Link         []LinkItem   `json:"Link"`
+}
+
+type GetProfileSuccessResponse struct {
+	Message string     `json:"Message"`
+	Data    []UserData `json:"Data"`
+	Link    []LinkItem `json:"Link"`
+}
+
+type GetProfileFailedResponse struct {
+	ErrorMessage string `json:"ErrorMessage"`
+	Data         string `json:"Data"`
+	Link         []LinkItem
 }

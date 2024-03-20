@@ -28,7 +28,7 @@ func LoginController(r *gin.Engine) {
 	r.POST("api/user/forgot_password", ForgotPassword)
 	r.GET("api/user/validate", middleware.RequireAuth, Validate)
 	r.GET("api/doctor/validate", middleware.RequireAuth, ValidateDoctor)
-	r.POST("api/user/refresh_code/forgot_password/:user_id", refreshForgotPasswordOtp)
+	r.POST("api/user/refresh_code/forgot_password/:user_id", RefreshForgotPasswordOtp)
 	r.POST("api/user/check_otp/:user_id", CheckOtp)
 	r.POST("api/user/change_password/:user_id/:otp_code", ChangePassword)
 }
@@ -105,7 +105,7 @@ func UserLogin(c *gin.Context) {
 		c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 
 		activationLink := "http://localhost:3000"
-		loginresponse.LoginSuccessResponse(c, "Login Doctor Success", body.Email, activationLink, http.StatusOK)
+		loginresponse.LoginSuccessResponse(c, "Login Doctor Success", user, activationLink, http.StatusOK)
 		return
 	}
 
@@ -145,7 +145,7 @@ func UserLogin(c *gin.Context) {
 	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 
 	activationLink := "http://localhost:3000"
-	loginresponse.LoginSuccessResponse(c, "Login Success", body.Email, activationLink, http.StatusOK)
+	loginresponse.LoginSuccessResponse(c, "Login Success", user, activationLink, http.StatusOK)
 }
 
 func Validate(c *gin.Context) {
@@ -460,7 +460,7 @@ func ChangePassword(c *gin.Context) {
 	otpresponse.SuccessResponse(c, "Update Password Successfully", user.Email, activationLink, http.StatusOK)
 }
 
-func refreshForgotPasswordOtp(c *gin.Context) {
+func RefreshForgotPasswordOtp(c *gin.Context) {
 	userID := c.Param("user_id")
 
 	var data struct {

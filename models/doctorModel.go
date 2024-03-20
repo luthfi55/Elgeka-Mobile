@@ -44,13 +44,19 @@ type GetListDoctorSuccessResponse struct {
 }
 
 type RegisterDoctorSuccessResponse struct {
-	Message string     `json:"Message"`
-	Data    []Data     `json:"Data"`
-	Link    []LinkItem `json:"Link"`
+	Message string         `json:"Message"`
+	Data    []RegisterData `json:"Data"`
+	Link    []LinkItem     `json:"Link"`
 }
 
 type RegisterDoctorFailedResponse struct {
-	ErrorMessage string     `json:"Message"`
+	ErrorMessage string     `json:"ErrorMessage"`
 	Data         []Data     `json:"Data"`
 	Link         []LinkItem `json:"Link"`
+}
+
+type ForgotPasswordUserSuccess struct {
+	Message string     `json:"Message"`
+	Data    []Data     `json:"Data"`
+	Link    []LinkItem `json:"Link"`
 }

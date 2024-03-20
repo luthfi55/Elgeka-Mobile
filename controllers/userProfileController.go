@@ -13,10 +13,34 @@ import (
 )
 
 func UserProfileController(r *gin.Engine) {
+	r.GET("api/user/profile", middleware.RequireAuth, ProfileData)
 	r.PUT("api/user/profile/edit", middleware.RequireAuth, EditProfile)
 	r.POST("api/user/add/personal_doctor", middleware.RequireAuth, AddPersonalDoctor)
 	r.GET("api/user/list/personal_doctor", middleware.RequireAuth, GetPersonalDoctor)
 	r.GET("api/user/list/activate_doctor", middleware.RequireAuth, ListActivateDoctor)
+}
+
+func ProfileData(c *gin.Context) {
+	user, _ := c.Get("user")
+
+	var user_data models.User
+	if err := initializers.DB.First(&user_data, "id = ?", user).Error; err != nil {
+		userresponse.GetProfileFailedResponse(c, "Failed To Find User", "", "Get Profile", "http://localhost:3000/api/user/profile", http.StatusBadRequest)
+		return
+	}
+
+	profile_data := models.UserData{
+		ID:          user_data.ID,
+		Name:        user_data.Name,
+		Email:       user_data.Email,
+		Address:     user_data.Address,
+		Gender:      user_data.Gender,
+		BirthDate:   user_data.BirthDate,
+		BloodGroup:  user_data.BloodGroup,
+		PhoneNumber: user_data.PhoneNumber,
+	}
+
+	userresponse.GetProfileSuccessResponse(c, "Success Get Profile", profile_data, "http://localhost:3000/api/user/profile", http.StatusOK)
 }
 
 func EditProfile(c *gin.Context) {

@@ -25,9 +25,10 @@ func LoginFailedResponse(c *gin.Context, message string, data models.UserIdData,
 	c.JSON(status, response)
 }
 
-func LoginSuccessResponse(c *gin.Context, message string, data string, link string, status int) {
+func LoginSuccessResponse(c *gin.Context, message string, data models.User, link string, status int) {
 	datas := models.Login{
-		Email: data,
+		Name:  data.Name,
+		Email: data.Email,
 	}
 
 	linkItem := models.LinkItem{
