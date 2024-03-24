@@ -83,12 +83,17 @@ func EditProfile(c *gin.Context) {
 		}
 	}
 
+	if body.Name == "" && body.Address == "" && body.Gender == "" && body.BirthDate == "" && body.BloodGroup == "" {
+		userresponse.UpdateUserProfileFailedResponse(c, "Body Can't Null", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
+		return
+	}
+
 	if err := initializers.DB.Save(&user_data).Error; err != nil {
 		userresponse.UpdateUserProfileFailedResponse(c, "Failed Update User", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
 		return
 	}
 
-	userresponse.UpdateUserProfileSuccessResponse(c, "Success Update User", user_data.Email, "http://localhost:3000/api/user/profile/edit", http.StatusOK)
+	userresponse.UpdateUserProfileSuccessResponse(c, "Success Update User", user_data.ID, "http://localhost:3000/api/user/profile/edit", http.StatusOK)
 
 }
 

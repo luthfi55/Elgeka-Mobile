@@ -2,7 +2,6 @@ package healthstatusresponse
 
 import (
 	"elgeka-mobile/models"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,7 +21,7 @@ func BcrAblFailedResponse(c *gin.Context, message string, data interface{}, link
 	c.JSON(status, response)
 }
 
-func BcrAblSuccessResponse(c *gin.Context, message string, data interface{}, link string) {
+func BcrAblSuccessResponse(c *gin.Context, message string, data interface{}, link string, status int) {
 	linkItem := models.LinkItem{
 		Name: "List BCR-ABL",
 		Link: link,
@@ -34,5 +33,5 @@ func BcrAblSuccessResponse(c *gin.Context, message string, data interface{}, lin
 		Link:    []models.LinkItem{linkItem},
 	}
 
-	c.JSON(http.StatusCreated, response)
+	c.JSON(status, response)
 }

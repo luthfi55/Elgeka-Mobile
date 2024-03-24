@@ -19,7 +19,7 @@ type UserPersonalDoctorID struct {
 }
 
 type AddPersonalDoctorFailledResponse struct {
-	ErrorMessage string     `json:"Message"`
+	ErrorMessage string     `json:"ErrorMessage"`
 	Data         string     `json:"Data"`
 	Link         []LinkItem `json:"Link"`
 }
@@ -31,7 +31,7 @@ type AddPersonalDoctorSuccessResponse struct {
 }
 
 type GetPersonalDoctorFailledResponse struct {
-	ErrorMessage string     `json:"Message"`
+	ErrorMessage string     `json:"ErrorMessage"`
 	Data         string     `json:"Data"`
 	Link         []LinkItem `json:"Link"`
 }

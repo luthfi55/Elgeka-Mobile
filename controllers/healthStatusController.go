@@ -95,7 +95,7 @@ func CreateBcrAbl(c *gin.Context) {
 		healthstatusresponse.BcrAblFailedResponse(c, strings.Title(err.Error()), bcr_abl_data, "Create BCR-ABL", "http://localhost:3000/api/user/health_status/bcr_abl", http.StatusBadRequest)
 	}
 
-	healthstatusresponse.BcrAblSuccessResponse(c, "Success Create Data", bcr_abl_data, "http://localhost:3000/api/user/health_status/bcr_abl")
+	healthstatusresponse.BcrAblSuccessResponse(c, "Success Create Data", bcr_abl_data, "http://localhost:3000/api/user/health_status/bcr_abl", http.StatusCreated)
 }
 
 func GetBcrAbl(c *gin.Context) {
@@ -136,7 +136,7 @@ func GetBcrAbl(c *gin.Context) {
 
 	}
 
-	healthstatusresponse.BcrAblSuccessResponse(c, "Success Get Data", bcr_abl_data, "http://localhost:3000/api/user/health_status/bcr_abl")
+	healthstatusresponse.BcrAblSuccessResponse(c, "Success Get Data", bcr_abl_data, "http://localhost:3000/api/user/health_status/bcr_abl", http.StatusOK)
 }
 
 func UpdateBcrAbl(c *gin.Context) {
@@ -187,7 +187,7 @@ func UpdateBcrAbl(c *gin.Context) {
 		return
 	}
 
-	healthstatusresponse.BcrAblSuccessResponse(c, "Success Update Data", bcr_abl_data, "http://localhost:3000/api/user/health_status/bcr_abl")
+	healthstatusresponse.BcrAblSuccessResponse(c, "Success Update Data", bcr_abl_data, "http://localhost:3000/api/user/health_status/bcr_abl", http.StatusOK)
 }
 
 func DeleteBcrAbl(c *gin.Context) {
@@ -216,7 +216,7 @@ func DeleteBcrAbl(c *gin.Context) {
 	bcr_abl_data.Notes = bcr_abl.Notes
 	bcr_abl_data.Date = bcr_abl.Date
 
-	healthstatusresponse.BcrAblSuccessResponse(c, "Success Delete Data", bcr_abl_data, "http://localhost:3000/api/user/health_status/bcr_abl")
+	healthstatusresponse.BcrAblSuccessResponse(c, "Success Delete Data", bcr_abl_data, "http://localhost:3000/api/user/health_status/bcr_abl", http.StatusOK)
 }
 
 func CreateLeukocytes(c *gin.Context) {
@@ -262,7 +262,7 @@ func CreateLeukocytes(c *gin.Context) {
 		healthstatusresponse.LeukocytesFailedResponse(c, strings.Title(err.Error()), leukocytesData, "Create Leukocytes", "http://localhost:3000/api/user/health_status/leukocytes", http.StatusBadRequest)
 	}
 
-	healthstatusresponse.LeukocytesSuccessResponse(c, "Success Create Data", leukocytesData, "http://localhost:3000/api/user/health_status/leukocytes")
+	healthstatusresponse.LeukocytesSuccessResponse(c, "Success Create Data", leukocytesData, "http://localhost:3000/api/user/health_status/leukocytes", http.StatusCreated)
 }
 
 func GetLeukocytes(c *gin.Context) {
@@ -303,7 +303,7 @@ func GetLeukocytes(c *gin.Context) {
 
 	}
 
-	healthstatusresponse.LeukocytesSuccessResponse(c, "Success Get Data", leukocytesData, "http://localhost:3000/api/user/health_status/leukocytes")
+	healthstatusresponse.LeukocytesSuccessResponse(c, "Success Get Data", leukocytesData, "http://localhost:3000/api/user/health_status/leukocytes", http.StatusOK)
 }
 
 func UpdateLeukocytes(c *gin.Context) {
@@ -354,7 +354,7 @@ func UpdateLeukocytes(c *gin.Context) {
 		return
 	}
 
-	healthstatusresponse.LeukocytesSuccessResponse(c, "Success Update Data", leukocytesData, "http://localhost:3000/api/user/health_status/leukocytes")
+	healthstatusresponse.LeukocytesSuccessResponse(c, "Success Update Data", leukocytesData, "http://localhost:3000/api/user/health_status/leukocytes", http.StatusOK)
 }
 
 func DeleteLeukocytes(c *gin.Context) {
@@ -383,7 +383,7 @@ func DeleteLeukocytes(c *gin.Context) {
 	leukocytesData.Notes = leukocytes.Notes
 	leukocytesData.Date = leukocytes.Date
 
-	healthstatusresponse.LeukocytesSuccessResponse(c, "Success Delete Data", leukocytesData, "http://localhost:3000/api/user/health_status/leukocytes")
+	healthstatusresponse.LeukocytesSuccessResponse(c, "Success Delete Data", leukocytesData, "http://localhost:3000/api/user/health_status/leukocytes", http.StatusOK)
 }
 
 func CreatePotentialHydrogen(c *gin.Context) {
@@ -429,7 +429,7 @@ func CreatePotentialHydrogen(c *gin.Context) {
 		healthstatusresponse.PotentialHydrogenFailedResponse(c, strings.Title(err.Error()), potentialHydrogenData, "Create Potential Hydrogen", "http://localhost:3000/api/user/health_status/potential_hydrogen", http.StatusBadRequest)
 	}
 
-	healthstatusresponse.PotentialHydrogenSuccessResponse(c, "Success Create Data", potentialHydrogenData, "http://localhost:3000/api/user/health_status/potential_hydrogen")
+	healthstatusresponse.PotentialHydrogenSuccessResponse(c, "Success Create Data", potentialHydrogenData, "http://localhost:3000/api/user/health_status/potential_hydrogen", http.StatusCreated)
 }
 
 func GetPotentialHydrogen(c *gin.Context) {
@@ -470,7 +470,7 @@ func GetPotentialHydrogen(c *gin.Context) {
 
 	}
 
-	healthstatusresponse.PotentialHydrogenSuccessResponse(c, "Success Get Data", potentialHydrogenData, "http://localhost:3000/api/user/health_status/potential_hydrogen")
+	healthstatusresponse.PotentialHydrogenSuccessResponse(c, "Success Get Data", potentialHydrogenData, "http://localhost:3000/api/user/health_status/potential_hydrogen", http.StatusOK)
 }
 
 func UpdatePotentialHydrogen(c *gin.Context) {
@@ -521,7 +521,7 @@ func UpdatePotentialHydrogen(c *gin.Context) {
 		return
 	}
 
-	healthstatusresponse.PotentialHydrogenSuccessResponse(c, "Success Update Data", potentialHydrogenData, "http://localhost:3000/api/user/health_status/potential_hydrogen")
+	healthstatusresponse.PotentialHydrogenSuccessResponse(c, "Success Update Data", potentialHydrogenData, "http://localhost:3000/api/user/health_status/potential_hydrogen", http.StatusOK)
 }
 
 func DeletePotentialHydrogen(c *gin.Context) {
@@ -550,7 +550,7 @@ func DeletePotentialHydrogen(c *gin.Context) {
 	potentialHydrogenData.Notes = potentialHydrogen.Notes
 	potentialHydrogenData.Date = potentialHydrogen.Date
 
-	healthstatusresponse.PotentialHydrogenSuccessResponse(c, "Success Delete Data", potentialHydrogenData, "http://localhost:3000/api/user/health_status/potential_hydrogen")
+	healthstatusresponse.PotentialHydrogenSuccessResponse(c, "Success Delete Data", potentialHydrogenData, "http://localhost:3000/api/user/health_status/potential_hydrogen", http.StatusOK)
 }
 
 func CreateHemoglobin(c *gin.Context) {
@@ -596,7 +596,7 @@ func CreateHemoglobin(c *gin.Context) {
 		healthstatusresponse.HemoglobinFailedResponse(c, strings.Title(err.Error()), hemoglobinData, "Create Hemoglobin", "http://localhost:3000/api/user/health_status/hemoglobin", http.StatusBadRequest)
 	}
 
-	healthstatusresponse.HemoglobinSuccessResponse(c, "Success Create Data", hemoglobinData, "http://localhost:3000/api/user/health_status/hemoglobin")
+	healthstatusresponse.HemoglobinSuccessResponse(c, "Success Create Data", hemoglobinData, "http://localhost:3000/api/user/health_status/hemoglobin", http.StatusCreated)
 }
 
 func GetHemoglobin(c *gin.Context) {
@@ -637,7 +637,7 @@ func GetHemoglobin(c *gin.Context) {
 
 	}
 
-	healthstatusresponse.HemoglobinSuccessResponse(c, "Success Get Data", hemoglobinData, "http://localhost:3000/api/user/health_status/hemoglobin")
+	healthstatusresponse.HemoglobinSuccessResponse(c, "Success Get Data", hemoglobinData, "http://localhost:3000/api/user/health_status/hemoglobin", http.StatusOK)
 }
 
 func UpdateHemoglobin(c *gin.Context) {
@@ -688,7 +688,7 @@ func UpdateHemoglobin(c *gin.Context) {
 		return
 	}
 
-	healthstatusresponse.HemoglobinSuccessResponse(c, "Success Update Data", hemoglobinData, "http://localhost:3000/api/user/health_status/hemoglobin")
+	healthstatusresponse.HemoglobinSuccessResponse(c, "Success Update Data", hemoglobinData, "http://localhost:3000/api/user/health_status/hemoglobin", http.StatusOK)
 }
 
 func DeleteHemoglobin(c *gin.Context) {
@@ -717,7 +717,7 @@ func DeleteHemoglobin(c *gin.Context) {
 	hemoglobinData.Notes = hemoglobin.Notes
 	hemoglobinData.Date = hemoglobin.Date
 
-	healthstatusresponse.HemoglobinSuccessResponse(c, "Success Delete Data", hemoglobinData, "http://localhost:3000/api/user/health_status/hemoglobin")
+	healthstatusresponse.HemoglobinSuccessResponse(c, "Success Delete Data", hemoglobinData, "http://localhost:3000/api/user/health_status/hemoglobin", http.StatusOK)
 }
 
 func CreateHeartRate(c *gin.Context) {
@@ -763,7 +763,7 @@ func CreateHeartRate(c *gin.Context) {
 		healthstatusresponse.HeartRateFailedResponse(c, strings.Title(err.Error()), heartRateData, "Create Heart Rate", "http://localhost:3000/api/user/health_status/heart_rate", http.StatusBadRequest)
 	}
 
-	healthstatusresponse.HeartRateSuccessResponse(c, "Success Create Data", heartRateData, "http://localhost:3000/api/user/health_status/heart_rate")
+	healthstatusresponse.HeartRateSuccessResponse(c, "Success Create Data", heartRateData, "http://localhost:3000/api/user/health_status/heart_rate", http.StatusCreated)
 }
 
 func GetHeartRate(c *gin.Context) {
@@ -804,7 +804,7 @@ func GetHeartRate(c *gin.Context) {
 
 	}
 
-	healthstatusresponse.HeartRateSuccessResponse(c, "Success Get Data", heartRateData, "http://localhost:3000/api/user/health_status/heart_rate")
+	healthstatusresponse.HeartRateSuccessResponse(c, "Success Get Data", heartRateData, "http://localhost:3000/api/user/health_status/heart_rate", http.StatusOK)
 }
 
 func UpdateHeartRate(c *gin.Context) {
@@ -855,7 +855,7 @@ func UpdateHeartRate(c *gin.Context) {
 		return
 	}
 
-	healthstatusresponse.HeartRateSuccessResponse(c, "Success Update Data", heartRateData, "http://localhost:3000/api/user/health_status/heart_rate")
+	healthstatusresponse.HeartRateSuccessResponse(c, "Success Update Data", heartRateData, "http://localhost:3000/api/user/health_status/heart_rate", http.StatusOK)
 }
 
 func DeleteHeartRate(c *gin.Context) {
@@ -884,7 +884,7 @@ func DeleteHeartRate(c *gin.Context) {
 	heartRateData.Notes = heartRate.Notes
 	heartRateData.Date = heartRate.Date
 
-	healthstatusresponse.HeartRateSuccessResponse(c, "Success Delete Data", heartRateData, "http://localhost:3000/api/user/health_status/heart_rate")
+	healthstatusresponse.HeartRateSuccessResponse(c, "Success Delete Data", heartRateData, "http://localhost:3000/api/user/health_status/heart_rate", http.StatusOK)
 }
 
 func CreateBloodPressure(c *gin.Context) {
@@ -933,7 +933,7 @@ func CreateBloodPressure(c *gin.Context) {
 		healthstatusresponse.BloodPressureFailedResponse(c, strings.Title(err.Error()), bloodPressureData, "Create Blood Pressure", "http://localhost:3000/api/user/health_status/blood_pressure", http.StatusBadRequest)
 	}
 
-	healthstatusresponse.BloodPressureSuccessResponse(c, "Success Create Data", bloodPressureData, "http://localhost:3000/api/user/health_status/blood_pressure")
+	healthstatusresponse.BloodPressureSuccessResponse(c, "Success Create Data", bloodPressureData, "http://localhost:3000/api/user/health_status/blood_pressure", http.StatusCreated)
 }
 
 func GetBloodPressure(c *gin.Context) {
@@ -977,7 +977,7 @@ func GetBloodPressure(c *gin.Context) {
 
 	}
 
-	healthstatusresponse.BloodPressureSuccessResponse(c, "Success Get Data", bloodPressureData, "http://localhost:3000/api/user/health_status/blood_pressure")
+	healthstatusresponse.BloodPressureSuccessResponse(c, "Success Get Data", bloodPressureData, "http://localhost:3000/api/user/health_status/blood_pressure", http.StatusOK)
 }
 
 func UpdateBloodPressure(c *gin.Context) {
@@ -1030,7 +1030,7 @@ func UpdateBloodPressure(c *gin.Context) {
 		return
 	}
 
-	healthstatusresponse.BloodPressureSuccessResponse(c, "Success Update Data", bloodPressureData, "http://localhost:3000/api/user/health_status/blood_pressure")
+	healthstatusresponse.BloodPressureSuccessResponse(c, "Success Update Data", bloodPressureData, "http://localhost:3000/api/user/health_status/blood_pressure", http.StatusOK)
 }
 
 func DeleteBloodPressure(c *gin.Context) {
@@ -1061,5 +1061,5 @@ func DeleteBloodPressure(c *gin.Context) {
 	bloodPressureData.Notes = bloodPressure.Notes
 	bloodPressureData.Date = bloodPressure.Date
 
-	healthstatusresponse.BloodPressureSuccessResponse(c, "Success Delete Data", bloodPressureData, "http://localhost:3000/api/user/health_status/blood_pressure")
+	healthstatusresponse.BloodPressureSuccessResponse(c, "Success Delete Data", bloodPressureData, "http://localhost:3000/api/user/health_status/blood_pressure", http.StatusOK)
 }

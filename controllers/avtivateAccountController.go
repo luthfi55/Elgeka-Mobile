@@ -17,18 +17,18 @@ import (
 
 func ActivateAccountController(r *gin.Engine) {
 	//user
-	r.POST("api/user/activate/:user_id", Activate)
 	r.POST("api/user/email_otp/:user_id", SendEmailOtp)
 	r.POST("api/user/whatsapp_otp/:user_id", SendWhatsappOtp)
+	r.POST("api/user/activate/:user_id", Activate)
 	r.POST("api/user/email_refresh_code/:user_id", RefreshOtpCode)
 	r.POST("api/user/whatsapp_refresh_code/:user_id", RefreshWhatsappOtpCode)
 
 	//doctor
-	r.POST("api/doctor/activate_account/:doctor_id", ActivateDoctor)
 	r.POST("api/doctor/activate_email/:doctor_id", ActivateEmailDoctor)
-	r.GET("api/doctor/list_inactive", ListInactiveDoctor)
-	r.POST("api/doctor/refresh_code/:doctor_id", RefreshDoctorOtpCode)
+	r.POST("api/doctor/activate_account/:doctor_id", ActivateDoctor)
 	r.POST("api/doctor/reject_activation/:doctor_id", RejectDoctor)
+	r.POST("api/doctor/refresh_code/:doctor_id", RefreshDoctorOtpCode)
+	r.GET("api/doctor/list_inactive", ListInactiveDoctor)
 }
 
 func SendEmailOtp(c *gin.Context) {

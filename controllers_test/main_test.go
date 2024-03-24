@@ -20,6 +20,11 @@ func TestMain(m *testing.M) {
 	initializers.SyncDatabase()
 	initializers.ConnectToDb()
 	initializers.SyncDatabase()
+	// initializers.ConnectToWhatsapp()
+
+	// go func() {
+	// 	initializers.ConnectToWhatsapp()
+	// }()
 
 	// Run tests
 	code := m.Run()

@@ -4,6 +4,7 @@ import (
 	"elgeka-mobile/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func UpdateUserProfileFailedResponse(c *gin.Context, message string, data models.User, link_name string, link string, status int) {
@@ -25,9 +26,9 @@ func UpdateUserProfileFailedResponse(c *gin.Context, message string, data models
 	c.JSON(status, response)
 }
 
-func UpdateUserProfileSuccessResponse(c *gin.Context, message string, data string, link string, status int) {
-	datas := models.Login{
-		Email: data,
+func UpdateUserProfileSuccessResponse(c *gin.Context, message string, data uuid.UUID, link string, status int) {
+	datas := models.UserIdData{
+		ID: data,
 	}
 
 	linkItem := models.LinkItem{
@@ -35,9 +36,9 @@ func UpdateUserProfileSuccessResponse(c *gin.Context, message string, data strin
 		Link: link,
 	}
 
-	response := models.LoginUserSuccessResponse{
+	response := models.UpdateUserProfileSuccessResponse{
 		Message: message,
-		Data:    []models.Login{datas},
+		Data:    []models.UserIdData{datas},
 		Link:    []models.LinkItem{linkItem},
 	}
 

@@ -39,9 +39,6 @@ func main() {
 
 	go func() {
 		<-shutdownSignal
-
-		initializers.DisconnectWhatsapp()
-
 		os.Exit(0)
 	}()
 

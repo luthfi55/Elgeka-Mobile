@@ -2,7 +2,6 @@ package healthstatusresponse
 
 import (
 	"elgeka-mobile/models"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,7 +21,7 @@ func HemoglobinFailedResponse(c *gin.Context, message string, data interface{}, 
 	c.JSON(status, response)
 }
 
-func HemoglobinSuccessResponse(c *gin.Context, message string, data interface{}, link string) {
+func HemoglobinSuccessResponse(c *gin.Context, message string, data interface{}, link string, status int) {
 	linkItem := models.LinkItem{
 		Name: "List Hemoglobin",
 		Link: link,
@@ -34,5 +33,5 @@ func HemoglobinSuccessResponse(c *gin.Context, message string, data interface{},
 		Link:    []models.LinkItem{linkItem},
 	}
 
-	c.JSON(http.StatusCreated, response)
+	c.JSON(status, response)
 }
