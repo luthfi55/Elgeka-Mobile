@@ -46,7 +46,7 @@ func TestUserRegister_Success(t *testing.T) {
 		"BirthDate": "1990-01-01",
 		"BloodGroup": "A",
 		"PhoneNumber": "1234567890",
-		"Email": "johnn@example.com",
+		"Email": "johnnn@example.com",
 		"Password": "Password123*",
 		"PasswordConfirmation": "Password123*"
 	}`)

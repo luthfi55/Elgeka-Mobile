@@ -45,7 +45,7 @@ func HealthStatusController(r *gin.Engine) {
 	r.PUT("api/user/health_status/heart_rate/:heart_rate_id", middleware.RequireAuth, UpdateHeartRate)
 	r.DELETE("api/user/health_status/heart_rate/:heart_rate_id", middleware.RequireAuth, DeleteHeartRate)
 
-	//heart rate
+	//blood pressure
 	r.POST("api/user/health_status/blood_pressure", middleware.RequireAuth, CreateBloodPressure)
 	r.GET("api/user/health_status/blood_pressure", middleware.RequireAuth, GetBloodPressure)
 	r.PUT("api/user/health_status/blood_pressure/:blood_pressure_id", middleware.RequireAuth, UpdateBloodPressure)

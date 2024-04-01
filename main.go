@@ -31,6 +31,7 @@ func main() {
 	controllers.HealthStatusController(r)
 	controllers.UserProfileController(r)
 	controllers.MedicineController(r)
+	controllers.SymptompController(r)
 
 	port := os.Getenv("PORT")
 	if port == "" {
