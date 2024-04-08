@@ -184,13 +184,14 @@ func GetPersonalDoctor(c *gin.Context) {
 	user, _ := c.Get("user")
 
 	var personal_doctor []struct {
-		DoctorName string
-		StartDate  string
-		EndDate    string
+		DoctorName  string
+		PhoneNumber string
+		StartDate   string
+		EndDate     string
 	}
 
 	var personal_doctor_data []models.UserPersonalDoctor
-	if err := initializers.DB.Where("user_id = ?", user).Order("start_date asc").Find(&personal_doctor_data).Error; err != nil {
+	if err := initializers.DB.Where("user_id = ?", user).Order("created_at desc").Find(&personal_doctor_data).Error; err != nil {
 		userresponse.GetPersonalDoctorFailedResponse(c, "Failed To Get Personal Doctor", "", "Get Personal Doctor", "http://localhost:3000/api/user/list/personal_doctor", http.StatusBadRequest)
 		return
 	}
@@ -199,13 +200,15 @@ func GetPersonalDoctor(c *gin.Context) {
 		initializers.DB.First(&doctor, "id = ?", item.DoctorID)
 
 		personal_doctor = append(personal_doctor, struct {
-			DoctorName string
-			StartDate  string
-			EndDate    string
+			DoctorName  string
+			PhoneNumber string
+			StartDate   string
+			EndDate     string
 		}{
-			DoctorName: doctor.Name,
-			StartDate:  item.StartDate,
-			EndDate:    item.EndDate,
+			DoctorName:  doctor.Name,
+			PhoneNumber: doctor.PhoneNumber,
+			StartDate:   item.StartDate,
+			EndDate:     item.EndDate,
 		})
 	}
 

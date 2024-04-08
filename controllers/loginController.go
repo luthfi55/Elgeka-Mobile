@@ -25,6 +25,7 @@ import (
 
 func LoginController(r *gin.Engine) {
 	r.POST("api/user/login", UserLogin)
+	r.POST("api/user/login_website", UserLoginWebsite)
 	r.POST("api/user/forgot_password", ForgotPassword)
 	r.GET("api/user/validate", middleware.RequireAuth, Validate)
 	r.GET("api/doctor/validate", middleware.RequireAuth, ValidateDoctor)
@@ -99,13 +100,18 @@ func UserLogin(c *gin.Context) {
 			return
 		}
 
+		var account models.Login
+
+		account.Email = doctor.Email
+		account.Name = doctor.Name
+
 		//send it back
 		c.SetSameSite(http.SameSiteLaxMode)
 		//expire set with second
 		c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 
 		activationLink := "http://localhost:3000"
-		loginresponse.LoginSuccessResponse(c, "Login Doctor Success", user, activationLink, http.StatusOK)
+		loginresponse.LoginSuccessResponse(c, "Login Doctor Success", account, activationLink, http.StatusOK)
 		return
 	}
 
@@ -139,13 +145,143 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 
+	var account models.Login
+
+	account.Email = user.Email
+	account.Name = user.Name
+
 	//send it back
 	c.SetSameSite(http.SameSiteLaxMode)
 	//expire set with second
 	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 
 	activationLink := "http://localhost:3000"
-	loginresponse.LoginSuccessResponse(c, "Login Success", user, activationLink, http.StatusOK)
+	loginresponse.LoginSuccessResponse(c, "Login Success", account, activationLink, http.StatusOK)
+}
+
+func UserLoginWebsite(c *gin.Context) {
+	//get the email and pass of req body
+	var body struct {
+		Email    string
+		Password string
+	}
+
+	if c.Bind(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to read body",
+		})
+
+		return
+	}
+
+	var UserId models.UserIdData
+
+	//look up requested user
+	var user models.User
+	initializers.DB.First(&user, "email = ?", body.Email)
+
+	if user.ID == uuid.Nil {
+		var doctor models.Doctor
+		initializers.DB.First(&doctor, "email = ?", body.Email)
+
+		if doctor.ID == uuid.Nil {
+			loginresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
+			return
+		}
+		err := bcrypt.CompareHashAndPassword([]byte(doctor.Password), []byte(body.Password))
+		if err != nil {
+			loginresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
+			return
+		}
+		// c.JSON(http.StatusBadRequest, gin.H{
+		// 	"error": "Login Doctor Success",
+		// })
+		//generate a jwt token
+		UserId.ID = doctor.ID
+		if !doctor.EmailActive {
+			loginresponse.LoginFailedResponse(c, "Email Account not Active", UserId, "http://localhost:3000/api/doctor/activate_email/"+doctor.ID.String(), http.StatusBadRequest)
+			return
+		}
+
+		if !doctor.IsActive {
+			loginresponse.LoginFailedResponse(c, "Account not Active", UserId, "http://localhost:3000/api/doctor/login", http.StatusBadRequest)
+			return
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"sub": doctor.ID,
+			// "exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+			"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+		})
+
+		// Sign and get the complete encoded token as a string using the secret
+		tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Invalid to create token",
+			})
+			loginresponse.LoginFailedResponse(c, "Invalid to create token", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
+			return
+		}
+
+		var account models.Login
+
+		account.Email = doctor.Email
+		account.Name = doctor.Name
+
+		//send it back
+		c.SetSameSite(http.SameSiteLaxMode)
+		//expire set with second
+		c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
+
+		activationLink := "http://localhost:3000"
+		loginresponse.LoginWebsiteSuccessResponse(c, "Login Doctor Success", account, activationLink, tokenString, http.StatusOK)
+		return
+	}
+
+	UserId.ID = user.ID
+
+	//compare sent in pass with saved user pass hash
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
+
+	if err != nil {
+		loginresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
+		return
+	}
+
+	if !user.IsActive {
+		loginresponse.LoginFailedResponse(c, "Account not Active", UserId, "http://localhost:3000/api/user/activate/"+user.ID.String(), http.StatusBadRequest)
+		return
+	}
+
+	//generate a jwt token
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub": user.ID,
+		// "exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+	})
+
+	// Sign and get the complete encoded token as a string using the secret
+	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+
+	if err != nil {
+		loginresponse.LoginFailedResponse(c, "Invalid to create token", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
+		return
+	}
+
+	var account models.Login
+
+	account.Email = user.Email
+	account.Name = user.Name
+
+	//send it back
+	c.SetSameSite(http.SameSiteLaxMode)
+	//expire set with second
+	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
+
+	activationLink := "http://localhost:3000"
+	loginresponse.LoginWebsiteSuccessResponse(c, "Login Success", account, activationLink, tokenString, http.StatusOK)
 }
 
 func Validate(c *gin.Context) {

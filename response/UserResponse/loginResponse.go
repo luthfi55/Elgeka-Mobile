@@ -25,7 +25,7 @@ func LoginFailedResponse(c *gin.Context, message string, data models.UserIdData,
 	c.JSON(status, response)
 }
 
-func LoginSuccessResponse(c *gin.Context, message string, data models.User, link string, status int) {
+func LoginSuccessResponse(c *gin.Context, message string, data models.Login, link string, status int) {
 	datas := models.Login{
 		Name:  data.Name,
 		Email: data.Email,
@@ -40,6 +40,27 @@ func LoginSuccessResponse(c *gin.Context, message string, data models.User, link
 		Message: message,
 		Data:    []models.Login{datas},
 		Link:    []models.LinkItem{linkItem},
+	}
+
+	c.JSON(status, response)
+}
+
+func LoginWebsiteSuccessResponse(c *gin.Context, message string, data models.Login, link string, token string, status int) {
+	datas := models.Login{
+		Name:  data.Name,
+		Email: data.Email,
+	}
+
+	linkItem := models.LinkItem{
+		Name: "Dashboard",
+		Link: link,
+	}
+
+	response := models.LoginUserWebsiteSuccessResponse{
+		Message: message,
+		Data:    []models.Login{datas},
+		Link:    []models.LinkItem{linkItem},
+		Token:   token,
 	}
 
 	c.JSON(status, response)

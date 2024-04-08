@@ -25,6 +25,7 @@ type User struct {
 	BCR_ABL            []BCR_ABL            `gorm:"foreignKey:UserID"`
 	UserPersonalDoctor []UserPersonalDoctor `gorm:"foreignKey:UserID"`
 	Medicine           []Medicine           `gorm:"foreignKey:UserID"`
+	MedicineSchedule   []MedicineSchedule   `gorm:"foreignKey:UserID"`
 	Symptom            []SymptomAnswer      `gorm:"foreignKey:UserID"`
 
 	gorm.Model
@@ -82,6 +83,13 @@ type LoginUserSuccessResponse struct {
 	Message string     `json:"Message"`
 	Data    []Login    `json:"Data"`
 	Link    []LinkItem `json:"Link"`
+}
+
+type LoginUserWebsiteSuccessResponse struct {
+	Message string     `json:"Message"`
+	Data    []Login    `json:"Data"`
+	Link    []LinkItem `json:"Link"`
+	Token   string
 }
 
 type LoginUserFailedResponse struct {
