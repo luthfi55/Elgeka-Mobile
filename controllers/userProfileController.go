@@ -71,6 +71,22 @@ func EditProfile(c *gin.Context) {
 		user_data.Address = body.Address
 	}
 
+	if body.Province != "" {
+		user_data.Province = body.Province
+	}
+
+	if body.District != "" {
+		user_data.District = body.District
+	}
+
+	if body.SubDistrict != "" {
+		user_data.SubDistrict = body.SubDistrict
+	}
+
+	if body.Village != "" {
+		user_data.Village = body.Village
+	}
+
 	if body.Gender != "" {
 		if body.Gender == "male" || body.Gender == "female" {
 			user_data.Gender = body.Gender
@@ -87,7 +103,7 @@ func EditProfile(c *gin.Context) {
 		}
 	}
 
-	if body.Name == "" && body.Address == "" && body.Gender == "" && body.BirthDate == "" && body.BloodGroup == "" {
+	if body.Name == "" && body.Address == "" && body.Province == "" && body.District == "" && body.SubDistrict == "" && body.Village == "" && body.Gender == "" && body.BirthDate == "" && body.BloodGroup == "" {
 		userresponse.UpdateUserProfileFailedResponse(c, "Body Can't Null", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
 		return
 	}

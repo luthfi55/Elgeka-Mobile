@@ -99,11 +99,15 @@ func TestEditProfile_Success(t *testing.T) {
 	router.PUT("/api/user/profile/edit", middleware.RequireAuth, controllers.EditProfile)
 
 	reqBody := models.User{
-		Name:       "haiixx",
-		Address:    "dago",
-		Gender:     "male",
-		BirthDate:  "2023-12-02",
-		BloodGroup: "A",
+		Name:        "Ane",
+		Province:    "Jawa Timur",
+		District:    "Kota Surabaya",
+		SubDistrict: "Buahmangga",
+		Village:     "Margamati",
+		Address:     "Ciuaua No.12",
+		Gender:      "male",
+		BirthDate:   "2023-12-02",
+		BloodGroup:  "B",
 	}
 
 	reqJSON, _ := json.Marshal(reqBody)
@@ -152,11 +156,15 @@ func TestEditProfile_Failed(t *testing.T) {
 	router.PUT("/api/user/profile/edit", middleware.RequireAuth, controllers.EditProfile)
 
 	reqBody := models.User{
-		Name:       "",
-		Address:    "",
-		Gender:     "",
-		BirthDate:  "",
-		BloodGroup: "",
+		Name:        "",
+		Province:    "",
+		District:    "",
+		SubDistrict: "",
+		Village:     "",
+		Address:     "",
+		Gender:      "",
+		BirthDate:   "",
+		BloodGroup:  "",
 	}
 
 	reqJSON, _ := json.Marshal(reqBody)

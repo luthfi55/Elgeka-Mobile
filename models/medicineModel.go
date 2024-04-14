@@ -89,10 +89,22 @@ type UpdateMedicineFailedResponse struct {
 	Link         []LinkItem     `json:"Link"`
 }
 
+type UpdateMedicineScheduleFailedResponse struct {
+	ErrorMessage string                 `json:"ErrorMessage"`
+	Data         []MedicineScheduleData `json:"Data"`
+	Link         []LinkItem             `json:"Link"`
+}
+
 type UpdateMedicineSuccessResponse struct {
 	Message string         `json:"Message"`
 	Data    []MedicineData `json:"Data"`
 	Link    []LinkItem     `json:"Link"`
+}
+
+type UpdateMedicineScheduleSuccessResponse struct {
+	Message string                 `json:"Message"`
+	Data    []MedicineScheduleData `json:"Data"`
+	Link    []LinkItem             `json:"Link"`
 }
 
 type DeleteMedicineFailedResponse struct {
@@ -101,8 +113,20 @@ type DeleteMedicineFailedResponse struct {
 	Link         []LinkItem     `json:"Link"`
 }
 
+type DeleteMedicineScheduleFailedResponse struct {
+	ErrorMessage string                 `json:"ErrorMessage"`
+	Data         []MedicineScheduleData `json:"Data"`
+	Link         []LinkItem             `json:"Link"`
+}
+
 type DeleteMedicineSuccessResponse struct {
 	Message string         `json:"Message"`
 	Data    []MedicineData `json:"Data"`
 	Link    []LinkItem     `json:"Link"`
+}
+
+type DeleteMedicineScheduleSuccessResponse struct {
+	Message string                 `json:"Message"`
+	Data    []MedicineScheduleData `json:"Data"`
+	Link    []LinkItem             `json:"Link"`
 }

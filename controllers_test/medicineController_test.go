@@ -490,3 +490,143 @@ func TestListMedicineSchedule_Failed(t *testing.T) {
 	}
 
 }
+
+func TestUpdateMedicineSchedule_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.PUT("/api/user/medicine/schedule/:schedule_id", middleware.RequireAuth, controllers.UpdateMedicineSchedule)
+
+	schedule_id := "df636bd0-cb0e-4964-9b0a-285fcfd36d29"
+
+	req, err := http.NewRequest("PUT", "/api/user/medicine/schedule/"+schedule_id, bytes.NewBuffer(nil))
+	req.AddCookie(CookieConfiguration())
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody successExpectedMedicineScheduleResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success to Update Medicine Schedule" {
+		t.Errorf("expected message %s but got %s", "Success to Update Medicine Schedule", expectedBody.Message)
+	}
+}
+
+func TestUpdateMedicineSchedule_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.PUT("/api/user/medicine/schedule/:schedule_id", middleware.RequireAuth, controllers.UpdateMedicineSchedule)
+
+	schedule_id := "df636bd0-cb0e-4964-9b0a-285fcfd36d21"
+
+	req, err := http.NewRequest("PUT", "/api/user/medicine/schedule/"+schedule_id, bytes.NewBuffer(nil))
+	req.AddCookie(CookieConfiguration())
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+
+	var expectedBody failedExpectedMedicineScheduleResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Failed to Find Medicine Schedule" {
+		t.Errorf("expected message %s but got %s", "Failed to Find Medicine Schedule", expectedBody.ErrorMessage)
+	}
+}
+
+func TestDeleteMedicineSchedule_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.DELETE("/api/user/medicine/schedule/:schedule_id", middleware.RequireAuth, controllers.DeleteMedicineSchedule)
+
+	schedule_id := "b87be0d0-0d9b-4733-8768-fda47ba5362d"
+
+	req, err := http.NewRequest("DELETE", "/api/user/medicine/schedule/"+schedule_id, bytes.NewBuffer(nil))
+	req.AddCookie(CookieConfiguration())
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody successExpectedMedicineScheduleResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success to Delete Medicine Schedule" {
+		t.Errorf("expected message %s but got %s", "Success to Update Medicine Schedule", expectedBody.Message)
+	}
+}
+
+func TestDeleteMedicineSchedule_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.DELETE("/api/user/medicine/schedule/:schedule_id", middleware.RequireAuth, controllers.DeleteMedicineSchedule)
+
+	schedule_id := "df636bd0-cb0e-4964-9b0a-285fcfd36d23"
+
+	req, err := http.NewRequest("DELETE", "/api/user/medicine/schedule/"+schedule_id, bytes.NewBuffer(nil))
+	req.AddCookie(CookieConfiguration())
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+
+	var expectedBody failedExpectedMedicineScheduleResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Failed to Find Medicine Schedule" {
+		t.Errorf("expected message %s but got %s", "Failed to Find Medicine Schedule", expectedBody.ErrorMessage)
+	}
+}

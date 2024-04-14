@@ -206,14 +206,14 @@ func UpdateMedicineSchedule(c *gin.Context) {
 	schedule_id := c.Param("schedule_id")
 
 	if err := initializers.DB.First(&medicine_schedule, "id = ?", schedule_id).Error; err != nil {
-		medicineresponse.GetMedicineScheduleFailedResponse(c, "Failed to Find Medicine Schedule", []models.MedicineScheduleData{}, "Update Medicine Schedule", "http://localhost:3000/api/medicine/schedule", http.StatusBadRequest)
+		medicineresponse.UpdateMedicineScheduleFailedResponse(c, "Failed to Find Medicine Schedule", []models.MedicineScheduleData{}, "Get Medicine Schedule", "http://localhost:3000/api/medicine/schedule", http.StatusBadRequest)
 		return
 	}
 
 	medicine_schedule.Status = true
 
 	if err := initializers.DB.Save(&medicine_schedule).Error; err != nil {
-		medicineresponse.GetMedicineScheduleFailedResponse(c, "Failed to Update Medicine Schedule", []models.MedicineScheduleData{}, "Update Medicine Schedule", "http://localhost:3000/api/medicine/schedule", http.StatusBadRequest)
+		medicineresponse.UpdateMedicineScheduleFailedResponse(c, "Failed to Update Medicine Schedule", []models.MedicineScheduleData{}, "Update Medicine Schedule", "http://localhost:3000/api/user/medicine/schedule/:schedule_id", http.StatusBadRequest)
 		return
 	}
 
@@ -222,7 +222,7 @@ func UpdateMedicineSchedule(c *gin.Context) {
 	medicine_schedule_data.Date = medicine_schedule.Date
 	medicine_schedule_data.Status = medicine_schedule.Status
 
-	medicineresponse.UpdateMedicineScheduleSuccessResponse(c, "Success to Update Medicine Schedule", medicine_schedule_data, "http://localhost:3000/api/medicine/add", http.StatusOK)
+	medicineresponse.UpdateMedicineScheduleSuccessResponse(c, "Success to Update Medicine Schedule", medicine_schedule_data, "http://localhost:3000/api/user/medicine/schedule/:schedule_id", http.StatusOK)
 }
 
 func DeleteMedicineSchedule(c *gin.Context) {
@@ -230,7 +230,7 @@ func DeleteMedicineSchedule(c *gin.Context) {
 	schedule_id := c.Param("schedule_id")
 
 	if err := initializers.DB.First(&medicine_schedule, "id = ?", schedule_id).Error; err != nil {
-		medicineresponse.GetMedicineScheduleFailedResponse(c, "Failed to Find Medicine Schedule", []models.MedicineScheduleData{}, "Update Medicine Schedule", "http://localhost:3000/api/medicine/schedule", http.StatusBadRequest)
+		medicineresponse.DeleteMedicineScheduleFailedResponse(c, "Failed to Find Medicine Schedule", []models.MedicineScheduleData{}, "Get Medicine Schedule", "http://localhost:3000/api/medicine/schedule", http.StatusBadRequest)
 		return
 	}
 
@@ -240,9 +240,9 @@ func DeleteMedicineSchedule(c *gin.Context) {
 	medicine_schedule_data.Status = medicine_schedule.Status
 
 	if err := initializers.DB.Delete(&medicine_schedule).Error; err != nil {
-		medicineresponse.GetMedicineScheduleFailedResponse(c, "Failed to Delete Medicine Schedule", []models.MedicineScheduleData{}, "Update Medicine Schedule", "http://localhost:3000/api/medicine/schedule", http.StatusBadRequest)
+		medicineresponse.DeleteMedicineScheduleFailedResponse(c, "Failed to Delete Medicine Schedule", []models.MedicineScheduleData{}, "Delete Medicine Schedule", "http://localhost:3000/api/user/medicine/schedule/:schedule_id", http.StatusBadRequest)
 		return
 	}
 
-	medicineresponse.UpdateMedicineScheduleSuccessResponse(c, "Success to Delete Medicine Schedule", medicine_schedule_data, "http://localhost:3000/api/medicine/add", http.StatusOK)
+	medicineresponse.DeleteMedicineScheduleSuccessResponse(c, "Success to Delete Medicine Schedule", medicine_schedule_data, "http://localhost:3000/api/user/medicine/schedule/:schedule_id", http.StatusOK)
 }

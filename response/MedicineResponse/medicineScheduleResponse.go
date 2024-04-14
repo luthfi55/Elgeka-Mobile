@@ -78,20 +78,20 @@ func GetMedicineScheduleSuccessResponse(c *gin.Context, message string, data int
 	c.JSON(status, response)
 }
 
-// func UpdateMedicineScheduleFailedResponse(c *gin.Context, message string, data models.MedicineSchedule, link_name string, link string, status int) {
-// 	linkItem := models.LinkItem{
-// 		Name: link_name,
-// 		Link: link,
-// 	}
+func UpdateMedicineScheduleFailedResponse(c *gin.Context, message string, data []models.MedicineScheduleData, link_name string, link string, status int) {
+	linkItem := models.LinkItem{
+		Name: link_name,
+		Link: link,
+	}
 
-// 	response := models.GetMedicineScheduleFailedResponse{
-// 		ErrorMessage: message,
-// 		Data:         data,
-// 		Link:         []models.LinkItem{linkItem},
-// 	}
+	response := models.UpdateMedicineScheduleFailedResponse{
+		ErrorMessage: message,
+		Data:         data,
+		Link:         []models.LinkItem{linkItem},
+	}
 
-// 	c.JSON(status, response)
-// }
+	c.JSON(status, response)
+}
 
 func UpdateMedicineScheduleSuccessResponse(c *gin.Context, message string, data models.MedicineScheduleData, link string, status int) {
 	linkItem := models.LinkItem{
@@ -99,9 +99,39 @@ func UpdateMedicineScheduleSuccessResponse(c *gin.Context, message string, data 
 		Link: link,
 	}
 
-	response := models.GetMedicineScheduleSuccessResponse{
+	response := models.UpdateMedicineScheduleSuccessResponse{
 		Message: message,
-		Data:    data,
+		Data:    []models.MedicineScheduleData{data},
+		Link:    []models.LinkItem{linkItem},
+	}
+
+	c.JSON(status, response)
+}
+
+func DeleteMedicineScheduleFailedResponse(c *gin.Context, message string, data []models.MedicineScheduleData, link_name string, link string, status int) {
+	linkItem := models.LinkItem{
+		Name: link_name,
+		Link: link,
+	}
+
+	response := models.DeleteMedicineScheduleFailedResponse{
+		ErrorMessage: message,
+		Data:         data,
+		Link:         []models.LinkItem{linkItem},
+	}
+
+	c.JSON(status, response)
+}
+
+func DeleteMedicineScheduleSuccessResponse(c *gin.Context, message string, data models.MedicineScheduleData, link string, status int) {
+	linkItem := models.LinkItem{
+		Name: "Delete Medicine Schedule",
+		Link: link,
+	}
+
+	response := models.DeleteMedicineScheduleSuccessResponse{
+		Message: message,
+		Data:    []models.MedicineScheduleData{data},
 		Link:    []models.LinkItem{linkItem},
 	}
 
