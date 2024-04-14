@@ -10,10 +10,14 @@ import (
 type User struct {
 	ID                 uuid.UUID `gorm:"type:uuid;primaryKey;"`
 	Name               string    `validate:"required"`
-	Address            string    `validate:"required"`
 	Gender             string    `validate:"required"`
 	BirthDate          string    `validate:"required"`
 	BloodGroup         string    `validate:"required"`
+	Province           string    `validate:"required"`
+	District           string    `validate:"required"`
+	SubDistrict        string    `validate:"required"`
+	Village            string    `validate:"required"`
+	Address            string    `validate:"required"`
 	PhoneNumber        string    `validate:"required,max=14"`
 	Email              string    `gorm:"unique" validate:"required,email"`
 	Password           string    `validate:"required,min=8"`
@@ -36,6 +40,10 @@ type UserData struct {
 	Name        string    `json:"Name"`
 	Email       string    `json:"Email"`
 	Address     string    `json:"Address"`
+	Province    string    `json:"Province"`
+	District    string    `json:"District"`
+	SubDistrict string    `json:"SubDistrict"`
+	Village     string    `json:"Village"`
 	Gender      string    `json:"Gender"`
 	BirthDate   string    `json:"BirthDate"`
 	BloodGroup  string    `json:"BloodGroup"`

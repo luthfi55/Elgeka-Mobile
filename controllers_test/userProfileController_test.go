@@ -38,18 +38,9 @@ func TestProfileData_Success(t *testing.T) {
 	}
 
 	type ExpectedResponse struct {
-		Message string `json:"Message"`
-		Data    []struct {
-			ID          string `json:"ID"`
-			Name        string `json:"Name"`
-			Email       string `json:"Email"`
-			Address     string `json:"Address"`
-			Gender      string `json:"Gender"`
-			BirthDate   string `json:"BirthDate"`
-			BloodGroup  string `json:"BloodGroup"`
-			PhoneNumber string `json:"PhoneNumber"`
-		} `json:"Data"`
-		Link []struct {
+		Message string            `json:"Message"`
+		Data    []models.UserData `json:"Data"`
+		Link    []struct {
 			Name string `json:"Name"`
 			Link string `json:"Link"`
 		} `json:"Link"`
@@ -327,9 +318,10 @@ func TestGetPersonalDoctor_Success(t *testing.T) {
 	type ExpectedResponse struct {
 		Message string `json:"Message"`
 		Data    []struct {
-			DoctorName string `json:"DoctorName"`
-			StartDate  string `json:"StartDate"`
-			EndDate    string `json:"Email"`
+			DoctorName  string `json:"DoctorName"`
+			PhoneNumber string `json:"PhoneNumber"`
+			StartDate   string `json:"StartDate"`
+			EndDate     string `json:"Email"`
 		} `json:"Data"`
 		Link []struct {
 			Name string `json:"Name"`

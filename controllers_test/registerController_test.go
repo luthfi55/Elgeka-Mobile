@@ -41,12 +41,16 @@ func TestUserRegister_Success(t *testing.T) {
 
 	reqBody := []byte(`{
 		"Name": "John Doe",
-		"Address": "123 Main St",
+		"province": "Jawa Barat",
+		"district": "Kota Bandung",
+		"SubDistrict": "Buahbatu",
+		"village": "Margasari",
+		"address": "Ciwastra No.81",
 		"Gender": "male",
 		"BirthDate": "1990-01-01",
 		"BloodGroup": "A",
 		"PhoneNumber": "1234567890",
-		"Email": "johnnn@example.com",
+		"Email": "johnnn1@example.com",
 		"Password": "Password123*",
 		"PasswordConfirmation": "Password123*"
 	}`)

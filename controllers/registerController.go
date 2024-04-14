@@ -145,9 +145,22 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
-	//create the user
 	newUUID := uuid.New()
-	user := models.User{ID: newUUID, Name: body.Name, Address: body.Address, Gender: body.Gender, BirthDate: body.BirthDate, BloodGroup: body.BloodGroup, PhoneNumber: body.PhoneNumber, Email: body.Email, Password: string(hash)}
+	user := models.User{
+		ID:          newUUID,
+		Name:        body.Name,
+		Province:    body.Province,
+		District:    body.District,
+		SubDistrict: body.SubDistrict,
+		Village:     body.Village,
+		Address:     body.Address,
+		Gender:      body.Gender,
+		BirthDate:   body.BirthDate,
+		BloodGroup:  body.BloodGroup,
+		PhoneNumber: body.PhoneNumber,
+		Email:       body.Email,
+		Password:    string(hash),
+	}
 
 	if err := initializers.DB.Create(&user).Error; err != nil {
 		activationLink := "http://localhost:3000/api/user/register"
