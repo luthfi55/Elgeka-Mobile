@@ -276,7 +276,7 @@ func UserLoginWebsite(c *gin.Context) {
 	account.Name = user.Name
 
 	//send it back
-	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetSameSite(http.SameSiteNoneMode)
 	//expire set with second
 	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 
