@@ -275,10 +275,17 @@ func UserLoginWebsite(c *gin.Context) {
 	account.Email = user.Email
 	account.Name = user.Name
 
-	//send it back
-	c.SetSameSite(http.SameSiteNoneMode)
-	//expire set with second
-	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
+	cookie := http.Cookie{
+		Name:     "Authorization",
+		Value:    tokenString,
+		MaxAge:   3600 * 24 * 30,
+		Path:     "/",
+		Domain:   "",
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteNoneMode,
+	}
+	http.SetCookie(c.Writer, &cookie)
 
 	activationLink := "http://localhost:3000"
 	loginresponse.LoginWebsiteSuccessResponse(c, "Login Success", account, activationLink, tokenString, http.StatusOK)
