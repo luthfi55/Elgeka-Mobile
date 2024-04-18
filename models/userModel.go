@@ -167,3 +167,15 @@ type GetProfileFailedResponse struct {
 	Data         string `json:"Data"`
 	Link         []LinkItem
 }
+
+type LogoutUserSuccessResponse struct {
+	Message string     `json:"Message"`
+	Data    string     `json:"Data"`
+	Link    []LinkItem `json:"Link"`
+}
+
+type LogoutUserFailedResponse struct {
+	ErrorMessage string     `json:"ErrorMessage"`
+	Data         string     `json:"Data"`
+	Link         []LinkItem `json:"Link"`
+}

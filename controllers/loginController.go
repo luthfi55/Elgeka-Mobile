@@ -14,7 +14,7 @@ import (
 	"encoding/base64"
 
 	otpresponse "elgeka-mobile/response/OtpResponse"
-	loginresponse "elgeka-mobile/response/UserResponse"
+	userresponse "elgeka-mobile/response/UserResponse"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -32,6 +32,7 @@ func LoginController(r *gin.Engine) {
 	r.POST("api/user/refresh_code/forgot_password/:user_id", RefreshForgotPasswordOtp)
 	r.POST("api/user/check_otp/:user_id", CheckOtp)
 	r.POST("api/user/change_password/:user_id/:otp_code", ChangePassword)
+	r.POST("api/user/logout", UserLogoutWebsite)
 }
 
 func UserLogin(c *gin.Context) {
@@ -60,12 +61,12 @@ func UserLogin(c *gin.Context) {
 		initializers.DB.First(&doctor, "email = ?", body.Email)
 
 		if doctor.ID == uuid.Nil {
-			loginresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
+			userresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
 			return
 		}
 		err := bcrypt.CompareHashAndPassword([]byte(doctor.Password), []byte(body.Password))
 		if err != nil {
-			loginresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
+			userresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
 			return
 		}
 		// c.JSON(http.StatusBadRequest, gin.H{
@@ -74,12 +75,12 @@ func UserLogin(c *gin.Context) {
 		//generate a jwt token
 		UserId.ID = doctor.ID
 		if !doctor.EmailActive {
-			loginresponse.LoginFailedResponse(c, "Email Account not Active", UserId, "http://localhost:3000/api/doctor/activate_email/"+doctor.ID.String(), http.StatusBadRequest)
+			userresponse.LoginFailedResponse(c, "Email Account not Active", UserId, "http://localhost:3000/api/doctor/activate_email/"+doctor.ID.String(), http.StatusBadRequest)
 			return
 		}
 
 		if !doctor.IsActive {
-			loginresponse.LoginFailedResponse(c, "Account not Active", UserId, "http://localhost:3000/api/doctor/login", http.StatusBadRequest)
+			userresponse.LoginFailedResponse(c, "Account not Active", UserId, "http://localhost:3000/api/doctor/login", http.StatusBadRequest)
 			return
 		}
 
@@ -96,7 +97,7 @@ func UserLogin(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Invalid to create token",
 			})
-			loginresponse.LoginFailedResponse(c, "Invalid to create token", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
+			userresponse.LoginFailedResponse(c, "Invalid to create token", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
 			return
 		}
 
@@ -111,7 +112,7 @@ func UserLogin(c *gin.Context) {
 		c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 
 		activationLink := "http://localhost:3000"
-		loginresponse.LoginSuccessResponse(c, "Login Doctor Success", account, activationLink, http.StatusOK)
+		userresponse.LoginSuccessResponse(c, "Login Doctor Success", account, activationLink, http.StatusOK)
 		return
 	}
 
@@ -121,12 +122,12 @@ func UserLogin(c *gin.Context) {
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
 
 	if err != nil {
-		loginresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
+		userresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
 		return
 	}
 
 	if !user.IsActive {
-		loginresponse.LoginFailedResponse(c, "Account not Active", UserId, "http://localhost:3000/api/user/activate/"+user.ID.String(), http.StatusBadRequest)
+		userresponse.LoginFailedResponse(c, "Account not Active", UserId, "http://localhost:3000/api/user/activate/"+user.ID.String(), http.StatusBadRequest)
 		return
 	}
 
@@ -141,7 +142,7 @@ func UserLogin(c *gin.Context) {
 	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
 
 	if err != nil {
-		loginresponse.LoginFailedResponse(c, "Invalid to create token", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
+		userresponse.LoginFailedResponse(c, "Invalid to create token", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
 		return
 	}
 
@@ -156,7 +157,7 @@ func UserLogin(c *gin.Context) {
 	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 
 	activationLink := "http://localhost:3000"
-	loginresponse.LoginSuccessResponse(c, "Login Success", account, activationLink, http.StatusOK)
+	userresponse.LoginSuccessResponse(c, "Login Success", account, activationLink, http.StatusOK)
 }
 
 func UserLoginWebsite(c *gin.Context) {
@@ -185,12 +186,12 @@ func UserLoginWebsite(c *gin.Context) {
 		initializers.DB.First(&doctor, "email = ?", body.Email)
 
 		if doctor.ID == uuid.Nil {
-			loginresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
+			userresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
 			return
 		}
 		err := bcrypt.CompareHashAndPassword([]byte(doctor.Password), []byte(body.Password))
 		if err != nil {
-			loginresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
+			userresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
 			return
 		}
 		// c.JSON(http.StatusBadRequest, gin.H{
@@ -199,12 +200,12 @@ func UserLoginWebsite(c *gin.Context) {
 		//generate a jwt token
 		UserId.ID = doctor.ID
 		if !doctor.EmailActive {
-			loginresponse.LoginFailedResponse(c, "Email Account not Active", UserId, "http://localhost:3000/api/doctor/activate_email/"+doctor.ID.String(), http.StatusBadRequest)
+			userresponse.LoginFailedResponse(c, "Email Account not Active", UserId, "http://localhost:3000/api/doctor/activate_email/"+doctor.ID.String(), http.StatusBadRequest)
 			return
 		}
 
 		if !doctor.IsActive {
-			loginresponse.LoginFailedResponse(c, "Account not Active", UserId, "http://localhost:3000/api/doctor/login", http.StatusBadRequest)
+			userresponse.LoginFailedResponse(c, "Account not Active", UserId, "http://localhost:3000/api/doctor/login", http.StatusBadRequest)
 			return
 		}
 
@@ -221,7 +222,7 @@ func UserLoginWebsite(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Invalid to create token",
 			})
-			loginresponse.LoginFailedResponse(c, "Invalid to create token", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
+			userresponse.LoginFailedResponse(c, "Invalid to create token", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
 			return
 		}
 
@@ -236,7 +237,7 @@ func UserLoginWebsite(c *gin.Context) {
 		c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 
 		activationLink := "http://localhost:3000"
-		loginresponse.LoginWebsiteSuccessResponse(c, "Login Doctor Success", account, activationLink, tokenString, http.StatusOK)
+		userresponse.LoginWebsiteSuccessResponse(c, "Login Doctor Success", account, activationLink, tokenString, http.StatusOK)
 		return
 	}
 
@@ -246,12 +247,12 @@ func UserLoginWebsite(c *gin.Context) {
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
 
 	if err != nil {
-		loginresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
+		userresponse.LoginFailedResponse(c, "Invalid email or password", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
 		return
 	}
 
 	if !user.IsActive {
-		loginresponse.LoginFailedResponse(c, "Account not Active", UserId, "http://localhost:3000/api/user/activate/"+user.ID.String(), http.StatusBadRequest)
+		userresponse.LoginFailedResponse(c, "Account not Active", UserId, "http://localhost:3000/api/user/activate/"+user.ID.String(), http.StatusBadRequest)
 		return
 	}
 
@@ -266,7 +267,7 @@ func UserLoginWebsite(c *gin.Context) {
 	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
 
 	if err != nil {
-		loginresponse.LoginFailedResponse(c, "Invalid to create token", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
+		userresponse.LoginFailedResponse(c, "Invalid to create token", UserId, "http://localhost:3000/api/user/login", http.StatusBadRequest)
 		return
 	}
 
@@ -288,7 +289,7 @@ func UserLoginWebsite(c *gin.Context) {
 	http.SetCookie(c.Writer, &cookie)
 
 	activationLink := "http://localhost:3000"
-	loginresponse.LoginWebsiteSuccessResponse(c, "Login Success", account, activationLink, tokenString, http.StatusOK)
+	userresponse.LoginWebsiteSuccessResponse(c, "Login Success", account, activationLink, tokenString, http.StatusOK)
 }
 
 func Validate(c *gin.Context) {
@@ -686,4 +687,22 @@ func RefreshForgotPasswordOtp(c *gin.Context) {
 
 	activationLink := "http://localhost:3000/api/user/check_otp/" + data.ID
 	otpresponse.ForgotPasswordUserSuccessResponse(c, "Success to Send Otp Code", user, activationLink, http.StatusOK)
+}
+
+func UserLogoutWebsite(c *gin.Context) {
+	cookie, err := c.Request.Cookie("Authorization")
+	if err != nil {
+		userresponse.LogoutSuccessResponse(c, "Failed to Get Cookie", "http://localhost:3000/api/user/login", http.StatusOK)
+		return
+	}
+
+	cookie.MaxAge = -1
+	cookie.Path = "/"
+	cookie.Secure = true
+	cookie.HttpOnly = true
+	cookie.SameSite = http.SameSiteNoneMode
+
+	http.SetCookie(c.Writer, cookie)
+
+	userresponse.LogoutSuccessResponse(c, "Logout Successful", "http://localhost:3000/api/user/login", http.StatusOK)
 }
