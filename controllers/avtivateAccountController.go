@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 	"gorm.io/gorm"
 )
 
@@ -225,6 +226,9 @@ func Activate(c *gin.Context) {
 }
 
 func ActivateDoctor(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
 	doctorID := c.Param("doctor_id")
 
 	var doctor models.Doctor
@@ -269,6 +273,33 @@ func ActivateDoctor(c *gin.Context) {
 
 	activationLink := "http://localhost:3000/api/user/login"
 	otpresponse.SuccessResponse(c, "Doctor Activated Successfully", doctor.Email, activationLink, http.StatusOK)
+}
+
+func ParseWebToken(c *gin.Context) bool {
+	tokenString := c.GetHeader("Authorization")
+	if tokenString == "" {
+		activationLink := "http://localhost:3000/api"
+		otpresponse.FailedResponse(c, "Token is required", "", activationLink, http.StatusBadRequest)
+		// c.JSON(400, gin.H{"error": "Token is required"})
+		return false
+	}
+
+	tokenString = tokenString[7:] // Remove "Bearer " prefix
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte("kFJ9CPC7av3X7VuddYR3AF7"), nil
+	})
+	if err != nil {
+		// c.JSON(401, gin.H{"error": "Failed to parse token"})
+		activationLink := "http://localhost:3000/api"
+		otpresponse.FailedResponse(c, "Failed to parse token", "", activationLink, http.StatusUnauthorized)
+		return false
+	}
+	if token.Valid {
+		return true
+	} else {
+		return false
+	}
 }
 
 func ActivateEmailDoctor(c *gin.Context) {
@@ -423,6 +454,10 @@ func RefreshDoctorOtpCode(c *gin.Context) {
 }
 
 func ListInactiveDoctor(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
 	var doctors []models.Doctor
 	var response []models.DoctorData
 	result := initializers.DB.Where("is_active = ?", false).Where("email_active = ?", true).Find(&doctors)
@@ -451,6 +486,9 @@ func ListInactiveDoctor(c *gin.Context) {
 }
 
 func RejectDoctor(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
 	doctorID := c.Param("doctor_id")
 	data := doctorID
 
