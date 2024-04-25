@@ -82,7 +82,7 @@ func SubmitSymptom(c *gin.Context) {
 
 func OralSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
-	answers := strings.Split(body.Answer, "','")
+	answers := strings.Split(body.Answer, ",")
 	length := len(answers)
 
 	if len(answers) != 8 {
@@ -100,7 +100,7 @@ func OralSymptom(c *gin.Context, body models.SymptomAnswer) {
 
 func DigestiveSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
-	answers := strings.Split(body.Answer, "','")
+	answers := strings.Split(body.Answer, ",")
 	length := len(answers)
 
 	if len(answers) != 20 {
@@ -118,7 +118,7 @@ func DigestiveSymptom(c *gin.Context, body models.SymptomAnswer) {
 
 func RespiratorySymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
-	answers := strings.Split(body.Answer, "','")
+	answers := strings.Split(body.Answer, ",")
 	length := len(answers)
 
 	if len(answers) != 7 {
@@ -136,7 +136,7 @@ func RespiratorySymptom(c *gin.Context, body models.SymptomAnswer) {
 
 func SkinSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
-	answers := strings.Split(body.Answer, "','")
+	answers := strings.Split(body.Answer, ",")
 	length := len(answers)
 
 	if len(answers) != 21 {
@@ -154,7 +154,7 @@ func SkinSymptom(c *gin.Context, body models.SymptomAnswer) {
 
 func HairSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
-	answers := strings.Split(body.Answer, "','")
+	answers := strings.Split(body.Answer, ",")
 	length := len(answers)
 
 	if len(answers) != 1 {
@@ -172,7 +172,7 @@ func HairSymptom(c *gin.Context, body models.SymptomAnswer) {
 
 func NailsSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
-	answers := strings.Split(body.Answer, "','")
+	answers := strings.Split(body.Answer, ",")
 	length := len(answers)
 
 	if len(answers) != 3 {
@@ -190,7 +190,7 @@ func NailsSymptom(c *gin.Context, body models.SymptomAnswer) {
 
 func SwellingSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
-	answers := strings.Split(body.Answer, "','")
+	answers := strings.Split(body.Answer, ",")
 	length := len(answers)
 
 	if len(answers) != 3 {
@@ -208,7 +208,7 @@ func SwellingSymptom(c *gin.Context, body models.SymptomAnswer) {
 
 func SensesSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
-	answers := strings.Split(body.Answer, "','")
+	answers := strings.Split(body.Answer, ",")
 	length := len(answers)
 
 	if len(answers) != 9 {
@@ -226,7 +226,7 @@ func SensesSymptom(c *gin.Context, body models.SymptomAnswer) {
 
 func MoodsSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
-	answers := strings.Split(body.Answer, "','")
+	answers := strings.Split(body.Answer, ",")
 	length := len(answers)
 
 	if len(answers) != 9 {
@@ -244,7 +244,7 @@ func MoodsSymptom(c *gin.Context, body models.SymptomAnswer) {
 
 func PainSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
-	answers := strings.Split(body.Answer, "','")
+	answers := strings.Split(body.Answer, ",")
 	length := len(answers)
 
 	if len(answers) != 13 {
@@ -262,7 +262,7 @@ func PainSymptom(c *gin.Context, body models.SymptomAnswer) {
 
 func CognitiveSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
-	answers := strings.Split(body.Answer, "','")
+	answers := strings.Split(body.Answer, ",")
 	length := len(answers)
 
 	if len(answers) != 11 {
@@ -280,7 +280,7 @@ func CognitiveSymptom(c *gin.Context, body models.SymptomAnswer) {
 
 func UrinarySymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
-	answers := strings.Split(body.Answer, "','")
+	answers := strings.Split(body.Answer, ",")
 	length := len(answers)
 
 	if len(answers) != 8 {
@@ -298,7 +298,7 @@ func UrinarySymptom(c *gin.Context, body models.SymptomAnswer) {
 
 func GenitalsSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
-	answers := strings.Split(body.Answer, "','")
+	answers := strings.Split(body.Answer, ",")
 	length := len(answers)
 
 	if len(answers) != 6 {
@@ -316,7 +316,7 @@ func GenitalsSymptom(c *gin.Context, body models.SymptomAnswer) {
 
 func ReproductiveSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
-	answers := strings.Split(body.Answer, "','")
+	answers := strings.Split(body.Answer, ",")
 	length := len(answers)
 
 	if len(answers) != 5 {
