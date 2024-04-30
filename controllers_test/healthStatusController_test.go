@@ -14,11 +14,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ExpectedHSSuccessResponse struct {
+type ExpectedSuccessResponse struct {
 	Message string `json:"Message"`
 }
 
-type ExpectedHSFailedResponse struct {
+type ExpectedFailedResponse struct {
 	ErrorMessage string `json:"ErrorMessage"`
 }
 
@@ -55,7 +55,7 @@ func TestCreateBcrAbl_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusCreated, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -97,7 +97,7 @@ func TestCreateBcrAbl_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -130,7 +130,7 @@ func TestGetBcrAbl_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -204,7 +204,7 @@ func TestUpdateBcrAbl_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -247,7 +247,7 @@ func TestUpdateBcrAbl_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -284,7 +284,7 @@ func TestDeleteBcrAbl_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 
 	if err != nil {
@@ -322,7 +322,7 @@ func TestDeleteBcrAbl_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 
 	if err != nil {
@@ -367,7 +367,7 @@ func TestCreateLeukocytes_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusCreated, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -409,7 +409,7 @@ func TestCreateLeukocytes_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -442,7 +442,7 @@ func TestGetLeukocytes_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -516,7 +516,7 @@ func TestUpdateLeukocytes_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -559,7 +559,7 @@ func TestUpdateLeukocytes_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -596,7 +596,7 @@ func TestDeleteLeukocytes_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 
 	if err != nil {
@@ -634,7 +634,7 @@ func TestDeleteLeukocytes_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 
 	if err != nil {
@@ -679,7 +679,7 @@ func TestCreatePotentialHydrogen_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusCreated, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -721,7 +721,7 @@ func TestCreatePotentialHydrogen_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -754,7 +754,7 @@ func TestGetPotentialHydrogen_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -828,7 +828,7 @@ func TestUpdatePotentialHydrogen_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -871,7 +871,7 @@ func TestUpdatePotentialHydrogen_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -908,7 +908,7 @@ func TestDeletePotentialHydrogen_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 
 	if err != nil {
@@ -946,7 +946,7 @@ func TestDeletePotentialHydrogen_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 
 	if err != nil {
@@ -991,7 +991,7 @@ func TestCreateHemoglobin_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusCreated, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -1033,7 +1033,7 @@ func TestCreateHemoglobin_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -1066,7 +1066,7 @@ func TestGetHemoglobin_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -1140,7 +1140,7 @@ func TestUpdateHemoglobin_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -1183,7 +1183,7 @@ func TestUpdateHemoglobin_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -1220,7 +1220,7 @@ func TestDeleteHemoglobin_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 
 	if err != nil {
@@ -1258,7 +1258,7 @@ func TestDeleteHemoglobin_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 
 	if err != nil {
@@ -1303,7 +1303,7 @@ func TestCreateHeartRate_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusCreated, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -1345,7 +1345,7 @@ func TestCreateHeartRate_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -1378,7 +1378,7 @@ func TestGetHeartRate_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -1452,7 +1452,7 @@ func TestUpdateHeartRate_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -1495,7 +1495,7 @@ func TestUpdateHeartRate_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -1532,7 +1532,7 @@ func TestDeleteHeartRate_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 
 	if err != nil {
@@ -1570,7 +1570,7 @@ func TestDeleteHeartRate_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 
 	if err != nil {
@@ -1616,7 +1616,7 @@ func TestCreateBloodPressure_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusCreated, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -1659,7 +1659,7 @@ func TestCreateBloodPressure_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -1692,7 +1692,7 @@ func TestGetBloodPressure_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -1767,7 +1767,7 @@ func TestUpdateBloodPressure_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -1811,7 +1811,7 @@ func TestUpdateBloodPressure_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 	if err != nil {
 		t.Fatal(err)
@@ -1848,7 +1848,7 @@ func TestDeleteBloodPressure_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	var expectedBody ExpectedHSSuccessResponse
+	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 
 	if err != nil {
@@ -1886,7 +1886,7 @@ func TestDeleteBloodPressure_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
-	var expectedBody ExpectedHSFailedResponse
+	var expectedBody ExpectedFailedResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
 
 	if err != nil {

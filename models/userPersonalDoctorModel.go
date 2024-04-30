@@ -11,6 +11,7 @@ type UserPersonalDoctor struct {
 	DoctorID  uuid.UUID `gorm:"type:uuid;foreignKey;"`
 	StartDate string    `validate:"required"`
 	EndDate   string    `validate:"required"`
+	Request   string    `validate:"required"`
 	gorm.Model
 }
 
@@ -37,6 +38,42 @@ type GetPersonalDoctorFailledResponse struct {
 }
 
 type GetPersonalDoctorSuccessResponse struct {
+	Message string      `json:"Message"`
+	Data    interface{} `json:"Data"`
+	Link    []LinkItem  `json:"Link"`
+}
+
+type ListAcceptancePatientFailedResponse struct {
+	ErrorMessage string      `json:"ErrorMessage"`
+	Data         interface{} `json:"Data"`
+	Link         []LinkItem  `json:"Link"`
+}
+
+type ListAcceptancePatientSuccessResponse struct {
+	Message string      `json:"Message"`
+	Data    interface{} `json:"Data"`
+	Link    []LinkItem  `json:"Link"`
+}
+
+type DoctorPatientAcceptFailledResponse struct {
+	ErrorMessage string      `json:"ErrorMessage"`
+	Data         interface{} `json:"Data"`
+	Link         []LinkItem  `json:"Link"`
+}
+
+type DoctorPatientAcceptSuccessResponse struct {
+	Message string      `json:"Message"`
+	Data    interface{} `json:"Data"`
+	Link    []LinkItem  `json:"Link"`
+}
+
+type DoctorPatientRejectFailledResponse struct {
+	ErrorMessage string      `json:"ErrorMessage"`
+	Data         interface{} `json:"Data"`
+	Link         []LinkItem  `json:"Link"`
+}
+
+type DoctorPatientRejectSuccessResponse struct {
 	Message string      `json:"Message"`
 	Data    interface{} `json:"Data"`
 	Link    []LinkItem  `json:"Link"`

@@ -8,6 +8,7 @@ import (
 
 	"elgeka-mobile/initializers"
 	"elgeka-mobile/models"
+	userresponse "elgeka-mobile/response/UserResponse"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -15,13 +16,10 @@ import (
 )
 
 func RequireAuth(c *gin.Context) {
-	//get the cookie of req
 	tokenString, err := c.Cookie("Authorization")
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Need Login",
-		})
+		userresponse.CheckAccountFailedResponse(c)
 	}
 
 	//decode/validate it

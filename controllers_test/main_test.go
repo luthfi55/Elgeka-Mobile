@@ -42,3 +42,14 @@ func CookieConfiguration() *http.Cookie {
 		Expires:  expiresTime,
 	}
 }
+
+func DoctorCookieConfiguration() *http.Cookie {
+	expiresTime, _ := time.Parse(time.RFC1123, "Mon, 15 Apr 2024 17:00:20 GMT")
+	return &http.Cookie{
+		Name:     "Authorization",
+		Value:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTcwNTgxNjQsInN1YiI6IjVmYWUwYjVkLTAxZDAtNDhmYi05ZTIzLWNhMWU5YWNhMmYyMCJ9.j4kcnBLIyOPnXl5Ok1gZKhqsAysXs2MTsEmzN23sVi0",
+		Path:     "/",
+		HttpOnly: true,
+		Expires:  expiresTime,
+	}
+}

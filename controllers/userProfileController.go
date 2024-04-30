@@ -5,11 +5,12 @@ import (
 	"elgeka-mobile/middleware"
 	"elgeka-mobile/models"
 	userresponse "elgeka-mobile/response/UserResponse"
+	"errors"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 func UserProfileController(r *gin.Engine) {
@@ -149,28 +150,29 @@ func AddPersonalDoctor(c *gin.Context) {
 		return
 	}
 
-	personal_doctor_data := models.UserPersonalDoctor{}
-	if err := initializers.DB.First(&personal_doctor_data, "user_id = ? AND end_date = ?", user, "").Error; err == nil {
-		personal_doctor_data.EndDate = time.Now().Format("2006-01-02")
-		if err := initializers.DB.Save(&personal_doctor_data).Error; err != nil {
-			userresponse.AddPersonalDoctorFailedResponse(c, "Failed To Update Latest Personal Doctor End Date", body.DoctorID, "Add Personal Doctor", "http://localhost:3000/api/user/add/doctor", http.StatusBadRequest)
+	var patient_request []models.UserPersonalDoctor
+	if err := initializers.DB.Where("user_id = ? AND request = ?", user, "Pending").First(&patient_request).Error; err != nil {
+		//Pending Not Found
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+
+			newUUID := uuid.New()
+			// currentTime := time.Now()
+			// startDate := currentTime.Format("2006-01-02")
+
+			personal_doctor := models.UserPersonalDoctor{ID: newUUID, UserID: user.(uuid.UUID), DoctorID: doctorUUID, Request: "Pending"}
+
+			if err := initializers.DB.Create(&personal_doctor).Error; err != nil {
+				userresponse.AddPersonalDoctorFailedResponse(c, "Failed To Add Personal Doctor", body.DoctorID, "Add Personal Doctor", "http://localhost:3000/api/user/add/doctor", http.StatusBadRequest)
+				return
+			}
+
+			userresponse.AddPersonalDoctorSuccessResponse(c, "Success Add Personal Doctor", body.DoctorID, "http://localhost:3000/api/user/add/doctor", http.StatusOK)
 			return
 		}
+		// Another Error
 	}
-
-	newUUID := uuid.New()
-	currentTime := time.Now()
-	startDate := currentTime.Format("2006-01-02")
-
-	personal_doctor := models.UserPersonalDoctor{ID: newUUID, UserID: user.(uuid.UUID), DoctorID: doctorUUID, StartDate: startDate}
-
-	if err := initializers.DB.Create(&personal_doctor).Error; err != nil {
-		userresponse.AddPersonalDoctorFailedResponse(c, "Failed To Add Personal Doctor", body.DoctorID, "Add Personal Doctor", "http://localhost:3000/api/user/add/doctor", http.StatusBadRequest)
-		return
-	}
-
-	userresponse.AddPersonalDoctorSuccessResponse(c, "Success Add Personal Doctor", body.DoctorID, "http://localhost:3000/api/user/add/doctor", http.StatusOK)
-
+	//Pending found
+	userresponse.AddPersonalDoctorFailedResponse(c, "Can't Add the Doctor. Please Wait Until The Doctor Accepts the Request First.", body.DoctorID, "Add Personal Doctor", "http://localhost:3000/api/user/add/doctor", http.StatusBadRequest)
 }
 
 func ListActivateDoctor(c *gin.Context) {
@@ -204,31 +206,39 @@ func GetPersonalDoctor(c *gin.Context) {
 	user, _ := c.Get("user")
 
 	var personal_doctor []struct {
-		DoctorName  string
-		PhoneNumber string
-		StartDate   string
-		EndDate     string
+		DoctorName   string
+		PhoneNumber  string
+		StartDate    string
+		EndDate      string
+		DoctorStatus string
 	}
 
 	var personal_doctor_data []models.UserPersonalDoctor
-	if err := initializers.DB.Where("user_id = ?", user).Order("created_at desc").Find(&personal_doctor_data).Error; err != nil {
+	if err := initializers.DB.Where("user_id = ? AND (request = ? OR request = ?)", user, "Accepted", "Pending").Order("created_at desc").Find(&personal_doctor_data).Error; err != nil {
 		userresponse.GetPersonalDoctorFailedResponse(c, "Failed To Get Personal Doctor", "", "Get Personal Doctor", "http://localhost:3000/api/user/list/personal_doctor", http.StatusBadRequest)
 		return
 	}
 	for _, item := range personal_doctor_data {
 		var doctor models.Doctor
 		initializers.DB.First(&doctor, "id = ?", item.DoctorID)
-
+		doctor_status := "Before"
+		if item.StartDate == "" && item.EndDate == "" {
+			doctor_status = "Waiting"
+		} else if item.EndDate == "" {
+			doctor_status = "Now"
+		}
 		personal_doctor = append(personal_doctor, struct {
-			DoctorName  string
-			PhoneNumber string
-			StartDate   string
-			EndDate     string
+			DoctorName   string
+			PhoneNumber  string
+			StartDate    string
+			EndDate      string
+			DoctorStatus string
 		}{
-			DoctorName:  doctor.Name,
-			PhoneNumber: doctor.PhoneNumber,
-			StartDate:   item.StartDate,
-			EndDate:     item.EndDate,
+			DoctorName:   doctor.Name,
+			PhoneNumber:  doctor.PhoneNumber,
+			StartDate:    item.StartDate,
+			EndDate:      item.EndDate,
+			DoctorStatus: doctor_status,
 		})
 	}
 

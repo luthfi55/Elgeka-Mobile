@@ -2,9 +2,25 @@ package userresponse
 
 import (
 	"elgeka-mobile/models"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
+
+func CheckAccountFailedResponse(c *gin.Context) {
+	linkItem := models.LinkItem{
+		Name: "Login",
+		Link: "http://localhost:3000/api/user/login",
+	}
+	var UserId []models.UserIdData
+	response := models.LoginUserFailedResponse{
+		ErrorMessage: "Need  Login",
+		Data:         UserId,
+		Link:         []models.LinkItem{linkItem},
+	}
+
+	c.JSON(http.StatusBadRequest, response)
+}
 
 func LoginFailedResponse(c *gin.Context, message string, data models.UserIdData, link string, status int) {
 	datas := models.UserIdData{
