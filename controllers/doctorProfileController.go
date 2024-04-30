@@ -18,10 +18,9 @@ func DoctorProfileController(r *gin.Engine) {
 	r.GET("api/doctor/patient_request", middleware.RequireAuth, DoctorPatientRequest)
 	r.PUT("api/doctor/patient_request/accept/:acceptance_id", middleware.RequireAuth, DoctorPatientAccept)
 	r.PUT("api/doctor/patient_request/reject/:acceptance_id", middleware.RequireAuth, DoctorPatientReject)
-	// r.PUT("api/user/profile/edit", middleware.RequireAuth, EditProfile)
-	// r.POST("api/user/add/personal_doctor", middleware.RequireAuth, AddPersonalDoctor)
-	// r.GET("api/user/list/personal_doctor", middleware.RequireAuth, GetPersonalDoctor)
-	// r.GET("api/user/list/activate_doctor", middleware.RequireAuth, ListActivateDoctor)
+
+	r.GET("api/doctor/patient/list", middleware.RequireAuth, DoctorPatientList)
+	r.GET("api/doctor/patient/profile/:acceptance_id", middleware.RequireAuth, DoctorPatientProfile)
 }
 
 func DoctorCheck(c *gin.Context, doctor any) bool {
@@ -124,7 +123,6 @@ func DoctorPatientReject(c *gin.Context) {
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			doctorresponse.DoctorPatientRejectFailedResponse(c, "Acceptance Data Not Found", acceptanceID, "List Patient Acceptance", "http://localhost:3000/api/doctor/patient_request/accept/:acceptance_id", http.StatusNotFound)
-
 			return
 		} else {
 			doctorresponse.DoctorPatientRejectFailedResponse(c, "Database Error", acceptanceID, "List Patient Acceptance", "http://localhost:3000/api/doctor/patient_request/accept/:acceptance_id", http.StatusInternalServerError)
@@ -144,4 +142,79 @@ func DoctorPatientReject(c *gin.Context) {
 	}
 
 	doctorresponse.DoctorPatientRejectSuccessResponse(c, "Success to Reject Patient", acceptance, http.StatusOK)
+}
+
+func DoctorPatientList(c *gin.Context) {
+	doctor, _ := c.Get("doctor")
+
+	if !DoctorCheck(c, doctor) {
+		return
+	}
+
+	var patient_request []models.UserPersonalDoctor
+	if err := initializers.DB.Where("doctor_id = ? AND request = ? AND end_date = ?", doctor, "Accepted", "").Order("created_at desc").Find(&patient_request).Error; err != nil {
+		doctorresponse.ListDoctorPatientFailedResponse(c, "Failed to Get List Patient", "", http.StatusBadRequest)
+		return
+	}
+	var patient []struct {
+		AcceptanceID uuid.UUID
+		UserID       uuid.UUID
+		PatientName  string
+		PhoneNumber  string
+	}
+	for _, item := range patient_request {
+		var user models.User
+		initializers.DB.First(&user, "id = ?", item.UserID)
+
+		patient = append(patient, struct {
+			AcceptanceID uuid.UUID
+			UserID       uuid.UUID
+			PatientName  string
+			PhoneNumber  string
+		}{
+			AcceptanceID: item.ID,
+			UserID:       user.ID,
+			PatientName:  user.Name,
+			PhoneNumber:  user.PhoneNumber,
+		})
+	}
+	doctorresponse.ListDoctorPatientSuccessResponse(c, "Success to Get List Patient", patient, http.StatusOK)
+}
+
+func DoctorPatientProfile(c *gin.Context) {
+	doctor, _ := c.Get("doctor")
+	acceptanceID := c.Param("acceptance_id")
+
+	if !DoctorCheck(c, doctor) {
+		return
+	}
+
+	var patient_profile models.UserPersonalDoctor
+	if err := initializers.DB.First(&patient_profile, "id = ? AND doctor_id = ? AND request = ? AND end_date = ?", acceptanceID, doctor, "Accepted", "").Error; err != nil {
+		doctorresponse.DoctorPatientProfileFailedResponse(c, "Patient Profile Not Found", "", http.StatusNotFound)
+		return
+	}
+
+	var patient_data models.User
+	if err := initializers.DB.First(&patient_data, "id = ?", patient_profile.UserID).Error; err != nil {
+		doctorresponse.DoctorPatientProfileFailedResponse(c, "Failed to Get Patient Data", "", http.StatusNotFound)
+		return
+	}
+
+	data := models.UserData{
+		ID:          patient_data.ID,
+		Name:        patient_data.Name,
+		Email:       patient_data.Email,
+		Address:     patient_data.Address,
+		Province:    patient_data.Province,
+		District:    patient_data.District,
+		SubDistrict: patient_data.SubDistrict,
+		Village:     patient_data.Village,
+		Gender:      patient_data.Gender,
+		BirthDate:   patient_data.BirthDate,
+		BloodGroup:  patient_data.BloodGroup,
+		PhoneNumber: patient_data.PhoneNumber,
+	}
+
+	doctorresponse.DoctorPatientProfileSuccessResponse(c, "Success to Get Patient Data", data, http.StatusOK)
 }

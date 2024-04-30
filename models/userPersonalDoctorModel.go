@@ -78,3 +78,27 @@ type DoctorPatientRejectSuccessResponse struct {
 	Data    interface{} `json:"Data"`
 	Link    []LinkItem  `json:"Link"`
 }
+
+type ListDoctorPatientFailledResponse struct {
+	ErrorMessage string      `json:"ErrorMessage"`
+	Data         interface{} `json:"Data"`
+	Link         []LinkItem  `json:"Link"`
+}
+
+type ListDoctorPatientSuccessResponse struct {
+	Message string      `json:"Message"`
+	Data    interface{} `json:"Data"`
+	Link    []LinkItem  `json:"Link"`
+}
+
+type DoctorPatientProfileFailledResponse struct {
+	ErrorMessage string      `json:"ErrorMessage"`
+	Data         interface{} `json:"Data"`
+	Link         []LinkItem  `json:"Link"`
+}
+
+type DoctorPatientProfileSuccessResponse struct {
+	Message string      `json:"Message"`
+	Data    interface{} `json:"Data"`
+	Link    []LinkItem  `json:"Link"`
+}
