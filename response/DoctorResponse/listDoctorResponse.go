@@ -94,3 +94,33 @@ func DoctorPatientProfileSuccessResponse(c *gin.Context, message string, data in
 
 	c.JSON(status, response)
 }
+
+func DoctorPatientHealthStatusFailedResponse(c *gin.Context, message string, data string, status int) {
+	linkItem := models.LinkItem{
+		Name: "List Patient",
+		Link: "http://localhost:3000/api/doctor/patient/list",
+	}
+
+	response := models.DoctorPatientHealthStatusFailledResponse{
+		ErrorMessage: message,
+		Data:         data,
+		Link:         []models.LinkItem{linkItem},
+	}
+
+	c.JSON(status, response)
+}
+
+func DoctorPatientHealthStatusSuccessResponse(c *gin.Context, message string, data interface{}, status int) {
+	linkItem := models.LinkItem{
+		Name: "List Patient",
+		Link: "http://localhost:3000/api/doctor/patient/list",
+	}
+
+	response := models.DoctorPatientHealthStatusSuccessResponse{
+		Message: message,
+		Data:    data,
+		Link:    []models.LinkItem{linkItem},
+	}
+
+	c.JSON(status, response)
+}

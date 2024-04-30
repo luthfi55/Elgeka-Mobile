@@ -343,3 +343,71 @@ func TestDoctorPatientProfile_Failed(t *testing.T) {
 		t.Errorf("expected message body %s but got %s", "Patient Profile Not Found", expectedBody.ErrorMessage)
 	}
 }
+
+func TestDoctorPatientHealthStatus_Success(t *testing.T) {
+	router := gin.Default()
+	acceptance_id := "3c297684-c68b-4828-a3d6-a734c246d685"
+
+	router.GET("/api/doctor/patient/health_status/:acceptance_id", middleware.RequireAuth, controllers.DoctorPatientHealthStatus)
+
+	req, err := http.NewRequest("GET", "/api/doctor/patient/health_status/"+acceptance_id, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(DoctorCookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success to Get Health Status Data" {
+		t.Errorf("expected message body %s but got %s", "Success to Get Health Status Data", expectedBody.Message)
+	}
+}
+
+func TestDoctorPatientHealthStatus_Failed(t *testing.T) {
+	router := gin.Default()
+	acceptance_id := "3c297684-c68b-4828-a3d6-a734c246d681"
+
+	router.GET("/api/doctor/patient/health_status/:acceptance_id", middleware.RequireAuth, controllers.DoctorPatientHealthStatus)
+
+	req, err := http.NewRequest("GET", "/api/doctor/patient/health_status/"+acceptance_id, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(DoctorCookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusNotFound {
+		t.Errorf("expected status code %d but got %d", http.StatusNotFound, rec.Code)
+	}
+
+	var expectedBody ExpectedFailedResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Patient Profile Not Found" {
+		t.Errorf("expected message body %s but got %s", "Patient Profile Not Found", expectedBody.ErrorMessage)
+	}
+}

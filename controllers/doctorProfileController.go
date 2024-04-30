@@ -21,6 +21,7 @@ func DoctorProfileController(r *gin.Engine) {
 
 	r.GET("api/doctor/patient/list", middleware.RequireAuth, DoctorPatientList)
 	r.GET("api/doctor/patient/profile/:acceptance_id", middleware.RequireAuth, DoctorPatientProfile)
+	r.GET("api/doctor/patient/health_status/:acceptance_id", middleware.RequireAuth, DoctorPatientHealthStatus)
 }
 
 func DoctorCheck(c *gin.Context, doctor any) bool {
@@ -217,4 +218,220 @@ func DoctorPatientProfile(c *gin.Context) {
 	}
 
 	doctorresponse.DoctorPatientProfileSuccessResponse(c, "Success to Get Patient Data", data, http.StatusOK)
+}
+
+func DoctorPatientHealthStatus(c *gin.Context) {
+	doctor, _ := c.Get("doctor")
+	acceptanceID := c.Param("acceptance_id")
+
+	if !DoctorCheck(c, doctor) {
+		return
+	}
+
+	var patient_profile models.UserPersonalDoctor
+	if err := initializers.DB.First(&patient_profile, "id = ? AND doctor_id = ? AND request = ? AND end_date = ?", acceptanceID, doctor, "Accepted", "").Error; err != nil {
+		doctorresponse.DoctorPatientHealthStatusFailedResponse(c, "Patient Profile Not Found", "", http.StatusNotFound)
+		return
+	}
+
+	var patient_data models.User
+	if err := initializers.DB.First(&patient_data, "id = ?", patient_profile.UserID).Error; err != nil {
+		doctorresponse.DoctorPatientHealthStatusFailedResponse(c, "Failed to Get Patient Data", "", http.StatusNotFound)
+		return
+	}
+
+	var bcr_abl []models.BCR_ABL
+	if err := initializers.DB.Where("user_id = ?", patient_profile.UserID).Order("date asc").Find(&bcr_abl).Error; err != nil {
+		doctorresponse.DoctorPatientHealthStatusFailedResponse(c, "Failed to Get BCR ABL Data", "", http.StatusNotFound)
+		return
+	}
+
+	var bcr_abl_data []struct {
+		Id    uuid.UUID
+		Data  float32
+		Notes string
+		Date  string
+	}
+
+	for _, item := range bcr_abl {
+		bcr_abl_data = append(bcr_abl_data, struct {
+			Id    uuid.UUID
+			Data  float32
+			Notes string
+			Date  string
+		}{
+			Id:    item.ID,
+			Data:  item.Data,
+			Notes: item.Notes,
+			Date:  item.Date,
+		})
+	}
+
+	var leukocytes []models.Leukocytes
+	if err := initializers.DB.Where("user_id = ?", patient_profile.UserID).Order("date asc").Find(&leukocytes).Error; err != nil {
+		doctorresponse.DoctorPatientHealthStatusFailedResponse(c, "Failed to Get Leukocytes Data", "", http.StatusNotFound)
+		return
+	}
+
+	var leukocytes_data []struct {
+		Id    uuid.UUID
+		Data  float32
+		Notes string
+		Date  string
+	}
+
+	for _, item := range leukocytes {
+		leukocytes_data = append(leukocytes_data, struct {
+			Id    uuid.UUID
+			Data  float32
+			Notes string
+			Date  string
+		}{
+			Id:    item.ID,
+			Data:  item.Data,
+			Notes: item.Notes,
+			Date:  item.Date,
+		})
+	}
+
+	var potential_hydrogen []models.PotentialHydrogen
+	if err := initializers.DB.Where("user_id = ?", patient_profile.UserID).Order("date asc").Find(&potential_hydrogen).Error; err != nil {
+		doctorresponse.DoctorPatientHealthStatusFailedResponse(c, "Failed to Get Potential Hydrogen Data", "", http.StatusNotFound)
+		return
+	}
+
+	var potential_hydrogen_data []struct {
+		Id    uuid.UUID
+		Data  float32
+		Notes string
+		Date  string
+	}
+
+	for _, item := range potential_hydrogen {
+		potential_hydrogen_data = append(potential_hydrogen_data, struct {
+			Id    uuid.UUID
+			Data  float32
+			Notes string
+			Date  string
+		}{
+			Id:    item.ID,
+			Data:  item.Data,
+			Notes: item.Notes,
+			Date:  item.Date,
+		})
+	}
+
+	var hemoglobin []models.Hemoglobin
+	if err := initializers.DB.Where("user_id = ?", patient_profile.UserID).Order("date asc").Find(&hemoglobin).Error; err != nil {
+		doctorresponse.DoctorPatientHealthStatusFailedResponse(c, "Failed to Get Hemoglobin Data", "", http.StatusNotFound)
+		return
+	}
+
+	var hemoglobin_data []struct {
+		Id    uuid.UUID
+		Data  float32
+		Notes string
+		Date  string
+	}
+
+	for _, item := range hemoglobin {
+		hemoglobin_data = append(hemoglobin_data, struct {
+			Id    uuid.UUID
+			Data  float32
+			Notes string
+			Date  string
+		}{
+			Id:    item.ID,
+			Data:  item.Data,
+			Notes: item.Notes,
+			Date:  item.Date,
+		})
+	}
+
+	var blood_pressure []models.BloodPressure
+	if err := initializers.DB.Where("user_id = ?", patient_profile.UserID).Order("date asc").Find(&blood_pressure).Error; err != nil {
+		doctorresponse.DoctorPatientHealthStatusFailedResponse(c, "Failed to Get Blood Pressure Data", "", http.StatusNotFound)
+		return
+	}
+
+	var blood_pressure_data []struct {
+		Id      uuid.UUID
+		DataSys float32
+		DataDia float32
+		Notes   string
+		Date    string
+	}
+
+	for _, item := range blood_pressure {
+		blood_pressure_data = append(blood_pressure_data, struct {
+			Id      uuid.UUID
+			DataSys float32
+			DataDia float32
+			Notes   string
+			Date    string
+		}{
+			Id:      item.ID,
+			DataSys: item.DataSys,
+			DataDia: item.DataDia,
+			Notes:   item.Notes,
+			Date:    item.Date,
+		})
+	}
+
+	var heart_rate []models.HeartRate
+	if err := initializers.DB.Where("user_id = ?", patient_profile.UserID).Order("date asc").Find(&heart_rate).Error; err != nil {
+		doctorresponse.DoctorPatientHealthStatusFailedResponse(c, "Failed to Get Heart Rate Data", "", http.StatusNotFound)
+		return
+	}
+
+	var heart_rate_data []struct {
+		Id    uuid.UUID
+		Data  float32
+		Notes string
+		Date  string
+	}
+
+	for _, item := range heart_rate {
+		heart_rate_data = append(heart_rate_data, struct {
+			Id    uuid.UUID
+			Data  float32
+			Notes string
+			Date  string
+		}{
+			Id:    item.ID,
+			Data:  item.Data,
+			Notes: item.Notes,
+			Date:  item.Date,
+		})
+	}
+
+	var health_status []struct {
+		Name              string
+		BCR_ABL           interface{}
+		Leukocytes        interface{}
+		PotentialHydrogen interface{}
+		Hemoglobin        interface{}
+		BloodPressure     interface{}
+		HeartRate         interface{}
+	}
+
+	health_status = append(health_status, struct {
+		Name              string
+		BCR_ABL           interface{}
+		Leukocytes        interface{}
+		PotentialHydrogen interface{}
+		Hemoglobin        interface{}
+		BloodPressure     interface{}
+		HeartRate         interface{}
+	}{
+		Name:              patient_data.Name,
+		BCR_ABL:           bcr_abl_data,
+		Leukocytes:        leukocytes_data,
+		PotentialHydrogen: potential_hydrogen_data,
+		Hemoglobin:        hemoglobin_data,
+		BloodPressure:     blood_pressure_data,
+		HeartRate:         heart_rate_data,
+	})
+
+	doctorresponse.DoctorPatientHealthStatusSuccessResponse(c, "Success to Get Health Status Data", health_status, http.StatusOK)
 }

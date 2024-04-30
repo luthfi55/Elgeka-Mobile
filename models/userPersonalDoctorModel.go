@@ -102,3 +102,15 @@ type DoctorPatientProfileSuccessResponse struct {
 	Data    interface{} `json:"Data"`
 	Link    []LinkItem  `json:"Link"`
 }
+
+type DoctorPatientHealthStatusFailledResponse struct {
+	ErrorMessage string      `json:"ErrorMessage"`
+	Data         interface{} `json:"Data"`
+	Link         []LinkItem  `json:"Link"`
+}
+
+type DoctorPatientHealthStatusSuccessResponse struct {
+	Message string      `json:"Message"`
+	Data    interface{} `json:"Data"`
+	Link    []LinkItem  `json:"Link"`
+}
