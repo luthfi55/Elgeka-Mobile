@@ -28,10 +28,10 @@ func SyncDatabase() {
 
 func SeedData(db *gorm.DB) {
 	oralSymptoms := []models.SymptomQuestion{
-		{ID: "OL-01", Type: "Oral", Question: "Berapa Tingkat Keparahan Mulut Kering Anda yang paling parah?", Option: "{'Tidak', 'Ringan', 'Sedang', 'Parah', 'Sangat Parah}"},
-		{ID: "OL-02", Type: "Oral", Question: "Seberapa parahkah tingkat keparahan kesulitan menelan yang Anda alami?", Option: "{'Tidak', 'Ringan', 'Sedang', 'Parah', 'Sangat Parah}"},
-		{ID: "OL-03", Type: "Oral", Question: "Seberapa parahkah tingkat keparahan luka di mulut atau tenggorokan Anda?", Option: "{'Tidak sama sekali', 'Sedikit', 'Agak', 'Cukup Sedikit', 'Sangat Parah}"},
-		{ID: "OL-04", Type: "Oral", Question: "Seberapa besar sariawan atau luka di mulut mengganggu aktivitas Anda sehari-hari?", Option: "{'Tidak sama sekali', 'Sedikit', 'Agak', 'Cukup Sedikit', 'Sangat Parah}"},
+		{ID: "OL-01", Type: "Oral", Question: "Berapa Tingkat Keparahan Mulut Kering Anda yang paling parah?"},
+		{ID: "OL-02", Type: "Oral", Question: "Seberapa parahkah tingkat keparahan kesulitan menelan yang Anda alami?"},
+		{ID: "OL-03", Type: "Oral", Question: "Seberapa parahkah tingkat keparahan luka di mulut atau tenggorokan Anda?"},
+		{ID: "OL-04", Type: "Oral", Question: "Seberapa besar sariawan atau luka di mulut mengganggu aktivitas Anda sehari-hari?"},
 	}
 
 	for _, symptom := range oralSymptoms {
