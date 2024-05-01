@@ -19,6 +19,7 @@ func UserProfileController(r *gin.Engine) {
 	r.POST("api/user/add/personal_doctor", middleware.RequireAuth, AddPersonalDoctor)
 	r.GET("api/user/list/personal_doctor", middleware.RequireAuth, GetPersonalDoctor)
 	r.GET("api/user/list/activate_doctor", middleware.RequireAuth, ListActivateDoctor)
+	r.GET("api/user/list/website", ListUserWebsite)
 }
 
 func ProfileData(c *gin.Context) {
@@ -243,4 +244,39 @@ func GetPersonalDoctor(c *gin.Context) {
 	}
 
 	userresponse.GetPersonalDoctorSuccessResponse(c, "Success Get Personal Doctor", personal_doctor, "http://localhost:3000/api/user/list/personal_doctor", http.StatusOK)
+}
+
+func ListUserWebsite(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	var user []models.User
+	result := initializers.DB.Where("is_active = ?", true).Find(&user)
+	if result.Error != nil {
+		activationLink := "http://localhost:3000/api/user/list/website"
+		userresponse.ListUserWebsiteFailedResponse(c, "Failed to Get Patient List", "", "Patient List", activationLink, http.StatusInternalServerError)
+		return
+	}
+
+	var user_data []models.UserData
+
+	for _, item := range user {
+		user_data = append(user_data, models.UserData{
+			ID:          item.ID,
+			Name:        item.Name,
+			Email:       item.Email,
+			Gender:      item.Gender,
+			BirthDate:   item.BirthDate,
+			BloodGroup:  item.BloodGroup,
+			PhoneNumber: item.PhoneNumber,
+			Province:    item.Province,
+			District:    item.District,
+			SubDistrict: item.SubDistrict,
+			Village:     item.Village,
+			Address:     item.Address,
+		})
+	}
+
+	userresponse.ListUserWebsiteSuccessResponse(c, "Success to Get Patient List", user_data, http.StatusOK)
 }

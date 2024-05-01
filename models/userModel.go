@@ -179,3 +179,15 @@ type LogoutUserFailedResponse struct {
 	Data         string     `json:"Data"`
 	Link         []LinkItem `json:"Link"`
 }
+
+type ListUserWebsiteSuccessResponse struct {
+	Message string      `json:"Message"`
+	Data    interface{} `json:"Data"`
+	Link    []LinkItem  `json:"Link"`
+}
+
+type ListUserWebsiteFailledResponse struct {
+	ErrorMessage string      `json:"ErrorMessage"`
+	Data         interface{} `json:"Data"`
+	Link         []LinkItem  `json:"Link"`
+}
