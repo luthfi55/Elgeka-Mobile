@@ -13,6 +13,7 @@ type User struct {
 	Gender             string    `validate:"required"`
 	BirthDate          string    `validate:"required"`
 	BloodGroup         string    `validate:"required"`
+	DiagnosisDate      string    `validate:"required"`
 	Province           string    `validate:"required"`
 	District           string    `validate:"required"`
 	SubDistrict        string    `validate:"required"`
@@ -36,18 +37,19 @@ type User struct {
 }
 
 type UserData struct {
-	ID          uuid.UUID `json:"ID"`
-	Name        string    `json:"Name"`
-	Email       string    `json:"Email"`
-	Address     string    `json:"Address"`
-	Province    string    `json:"Province"`
-	District    string    `json:"District"`
-	SubDistrict string    `json:"SubDistrict"`
-	Village     string    `json:"Village"`
-	Gender      string    `json:"Gender"`
-	BirthDate   string    `json:"BirthDate"`
-	BloodGroup  string    `json:"BloodGroup"`
-	PhoneNumber string    `json:"PhoneNumber"`
+	ID            uuid.UUID `json:"ID"`
+	Name          string    `json:"Name"`
+	Email         string    `json:"Email"`
+	Address       string    `json:"Address"`
+	Province      string    `json:"Province"`
+	District      string    `json:"District"`
+	SubDistrict   string    `json:"SubDistrict"`
+	Village       string    `json:"Village"`
+	Gender        string    `json:"Gender"`
+	BirthDate     string    `json:"BirthDate"`
+	BloodGroup    string    `json:"BloodGroup"`
+	DiagnosisDate string    `json:"DiagnosisDate"`
+	PhoneNumber   string    `json:"PhoneNumber"`
 }
 
 type Data struct {

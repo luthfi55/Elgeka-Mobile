@@ -32,18 +32,19 @@ func ProfileData(c *gin.Context) {
 	}
 
 	profile_data := models.UserData{
-		ID:          user_data.ID,
-		Name:        user_data.Name,
-		Email:       user_data.Email,
-		Address:     user_data.Address,
-		Province:    user_data.Province,
-		District:    user_data.District,
-		SubDistrict: user_data.SubDistrict,
-		Village:     user_data.Village,
-		Gender:      user_data.Gender,
-		BirthDate:   user_data.BirthDate,
-		BloodGroup:  user_data.BloodGroup,
-		PhoneNumber: user_data.PhoneNumber,
+		ID:            user_data.ID,
+		Name:          user_data.Name,
+		Email:         user_data.Email,
+		Address:       user_data.Address,
+		Province:      user_data.Province,
+		District:      user_data.District,
+		SubDistrict:   user_data.SubDistrict,
+		Village:       user_data.Village,
+		Gender:        user_data.Gender,
+		BirthDate:     user_data.BirthDate,
+		BloodGroup:    user_data.BloodGroup,
+		DiagnosisDate: user_data.DiagnosisDate,
+		PhoneNumber:   user_data.PhoneNumber,
 	}
 
 	userresponse.GetProfileSuccessResponse(c, "Success Get Profile", profile_data, "http://localhost:3000/api/user/profile", http.StatusOK)
@@ -99,13 +100,17 @@ func EditProfile(c *gin.Context) {
 		user_data.BirthDate = body.BirthDate
 	}
 
+	if body.DiagnosisDate != "" {
+		user_data.DiagnosisDate = body.DiagnosisDate
+	}
+
 	if body.BloodGroup != "" {
 		if body.BloodGroup == "A" || body.BloodGroup == "B" || body.BloodGroup == "AB" || body.BloodGroup == "O" {
 			user_data.BloodGroup = body.BloodGroup
 		}
 	}
 
-	if body.Name == "" && body.Address == "" && body.Province == "" && body.District == "" && body.SubDistrict == "" && body.Village == "" && body.Gender == "" && body.BirthDate == "" && body.BloodGroup == "" {
+	if body.Name == "" && body.Address == "" && body.Province == "" && body.District == "" && body.SubDistrict == "" && body.Village == "" && body.Gender == "" && body.BirthDate == "" && body.BloodGroup == "" && body.DiagnosisDate == "" {
 		userresponse.UpdateUserProfileFailedResponse(c, "Body Can't Null", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
 		return
 	}

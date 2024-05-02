@@ -19,9 +19,7 @@ import (
 )
 
 func RegisterController(r *gin.Engine) {
-	//user
 	r.POST("api/user/register", UserRegister)
-	//doctor
 	r.POST("api/doctor/register", DoctorRegister)
 }
 
@@ -128,6 +126,14 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
+	if body.DiagnosisDate == "" || !isValidDateFormat(body.DiagnosisDate) {
+		errorMessage := "Diagnosis Date must be in the format 'Year-Month-Day'."
+		data := body
+		activationLink := "http://localhost:3000/api/user/register"
+		userresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
+		return
+	}
+
 	if body.BloodGroup != "A" && body.BloodGroup != "B" && body.BloodGroup != "AB" && body.BloodGroup != "O" {
 		errorMessage := "Blood Group must A, B, AB, or O."
 		data := body
@@ -147,19 +153,20 @@ func UserRegister(c *gin.Context) {
 
 	newUUID := uuid.New()
 	user := models.User{
-		ID:          newUUID,
-		Name:        body.Name,
-		Province:    body.Province,
-		District:    body.District,
-		SubDistrict: body.SubDistrict,
-		Village:     body.Village,
-		Address:     body.Address,
-		Gender:      body.Gender,
-		BirthDate:   body.BirthDate,
-		BloodGroup:  body.BloodGroup,
-		PhoneNumber: body.PhoneNumber,
-		Email:       body.Email,
-		Password:    string(hash),
+		ID:            newUUID,
+		Name:          body.Name,
+		Province:      body.Province,
+		District:      body.District,
+		SubDistrict:   body.SubDistrict,
+		Village:       body.Village,
+		Address:       body.Address,
+		Gender:        body.Gender,
+		BirthDate:     body.BirthDate,
+		BloodGroup:    body.BloodGroup,
+		DiagnosisDate: body.DiagnosisDate,
+		PhoneNumber:   body.PhoneNumber,
+		Email:         body.Email,
+		Password:      string(hash),
 	}
 
 	if err := initializers.DB.Create(&user).Error; err != nil {
@@ -184,7 +191,6 @@ func UserRegister(c *gin.Context) {
 
 	// SendEmailWithGmail(body.Email, otpCode)
 
-	//respond
 	activationLink := "http://localhost:3000/api/user/activate/" + newUUID.String()
 	userresponse.RegisterSuccessResponse(c, "Register Success", user, activationLink)
 }

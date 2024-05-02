@@ -8,18 +8,19 @@ import (
 
 func GetProfileSuccessResponse(c *gin.Context, message string, data models.UserData, link string, status int) {
 	datas := models.UserData{
-		ID:          data.ID,
-		Name:        data.Name,
-		Email:       data.Email,
-		Address:     data.Address,
-		Province:    data.Province,
-		District:    data.District,
-		SubDistrict: data.SubDistrict,
-		Village:     data.Village,
-		Gender:      data.Gender,
-		BirthDate:   data.BirthDate,
-		BloodGroup:  data.BloodGroup,
-		PhoneNumber: data.PhoneNumber,
+		ID:            data.ID,
+		Name:          data.Name,
+		Email:         data.Email,
+		Address:       data.Address,
+		Province:      data.Province,
+		District:      data.District,
+		SubDistrict:   data.SubDistrict,
+		Village:       data.Village,
+		Gender:        data.Gender,
+		BirthDate:     data.BirthDate,
+		BloodGroup:    data.BloodGroup,
+		DiagnosisDate: data.DiagnosisDate,
+		PhoneNumber:   data.PhoneNumber,
 	}
 
 	linkItem := models.LinkItem{

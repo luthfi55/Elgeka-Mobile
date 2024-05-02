@@ -39,7 +39,7 @@ func GenderChartSuccessResponse(c *gin.Context, message string, data interface{}
 func AgeChartFailedResponse(c *gin.Context, message string, data string, status int) {
 	linkItem := models.LinkItem{
 		Name: "Patient Data by Gender",
-		Link: "http://localhost:3000/api/doctor/patient/data/gender",
+		Link: "http://localhost:3000/api/doctor/patient/data/age",
 	}
 
 	response := models.ListAcceptancePatientFailedResponse{
@@ -54,7 +54,7 @@ func AgeChartFailedResponse(c *gin.Context, message string, data string, status 
 func AgeChartSuccessResponse(c *gin.Context, message string, data interface{}, status int) {
 	linkItem := models.LinkItem{
 		Name: "Patient Data by Gender",
-		Link: "http://localhost:3000/api/doctor/patient/data/gender",
+		Link: "http://localhost:3000/api/doctor/patient/data/age",
 	}
 
 	response := models.ListAcceptancePatientSuccessResponse{
