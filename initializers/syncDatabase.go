@@ -21,6 +21,7 @@ func SyncDatabase() {
 		&models.MedicineSchedule{},
 		&models.SymptomQuestion{},
 		&models.SymptomAnswer{},
+		&models.UserTreatment{},
 	)
 
 	SeedData(DB)

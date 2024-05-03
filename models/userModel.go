@@ -32,6 +32,7 @@ type User struct {
 	Medicine           []Medicine           `gorm:"foreignKey:UserID"`
 	MedicineSchedule   []MedicineSchedule   `gorm:"foreignKey:UserID"`
 	Symptom            []SymptomAnswer      `gorm:"foreignKey:UserID"`
+	UserTreatment      []UserTreatment      `gorm:"foreignKey:UserID"`
 
 	gorm.Model
 }
@@ -47,6 +48,23 @@ type UserData struct {
 	Village       string    `json:"Village"`
 	Gender        string    `json:"Gender"`
 	BirthDate     string    `json:"BirthDate"`
+	BloodGroup    string    `json:"BloodGroup"`
+	DiagnosisDate string    `json:"DiagnosisDate"`
+	PhoneNumber   string    `json:"PhoneNumber"`
+}
+
+type UserDataAge struct {
+	ID            uuid.UUID `json:"ID"`
+	Name          string    `json:"Name"`
+	Email         string    `json:"Email"`
+	Address       string    `json:"Address"`
+	Province      string    `json:"Province"`
+	District      string    `json:"District"`
+	SubDistrict   string    `json:"SubDistrict"`
+	Village       string    `json:"Village"`
+	Gender        string    `json:"Gender"`
+	BirthDate     string    `json:"BirthDate"`
+	Age           int       `json:"Age"`
 	BloodGroup    string    `json:"BloodGroup"`
 	DiagnosisDate string    `json:"DiagnosisDate"`
 	PhoneNumber   string    `json:"PhoneNumber"`

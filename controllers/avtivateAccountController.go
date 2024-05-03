@@ -5,6 +5,7 @@ import (
 	"elgeka-mobile/models"
 	doctorresponse "elgeka-mobile/response/DoctorResponse"
 	otpresponse "elgeka-mobile/response/OtpResponse"
+	userresponse "elgeka-mobile/response/UserResponse"
 	"errors"
 	"fmt"
 	"math/rand"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -170,7 +172,6 @@ func Activate(c *gin.Context) {
 
 	var user models.User
 
-	// Find the user by ID
 	result := initializers.DB.First(&user, "id = ?", userID)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -198,7 +199,6 @@ func Activate(c *gin.Context) {
 		otpresponse.FailedResponse(c, "Incorrect OTP code", user.Email, activationLink, http.StatusUnauthorized)
 		return
 	} else {
-		// 1 minute expired
 		if time.Since(user.OtpCreatedAt) > time.Minute {
 			activationLink := "http://localhost:3000/api/user/register"
 			otpresponse.FailedResponse(c, "OTP Code Expired", user.Email, activationLink, http.StatusUnauthorized)
@@ -216,6 +216,15 @@ func Activate(c *gin.Context) {
 		if err := initializers.DB.Save(&user).Error; err != nil {
 			activationLink := "http://localhost:3000/api/user/register"
 			otpresponse.FailedResponse(c, "Failed to Activate", user.Email, activationLink, http.StatusInternalServerError)
+			return
+		}
+
+		var treatment models.UserTreatment
+		newUUID := uuid.New()
+		treatment.ID = newUUID
+		treatment.UserID = user.ID
+		if err := initializers.DB.Create(&treatment).Error; err != nil {
+			userresponse.GetTreatmentDataFailedResponse(c, "Failed To Create Treatment Data", "", http.StatusInternalServerError)
 			return
 		}
 

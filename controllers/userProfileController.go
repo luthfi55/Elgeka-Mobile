@@ -7,6 +7,7 @@ import (
 	userresponse "elgeka-mobile/response/UserResponse"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -264,15 +265,21 @@ func ListUserWebsite(c *gin.Context) {
 		return
 	}
 
-	var user_data []models.UserData
+	var user_data []models.UserDataAge
 
 	for _, item := range user {
-		user_data = append(user_data, models.UserData{
+		birthdate, err := time.Parse("2006-01-02", item.BirthDate)
+		if err != nil {
+			continue
+		}
+		age := time.Now().Year() - birthdate.Year()
+		user_data = append(user_data, models.UserDataAge{
 			ID:          item.ID,
 			Name:        item.Name,
 			Email:       item.Email,
 			Gender:      item.Gender,
 			BirthDate:   item.BirthDate,
+			Age:         age,
 			BloodGroup:  item.BloodGroup,
 			PhoneNumber: item.PhoneNumber,
 			Province:    item.Province,

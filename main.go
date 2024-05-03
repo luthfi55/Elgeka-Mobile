@@ -25,7 +25,6 @@ func main() {
 	}()
 	r := gin.Default()
 
-	// Tambahkan middleware CORS di sini
 	r.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "https://stirring-pixie-ed5c9b.netlify.app")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
@@ -49,6 +48,7 @@ func main() {
 	controllers.SymptompController(r)
 	controllers.DoctorProfileController(r)
 	controllers.DoctorChartController(r)
+	controllers.UserTreatmentController(r)
 
 	port := os.Getenv("PORT")
 	if port == "" {
