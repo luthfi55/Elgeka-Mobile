@@ -488,7 +488,7 @@ func ListPatientDoctorWebsite(c *gin.Context) {
 		var patient []models.UserPersonalDoctor
 		var patient_list []models.UserPersonalDoctorData
 
-		initializers.DB.Where("doctor_id", item.ID).Find(&patient)
+		initializers.DB.Where("doctor_id = ? AND request = ? AND end_date = ?", item.ID, "Accepted", "").Find(&patient)
 		for _, second_item := range patient {
 			var patient_profile models.User
 			initializers.DB.First(&patient_profile, "id = ?", second_item.UserID)
