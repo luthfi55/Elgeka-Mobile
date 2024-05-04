@@ -22,6 +22,9 @@ func DoctorProfileController(r *gin.Engine) {
 	r.GET("api/doctor/patient/list", middleware.RequireAuth, DoctorPatientList)
 	r.GET("api/doctor/patient/profile/:acceptance_id", middleware.RequireAuth, DoctorPatientProfile)
 	r.GET("api/doctor/patient/health_status/:acceptance_id", middleware.RequireAuth, DoctorPatientHealthStatus)
+
+	r.GET("api/doctor/list/website", ListDoctorWebsite)
+	r.GET("api/doctor/list_patient/website", ListPatientDoctorWebsite)
 }
 
 func DoctorCheck(c *gin.Context, doctor any) bool {
@@ -434,4 +437,79 @@ func DoctorPatientHealthStatus(c *gin.Context) {
 	})
 
 	doctorresponse.DoctorPatientHealthStatusSuccessResponse(c, "Success to Get Health Status Data", health_status, http.StatusOK)
+}
+
+func ListDoctorWebsite(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	var doctor []models.Doctor
+
+	result := initializers.DB.Where("is_active = ?", true).Find(&doctor)
+	if result.Error != nil {
+		doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Get Doctor List", "", http.StatusInternalServerError)
+		return
+	}
+
+	var doctor_data []models.DoctorProfile
+
+	for _, item := range doctor {
+		doctor_data = append(doctor_data, models.DoctorProfile{
+			ID:           item.ID,
+			Name:         item.Name,
+			PhoneNumber:  item.PhoneNumber,
+			Email:        item.Email,
+			Gender:       item.Gender,
+			PolyName:     item.PolyName,
+			HospitalName: item.HospitalName,
+		})
+	}
+
+	doctorresponse.ListDoctorWebsiteSuccessResponse(c, "Success to Get Doctor List", doctor_data, http.StatusOK)
+}
+
+func ListPatientDoctorWebsite(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	var doctor []models.Doctor
+
+	result := initializers.DB.Where("is_active = ?", true).Find(&doctor)
+	if result.Error != nil {
+		doctorresponse.ListPatientDoctorWebsiteFailedResponse(c, "Failed to Get Patient Doctor List", "", http.StatusInternalServerError)
+		return
+	}
+
+	var doctor_data []models.DoctorPatientData
+
+	for _, item := range doctor {
+		var patient []models.UserPersonalDoctor
+		var patient_list []models.UserPersonalDoctorData
+
+		initializers.DB.Where("doctor_id", item.ID).Find(&patient)
+		for _, second_item := range patient {
+			var patient_profile models.User
+			initializers.DB.First(&patient_profile, "id = ?", second_item.UserID)
+			patient_list = append(patient_list, models.UserPersonalDoctorData{
+				UserID:        patient_profile.ID,
+				Name:          patient_profile.Name,
+				Email:         patient_profile.Email,
+				PhoneNumber:   patient_profile.PhoneNumber,
+				Gender:        patient_profile.Gender,
+				BloodGroup:    patient_profile.BloodGroup,
+				DiagnosisDate: patient_profile.DiagnosisDate,
+			})
+		}
+
+		doctor_data = append(doctor_data, models.DoctorPatientData{
+			ID:          item.ID,
+			DoctorName:  item.Name,
+			PatientData: patient_list,
+		})
+
+	}
+
+	doctorresponse.ListPatientDoctorWebsiteSuccessResponse(c, "Success to Get Patient Doctor List", doctor_data, http.StatusOK)
 }

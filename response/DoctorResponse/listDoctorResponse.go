@@ -124,3 +124,63 @@ func DoctorPatientHealthStatusSuccessResponse(c *gin.Context, message string, da
 
 	c.JSON(status, response)
 }
+
+func ListDoctorWebsiteFailedResponse(c *gin.Context, message string, data string, status int) {
+	linkItem := models.LinkItem{
+		Name: "List Doctor Web",
+		Link: "http://localhost:3000/api/doctor/list/website",
+	}
+
+	response := models.ListDoctorWebsiteFailledResponse{
+		ErrorMessage: message,
+		Data:         data,
+		Link:         []models.LinkItem{linkItem},
+	}
+
+	c.JSON(status, response)
+}
+
+func ListDoctorWebsiteSuccessResponse(c *gin.Context, message string, data interface{}, status int) {
+	linkItem := models.LinkItem{
+		Name: "List Doctor Web",
+		Link: "http://localhost:3000/api/doctor/list/website",
+	}
+
+	response := models.ListDoctorWebsiteSuccessResponse{
+		Message: message,
+		Data:    data,
+		Link:    []models.LinkItem{linkItem},
+	}
+
+	c.JSON(status, response)
+}
+
+func ListPatientDoctorWebsiteFailedResponse(c *gin.Context, message string, data string, status int) {
+	linkItem := models.LinkItem{
+		Name: "List Patient Doctor Web",
+		Link: "http://localhost:3000/api/doctor/list_patient/website",
+	}
+
+	response := models.ListPatientDoctorWebsiteFailledResponse{
+		ErrorMessage: message,
+		Data:         data,
+		Link:         []models.LinkItem{linkItem},
+	}
+
+	c.JSON(status, response)
+}
+
+func ListPatientDoctorWebsiteSuccessResponse(c *gin.Context, message string, data interface{}, status int) {
+	linkItem := models.LinkItem{
+		Name: "List Patient Doctor Web",
+		Link: "http://localhost:3000/api/doctor/list_patient/website",
+	}
+
+	response := models.ListPatientDoctorWebsiteSuccessResponse{
+		Message: message,
+		Data:    data,
+		Link:    []models.LinkItem{linkItem},
+	}
+
+	c.JSON(status, response)
+}

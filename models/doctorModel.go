@@ -26,15 +26,26 @@ type Doctor struct {
 	gorm.Model
 }
 
+type DoctorProfile struct {
+	ID           uuid.UUID `json:"ID"`
+	Name         string    `json:"Name"`
+	PhoneNumber  string    `json:"PhoneNumber"`
+	Email        string    `json:"Email"`
+	Gender       string    `json:"Gender"`
+	PolyName     string    `json:"PolyName"`
+	HospitalName string    `json:"HospitalName"`
+}
+
 type DoctorData struct {
 	ID   uuid.UUID `json:"ID"`
 	Name string    `json:"Name"`
 }
 
-// type LinkItem struct {
-// 	Name string `json:"Name"`
-// 	Link string `json:"Link"`
-// }
+type DoctorPatientData struct {
+	ID          uuid.UUID   `json:"ID"`
+	DoctorName  string      `json:"DoctorName"`
+	PatientData interface{} `json:"PatientData"`
+}
 
 type GetListDoctorSuccessResponse struct {
 	Message string       `json:"Message"`
@@ -58,4 +69,28 @@ type ForgotPasswordUserSuccess struct {
 	Message string     `json:"Message"`
 	Data    []Data     `json:"Data"`
 	Link    []LinkItem `json:"Link"`
+}
+
+type ListDoctorWebsiteSuccessResponse struct {
+	Message string      `json:"Message"`
+	Data    interface{} `json:"Data"`
+	Link    []LinkItem  `json:"Link"`
+}
+
+type ListDoctorWebsiteFailledResponse struct {
+	ErrorMessage string      `json:"ErrorMessage"`
+	Data         interface{} `json:"Data"`
+	Link         []LinkItem  `json:"Link"`
+}
+
+type ListPatientDoctorWebsiteSuccessResponse struct {
+	Message string      `json:"Message"`
+	Data    interface{} `json:"Data"`
+	Link    []LinkItem  `json:"Link"`
+}
+
+type ListPatientDoctorWebsiteFailledResponse struct {
+	ErrorMessage string      `json:"ErrorMessage"`
+	Data         interface{} `json:"Data"`
+	Link         []LinkItem  `json:"Link"`
 }

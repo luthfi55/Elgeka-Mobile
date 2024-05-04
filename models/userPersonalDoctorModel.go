@@ -15,6 +15,16 @@ type UserPersonalDoctor struct {
 	gorm.Model
 }
 
+type UserPersonalDoctorData struct {
+	UserID        uuid.UUID `json:"UserID"`
+	Name          string    `json:"Name"`
+	Email         string    `json:"Email"`
+	PhoneNumber   string    `json:"PhoneNumber"`
+	Gender        string    `json:"Gender"`
+	BloodGroup    string    `json:"BloodGroup"`
+	DiagnosisDate string    `json:"DiagnosisDate"`
+}
+
 type UserPersonalDoctorID struct {
 	ID string `json:"Personal Doctor ID"`
 }
