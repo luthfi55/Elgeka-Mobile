@@ -29,6 +29,14 @@ type MedicineData struct {
 	Stock int       `json:"Stock"`
 }
 
+type MedicineDataWebsite struct {
+	ID           uuid.UUID   `json:"ID"`
+	Name         string      `json:"Name"`
+	Email        string      `json:"Email"`
+	PhoneNumber  string      `json:"PhoneNumber"`
+	ListMedicine interface{} `json:"ListMedicine"`
+}
+
 type MedicineScheduleData struct {
 	ID     uuid.UUID `json:"ID"`
 	Date   string    `json:"Date"`
@@ -129,4 +137,28 @@ type DeleteMedicineScheduleSuccessResponse struct {
 	Message string                 `json:"Message"`
 	Data    []MedicineScheduleData `json:"Data"`
 	Link    []LinkItem             `json:"Link"`
+}
+
+type GetMedicineWebsiteFailedResponse struct {
+	ErrorMessage string      `json:"ErrorMessage"`
+	Data         interface{} `json:"Data"`
+	Link         []LinkItem  `json:"Link"`
+}
+
+type GetMedicineWebsiteSuccessResponse struct {
+	Message string      `json:"Message"`
+	Data    interface{} `json:"Data"`
+	Link    []LinkItem  `json:"Link"`
+}
+
+type GetPatientMedicineWebsiteFailedResponse struct {
+	ErrorMessage string      `json:"ErrorMessage"`
+	Data         interface{} `json:"Data"`
+	Link         []LinkItem  `json:"Link"`
+}
+
+type GetPatientMedicineWebsiteSuccessResponse struct {
+	Message string      `json:"Message"`
+	Data    interface{} `json:"Data"`
+	Link    []LinkItem  `json:"Link"`
 }

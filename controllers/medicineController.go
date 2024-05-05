@@ -21,6 +21,9 @@ func MedicineController(r *gin.Engine) {
 	r.GET("api/user/medicine/schedule", middleware.RequireAuth, ListMedicineSchedule)
 	r.PUT("api/user/medicine/schedule/:schedule_id", middleware.RequireAuth, UpdateMedicineSchedule)
 	r.DELETE("api/user/medicine/schedule/:schedule_id", middleware.RequireAuth, DeleteMedicineSchedule)
+
+	r.GET("api/user/medicine/list/website", middleware.RequireAuth, ListMedicineWebsite)
+	r.GET("api/user/medicine/list_patient/website", middleware.RequireAuth, ListPatientMedicineWebsite)
 }
 
 func ListMedicine(c *gin.Context) {
@@ -65,6 +68,15 @@ func AddMedicine(c *gin.Context) {
 
 	if body.Name == "" || body.Stock == 0 {
 		medicineresponse.AddMedicineFailedResponse(c, "Name or Stock Can't be Empty", body, "Add Medicine", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
+		return
+	}
+
+	var medicinedata models.Medicine
+
+	result := initializers.DB.Where("user_id = ? AND Name = ?", user, body.Name).First(&medicinedata)
+
+	if result.RowsAffected > 0 {
+		c.JSON(400, "Gabisa")
 		return
 	}
 
@@ -245,4 +257,78 @@ func DeleteMedicineSchedule(c *gin.Context) {
 	}
 
 	medicineresponse.DeleteMedicineScheduleSuccessResponse(c, "Success to Delete Medicine Schedule", medicine_schedule_data, "http://localhost:3000/api/user/medicine/schedule/:schedule_id", http.StatusOK)
+}
+
+func ListMedicineWebsite(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	var medicines []models.Medicine
+	result := initializers.DB.Find(&medicines)
+	if result.Error != nil {
+		medicineresponse.GetMedicineWebsiteFailedResponse(c, "Failed to Get Medicine List Website", "", http.StatusInternalServerError)
+	}
+
+	var medicineData []struct {
+		Medicine_Name string
+		Total_Patient int
+	}
+	medicineCount := make(map[string]int)
+
+	for _, medicine := range medicines {
+		medicineCount[medicine.Name]++
+	}
+
+	for name, count := range medicineCount {
+		medicineData = append(medicineData, struct {
+			Medicine_Name string
+			Total_Patient int
+		}{
+			Medicine_Name: name,
+			Total_Patient: count,
+		})
+	}
+
+	medicineresponse.GetMedicineWebsiteSuccessResponse(c, "Success to Get Medicine List Website", medicineData, http.StatusOK)
+}
+
+func ListPatientMedicineWebsite(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	var user []models.User
+	var userData []models.MedicineDataWebsite
+
+	result := initializers.DB.Where("is_active = ?", true).Find(&user)
+
+	if result.Error != nil {
+		medicineresponse.GetPatientMedicineWebsiteFailedResponse(c, "Failed to Get Patient Medicine List Website", "", http.StatusInternalServerError)
+		return
+	}
+
+	for _, item := range user {
+		var medicine []models.Medicine
+		var medicineData []models.MedicineData
+		initializers.DB.Where("user_id = ?", item.ID).Find(&medicine)
+		for _, item := range medicine {
+			medicineData = append(medicineData, models.MedicineData{
+				ID:    item.ID,
+				Name:  item.Name,
+				Stock: item.Stock,
+			})
+		}
+		if len(medicine) > 0 {
+			userData = append(userData, models.MedicineDataWebsite{
+				ID:           item.ID,
+				Name:         item.Name,
+				Email:        item.Email,
+				PhoneNumber:  item.PhoneNumber,
+				ListMedicine: medicineData,
+			})
+		}
+	}
+
+	medicineresponse.GetPatientMedicineWebsiteSuccessResponse(c, "Success to Get Patient Medicine List Website", userData, http.StatusOK)
 }
