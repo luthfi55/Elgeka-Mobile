@@ -14,6 +14,8 @@ import (
 func DoctorChartController(r *gin.Engine) {
 	r.GET("api/doctor/patient/data/gender", middleware.RequireAuth, DataByGender)
 	r.GET("api/doctor/patient/data/age", middleware.RequireAuth, DataByAge)
+	r.GET("api/doctor/patient/data/diagnosis_date", middleware.RequireAuth, DataByDiagnosisDate)
+	r.GET("api/doctor/patient/data/treatment", middleware.RequireAuth, DataByTreatment)
 }
 
 func DataByGender(c *gin.Context) {
@@ -131,4 +133,103 @@ func calculateAge(birthdate, currentDate time.Time) int {
 	}
 
 	return years
+}
+
+func DataByDiagnosisDate(c *gin.Context) {
+	doctor, _ := c.Get("doctor")
+
+	if !DoctorCheck(c, doctor) {
+		return
+	}
+
+	var users []models.User
+	result := initializers.DB.Find(&users)
+	if result.Error != nil {
+		doctorresponse.DiagnosisChartFailedResponse(c, "Database Error", "", http.StatusInternalServerError)
+		return
+	}
+
+	var underOneYear int
+	var underThreeYear int
+	var underTenYear int
+	var overTenYear int
+	for _, user := range users {
+		diagnosisDate, err := time.Parse("2006-01-02", user.DiagnosisDate)
+		if err != nil {
+			continue
+		}
+		timeDiagnosis := calculateAge(diagnosisDate, time.Now())
+		if timeDiagnosis < 1 {
+			underOneYear++
+		} else if timeDiagnosis >= 1 && timeDiagnosis < 3 {
+			underThreeYear++
+		} else if timeDiagnosis >= 3 && timeDiagnosis < 10 {
+			underTenYear++
+		} else if timeDiagnosis >= 10 {
+			overTenYear++
+		}
+	}
+
+	var Data struct {
+		UnderOneYear          int
+		UnderThreeYear        int
+		UnderTenYear          int
+		OverTenYear           int
+		TotalPatient          int
+		UnderOneYearPercent   float32
+		UnderThreeYearPercent float32
+		UnderTenYearPercent   float32
+		OverTenYearPercent    float32
+	}
+
+	Data.UnderOneYear = underOneYear
+	Data.UnderThreeYear = underThreeYear
+	Data.UnderTenYear = underTenYear
+	Data.OverTenYear = overTenYear
+	Data.TotalPatient = underOneYear + underThreeYear + underTenYear + overTenYear
+	Data.UnderOneYearPercent = float32(underOneYear) / float32(Data.TotalPatient) * 100
+	Data.UnderThreeYearPercent = float32(underThreeYear) / float32(Data.TotalPatient) * 100
+	Data.UnderTenYearPercent = float32(underTenYear) / float32(Data.TotalPatient) * 100
+	Data.OverTenYearPercent = float32(overTenYear) / float32(Data.TotalPatient) * 100
+
+	doctorresponse.DiagnosisChartSuccessResponse(c, "Succes to Get Patient Data by Age", Data, http.StatusOK)
+
+}
+
+func DataByTreatment(c *gin.Context) {
+	doctor, _ := c.Get("doctor")
+	if !DoctorCheck(c, doctor) {
+		return
+	}
+
+	var treatment []models.UserTreatment
+	initializers.DB.Find(&treatment)
+	totalPatient := len(treatment)
+
+	treatments := []string{
+		"Imatinib (Glivec)", "Generic Imatinib", "Nilotinib (Tasigna)", "Generic Nilotinib",
+		"Dasatinib (Sprycel)", "Generic Dasatinib", "Bosutinib (Bosulif)", "Ponatinib (Iclusig)",
+		"Radotinib (Supect)", "Hydroxyurea", "Interferon alfa", "Interferon beta",
+		"Bone marrow transplantation", "Radotinib", "Olveramtinib",
+	}
+
+	data := make(map[string]int)
+	for _, t := range treatments {
+		var userTreatments []models.UserTreatment
+		result := initializers.DB.Where("first_treatment = ? OR second_treatment = ?", t, t).Find(&userTreatments)
+		if result.Error != nil {
+			doctorresponse.TreatmentChartFailedResponse(c, "Database Error", "", http.StatusInternalServerError)
+			return
+		}
+		data[t] = len(userTreatments)
+	}
+
+	response := make(map[string]interface{})
+	for t, count := range data {
+		response[t] = count
+		response[t+" Percent"] = float32(count) / float32(totalPatient) / 2 * 100
+	}
+	response["TotalPatient"] = totalPatient
+
+	doctorresponse.TreatmentChartSuccessResponse(c, "Success to Get Patient Data by Treatment", response, http.StatusOK)
 }

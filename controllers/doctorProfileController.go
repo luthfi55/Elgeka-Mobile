@@ -15,6 +15,8 @@ import (
 )
 
 func DoctorProfileController(r *gin.Engine) {
+	r.GET("api/doctor/profile", middleware.RequireAuth, DoctorProfile)
+
 	r.GET("api/doctor/patient_request", middleware.RequireAuth, DoctorPatientRequest)
 	r.PUT("api/doctor/patient_request/accept/:acceptance_id", middleware.RequireAuth, DoctorPatientAccept)
 	r.PUT("api/doctor/patient_request/reject/:acceptance_id", middleware.RequireAuth, DoctorPatientReject)
@@ -34,6 +36,32 @@ func DoctorCheck(c *gin.Context, doctor any) bool {
 		return false
 	}
 	return true
+}
+
+func DoctorProfile(c *gin.Context) {
+	doctor, _ := c.Get("doctor")
+
+	if !DoctorCheck(c, doctor) {
+		return
+	}
+
+	var doctor_account models.Doctor
+	if err := initializers.DB.First(&doctor_account, "id = ?", doctor).Error; err != nil {
+		doctorresponse.CheckDoctorAccountFailedResponse(c)
+	}
+
+	var doctor_data models.DoctorProfile
+
+	doctor_data.ID = doctor_account.ID
+	doctor_data.Name = doctor_account.Name
+	doctor_data.PhoneNumber = doctor_account.PhoneNumber
+	doctor_data.Email = doctor_account.Email
+	doctor_data.Gender = doctor_account.Gender
+	doctor_data.HospitalName = doctor_account.HospitalName
+	doctor_data.PolyName = doctor_account.PolyName
+
+	c.JSON(200, doctor_data)
+
 }
 
 func DoctorPatientRequest(c *gin.Context) {

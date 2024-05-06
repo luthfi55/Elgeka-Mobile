@@ -22,8 +22,8 @@ func MedicineController(r *gin.Engine) {
 	r.PUT("api/user/medicine/schedule/:schedule_id", middleware.RequireAuth, UpdateMedicineSchedule)
 	r.DELETE("api/user/medicine/schedule/:schedule_id", middleware.RequireAuth, DeleteMedicineSchedule)
 
-	r.GET("api/user/medicine/list/website", middleware.RequireAuth, ListMedicineWebsite)
-	r.GET("api/user/medicine/list_patient/website", middleware.RequireAuth, ListPatientMedicineWebsite)
+	r.GET("api/user/medicine/list/website", ListMedicineWebsite)
+	r.GET("api/user/medicine/list_patient/website", ListPatientMedicineWebsite)
 }
 
 func ListMedicine(c *gin.Context) {
@@ -278,6 +278,11 @@ func ListMedicineWebsite(c *gin.Context) {
 		return
 	}
 
+	var totalPatientHaveMedicine []models.Medicine
+	initializers.DB.Distinct("user_id").Find(&totalPatientHaveMedicine)
+
+	numTotalPatientHaveMedicine := len(totalPatientHaveMedicine)
+
 	var medicines []models.Medicine
 	result := initializers.DB.Find(&medicines)
 	if result.Error != nil {
@@ -304,7 +309,15 @@ func ListMedicineWebsite(c *gin.Context) {
 		})
 	}
 
-	medicineresponse.GetMedicineWebsiteSuccessResponse(c, "Success to Get Medicine List Website", medicineData, http.StatusOK)
+	var Data struct {
+		Total_Patient_Have_Medicine int
+		Medicine                    interface{}
+	}
+
+	Data.Total_Patient_Have_Medicine = numTotalPatientHaveMedicine
+	Data.Medicine = medicineData
+
+	medicineresponse.GetMedicineWebsiteSuccessResponse(c, "Success to Get Medicine List Website", Data, http.StatusOK)
 }
 
 func ListPatientMedicineWebsite(c *gin.Context) {
