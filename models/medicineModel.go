@@ -9,6 +9,7 @@ type Medicine struct {
 	ID               uuid.UUID          `gorm:"type:uuid;primaryKey;"`
 	UserID           uuid.UUID          `gorm:"type:uuid;foreignKey;"`
 	Name             string             `json:"Name"`
+	Dosage           string             `json:"Dosage"`
 	Stock            int                `json:"Stock"`
 	MedicineSchedule []MedicineSchedule `gorm:"foreignKey:MedicineID"`
 	gorm.Model
@@ -24,9 +25,10 @@ type MedicineSchedule struct {
 }
 
 type MedicineData struct {
-	ID    uuid.UUID `json:"ID"`
-	Name  string    `json:"Name"`
-	Stock int       `json:"Stock"`
+	ID     uuid.UUID `json:"ID"`
+	Name   string    `json:"Name"`
+	Dosage string    `json:"Dosage"`
+	Stock  int       `json:"Stock"`
 }
 
 type MedicineDataWebsite struct {

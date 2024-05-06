@@ -72,8 +72,9 @@ func TestAddMedicine_Success(t *testing.T) {
 	router.POST("/api/user/medicine", middleware.RequireAuth, controllers.AddMedicine)
 
 	reqBody := models.Medicine{
-		Name:  "Sanmol",
-		Stock: 10,
+		Name:   "Sanmol",
+		Dosage: "200mg",
+		Stock:  10,
 	}
 	reqJSON, _ := json.Marshal(reqBody)
 
@@ -111,8 +112,9 @@ func TestAddMedicine_Failed(t *testing.T) {
 	router.POST("/api/user/medicine", middleware.RequireAuth, controllers.AddMedicine)
 
 	reqBody := models.Medicine{
-		Name:  "",
-		Stock: 10,
+		Name:   "",
+		Dosage: "200mg",
+		Stock:  10,
 	}
 	reqJSON, _ := json.Marshal(reqBody)
 
@@ -204,8 +206,9 @@ func TestUpdateMedicine_Success(t *testing.T) {
 	router.PUT("api/user/medicine/:medicine_id", middleware.RequireAuth, controllers.UpdateMedicine)
 
 	reqBody := models.Medicine{
-		Name:  "Paracetamol",
-		Stock: 100,
+		Name:   "Paracetamol",
+		Dosage: "300mg",
+		Stock:  100,
 	}
 	reqJSON, _ := json.Marshal(reqBody)
 
@@ -244,8 +247,9 @@ func TestUpdateMedicine_Failed(t *testing.T) {
 	router.PUT("api/user/medicine/:medicine_id", middleware.RequireAuth, controllers.UpdateMedicine)
 
 	reqBody := models.Medicine{
-		Name:  "",
-		Stock: 100,
+		Name:   "",
+		Dosage: "100mg",
+		Stock:  100,
 	}
 	reqJSON, _ := json.Marshal(reqBody)
 

@@ -8,9 +8,10 @@ import (
 
 func AddMedicineFailedResponse(c *gin.Context, message string, data models.Medicine, link_name string, link string, status int) {
 	datas := models.MedicineData{
-		ID:    data.ID,
-		Name:  data.Name,
-		Stock: data.Stock,
+		ID:     data.ID,
+		Name:   data.Name,
+		Dosage: data.Dosage,
+		Stock:  data.Stock,
 	}
 
 	linkItem := models.LinkItem{
@@ -29,9 +30,10 @@ func AddMedicineFailedResponse(c *gin.Context, message string, data models.Medic
 
 func AddMedicineSuccessResponse(c *gin.Context, message string, data models.Medicine, link string, status int) {
 	datas := models.MedicineData{
-		ID:    data.ID,
-		Name:  data.Name,
-		Stock: data.Stock,
+		ID:     data.ID,
+		Name:   data.Name,
+		Dosage: data.Dosage,
+		Stock:  data.Stock,
 	}
 
 	linkItem := models.LinkItem{
@@ -80,9 +82,10 @@ func GetMedicineSuccessResponse(c *gin.Context, message string, data interface{}
 
 func UpdateMedicineFailedResponse(c *gin.Context, message string, data models.Medicine, link_name string, link string, status int) {
 	datas := models.MedicineData{
-		ID:    data.ID,
-		Name:  data.Name,
-		Stock: data.Stock,
+		ID:     data.ID,
+		Name:   data.Name,
+		Dosage: data.Dosage,
+		Stock:  data.Stock,
 	}
 
 	linkItem := models.LinkItem{
@@ -101,9 +104,10 @@ func UpdateMedicineFailedResponse(c *gin.Context, message string, data models.Me
 
 func UpdateMedicineSuccessResponse(c *gin.Context, message string, data models.Medicine, link string, status int) {
 	datas := models.MedicineData{
-		ID:    data.ID,
-		Name:  data.Name,
-		Stock: data.Stock,
+		ID:     data.ID,
+		Name:   data.Name,
+		Dosage: data.Dosage,
+		Stock:  data.Stock,
 	}
 
 	linkItem := models.LinkItem{
@@ -122,9 +126,10 @@ func UpdateMedicineSuccessResponse(c *gin.Context, message string, data models.M
 
 func DeleteMedicineFailedResponse(c *gin.Context, message string, data models.Medicine, link_name string, link string, status int) {
 	datas := models.MedicineData{
-		ID:    data.ID,
-		Name:  data.Name,
-		Stock: data.Stock,
+		ID:     data.ID,
+		Name:   data.Name,
+		Dosage: data.Dosage,
+		Stock:  data.Stock,
 	}
 
 	linkItem := models.LinkItem{
@@ -143,9 +148,10 @@ func DeleteMedicineFailedResponse(c *gin.Context, message string, data models.Me
 
 func DeleteMedicineSuccessResponse(c *gin.Context, message string, data models.Medicine, link string, status int) {
 	datas := models.MedicineData{
-		ID:    data.ID,
-		Name:  data.Name,
-		Stock: data.Stock,
+		ID:     data.ID,
+		Name:   data.Name,
+		Dosage: data.Dosage,
+		Stock:  data.Stock,
 	}
 
 	linkItem := models.LinkItem{

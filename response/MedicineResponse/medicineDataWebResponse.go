@@ -38,8 +38,8 @@ func GetMedicineWebsiteSuccessResponse(c *gin.Context, message string, data inte
 
 func GetPatientMedicineWebsiteFailedResponse(c *gin.Context, message string, data string, status int) {
 	linkItem := models.LinkItem{
-		Name: "List Medicinte Web",
-		Link: "http://localhost:3000/api/user/medicine/list/website",
+		Name: "List Patient Medicine Webb",
+		Link: "http://localhost:3000/api/user/medicine/list_patient/website",
 	}
 
 	response := models.GetPatientMedicineWebsiteFailedResponse{
@@ -53,8 +53,8 @@ func GetPatientMedicineWebsiteFailedResponse(c *gin.Context, message string, dat
 
 func GetPatientMedicineWebsiteSuccessResponse(c *gin.Context, message string, data interface{}, status int) {
 	linkItem := models.LinkItem{
-		Name: "List Medicine Web",
-		Link: "http://localhost:3000/api/user/medicine/list/website",
+		Name: "List Patient Medicine Web",
+		Link: "http://localhost:3000/api/user/medicine/list_patient/website",
 	}
 
 	response := models.GetPatientMedicineWebsiteSuccessResponse{

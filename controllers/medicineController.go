@@ -31,9 +31,10 @@ func ListMedicine(c *gin.Context) {
 
 	var medicine []models.Medicine
 	var medicine_data []struct {
-		ID    uuid.UUID
-		Name  string
-		Stock int
+		ID     uuid.UUID
+		Name   string
+		Dosage string
+		Stock  int
 	}
 
 	if err := initializers.DB.Where("user_id = ?", user).Find(&medicine).Error; err != nil {
@@ -43,13 +44,15 @@ func ListMedicine(c *gin.Context) {
 
 	for _, item := range medicine {
 		medicine_data = append(medicine_data, struct {
-			ID    uuid.UUID
-			Name  string
-			Stock int
+			ID     uuid.UUID
+			Name   string
+			Dosage string
+			Stock  int
 		}{
-			ID:    item.ID,
-			Name:  item.Name,
-			Stock: item.Stock,
+			ID:     item.ID,
+			Name:   item.Name,
+			Dosage: item.Dosage,
+			Stock:  item.Stock,
 		})
 	}
 
@@ -71,12 +74,17 @@ func AddMedicine(c *gin.Context) {
 		return
 	}
 
+	if body.Dosage == "" {
+		medicineresponse.AddMedicineFailedResponse(c, "Dosage Can't be Empty", body, "ADd Medicine", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
+		return
+	}
+
 	var medicinedata models.Medicine
 
 	result := initializers.DB.Where("user_id = ? AND Name = ?", user, body.Name).First(&medicinedata)
 
 	if result.RowsAffected > 0 {
-		c.JSON(400, "Gabisa")
+		medicineresponse.AddMedicineFailedResponse(c, "Can't add Medicine, Medicine has registered", body, "Add Medicine", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
 		return
 	}
 
@@ -108,6 +116,11 @@ func UpdateMedicine(c *gin.Context) {
 		return
 	}
 
+	if body.Dosage == "" {
+		medicineresponse.UpdateMedicineFailedResponse(c, "Dosage Can't be Empty", body, "Update Medicine", "http://localhost:3000/api/medicine/update/"+medicine_id, http.StatusBadRequest)
+		return
+	}
+
 	var medicine models.Medicine
 	if err := initializers.DB.First(&medicine, "id = ? AND user_id = ?", medicine_id, user).Error; err != nil {
 		medicineresponse.UpdateMedicineFailedResponse(c, "Medicine Not Found", body, "Update Medicine", "http://localhost:3000/api/medicine/update/"+medicine_id, http.StatusNotFound)
@@ -115,6 +128,7 @@ func UpdateMedicine(c *gin.Context) {
 	}
 
 	medicine.Name = body.Name
+	medicine.Dosage = body.Dosage
 	medicine.Stock = body.Stock
 
 	if err := initializers.DB.Save(&medicine).Error; err != nil {
