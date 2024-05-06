@@ -192,7 +192,7 @@ func DataByDiagnosisDate(c *gin.Context) {
 	Data.UnderTenYearPercent = float32(underTenYear) / float32(Data.TotalPatient) * 100
 	Data.OverTenYearPercent = float32(overTenYear) / float32(Data.TotalPatient) * 100
 
-	doctorresponse.DiagnosisChartSuccessResponse(c, "Succes to Get Patient Data by Age", Data, http.StatusOK)
+	doctorresponse.DiagnosisChartSuccessResponse(c, "Succes to Get Patient Data by Diagnonsis Date", Data, http.StatusOK)
 
 }
 
