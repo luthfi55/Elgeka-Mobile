@@ -121,8 +121,8 @@ func RespiratorySymptom(c *gin.Context, body models.SymptomAnswer) {
 	answers := strings.Split(body.Answer, ",")
 	length := len(answers)
 
-	if len(answers) != 7 {
-		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 7 for Respiratory Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+	if len(answers) != 6 {
+		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 6 for Respiratory Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
 		return
 	}
 
@@ -139,8 +139,8 @@ func SkinSymptom(c *gin.Context, body models.SymptomAnswer) {
 	answers := strings.Split(body.Answer, ",")
 	length := len(answers)
 
-	if len(answers) != 21 {
-		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 21 for Skin Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+	if len(answers) != 20 {
+		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 20 for Skin Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
 		return
 	}
 

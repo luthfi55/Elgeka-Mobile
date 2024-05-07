@@ -50,6 +50,7 @@ func HealthStatusController(r *gin.Engine) {
 	r.GET("api/user/health_status/blood_pressure", middleware.RequireAuth, GetBloodPressure)
 	r.PUT("api/user/health_status/blood_pressure/:blood_pressure_id", middleware.RequireAuth, UpdateBloodPressure)
 	r.DELETE("api/user/health_status/blood_pressure/:blood_pressure_id", middleware.RequireAuth, DeleteBloodPressure)
+
 }
 
 func CreateBcrAbl(c *gin.Context) {

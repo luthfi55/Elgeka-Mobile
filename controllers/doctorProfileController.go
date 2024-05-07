@@ -16,6 +16,7 @@ import (
 
 func DoctorProfileController(r *gin.Engine) {
 	r.GET("api/doctor/profile", middleware.RequireAuth, DoctorProfile)
+	r.PUT("api/doctor/profile/edit", middleware.RequireAuth, EditDoctorProfile)
 
 	r.GET("api/doctor/patient_request", middleware.RequireAuth, DoctorPatientRequest)
 	r.PUT("api/doctor/patient_request/accept/:acceptance_id", middleware.RequireAuth, DoctorPatientAccept)
@@ -60,8 +61,69 @@ func DoctorProfile(c *gin.Context) {
 	doctor_data.HospitalName = doctor_account.HospitalName
 	doctor_data.PolyName = doctor_account.PolyName
 
-	c.JSON(200, doctor_data)
+	doctorresponse.GetDoctorProfileSuccessResponse(c, "Success to Get Doctor Profile Data", doctor_data, http.StatusOK)
+}
 
+func EditDoctorProfile(c *gin.Context) {
+	doctor, _ := c.Get("doctor")
+
+	if !DoctorCheck(c, doctor) {
+		return
+	}
+
+	var body models.Doctor
+
+	if c.Bind(&body) != nil {
+		doctorresponse.UpdateDoctorProfileFailedResponse(c, "Failed to read body", "", http.StatusBadRequest)
+		return
+	}
+
+	var doctor_account models.Doctor
+	if err := initializers.DB.First(&doctor_account, "id = ?", doctor).Error; err != nil {
+		doctorresponse.CheckDoctorAccountFailedResponse(c)
+	}
+
+	if body.Name != "" {
+		doctor_account.Name = body.Name
+	}
+
+	if body.PhoneNumber != "" {
+		doctor_account.PhoneNumber = body.PhoneNumber
+	}
+
+	if body.Gender != "" {
+		doctor_account.Gender = body.Gender
+	}
+
+	if body.PolyName != "" {
+		doctor_account.PolyName = body.PolyName
+	}
+
+	if body.HospitalName != "" {
+		doctor_account.HospitalName = body.HospitalName
+	}
+
+	if body.Name == "" && body.PhoneNumber == "" && body.Gender == "" && body.PolyName == "" && body.HospitalName == "" {
+		doctorresponse.UpdateDoctorProfileFailedResponse(c, "Body Can't Null", "", http.StatusBadRequest)
+		return
+	}
+
+	if err := initializers.DB.Save(&doctor_account).Error; err != nil {
+		doctorresponse.UpdateDoctorProfileFailedResponse(c, "Failed Update Doctor", "", http.StatusBadRequest)
+		return
+	}
+
+	var doctor_data models.DoctorProfile
+
+	doctor_data.ID = doctor_account.ID
+	doctor_data.Name = doctor_account.Name
+	doctor_data.PhoneNumber = doctor_account.PhoneNumber
+	doctor_data.Email = doctor_account.Email
+	doctor_data.Gender = doctor_account.Gender
+	doctor_data.HospitalName = doctor_account.HospitalName
+	doctor_data.PolyName = doctor_account.PolyName
+
+	doctorresponse.UpdateDoctorProfileSuccessResponse(c, "Success to Update Doctor Profile Data", doctor_data, http.StatusOK)
 }
 
 func DoctorPatientRequest(c *gin.Context) {
