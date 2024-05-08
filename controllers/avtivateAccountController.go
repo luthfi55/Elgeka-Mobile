@@ -468,7 +468,7 @@ func ListInactiveDoctor(c *gin.Context) {
 	}
 
 	var doctors []models.Doctor
-	var response []models.DoctorData
+	var response []models.DoctorProfile
 	result := initializers.DB.Where("is_active = ?", false).Where("email_active = ?", true).Find(&doctors)
 
 	if result.Error != nil {
@@ -478,9 +478,14 @@ func ListInactiveDoctor(c *gin.Context) {
 	}
 
 	for _, doctor := range doctors {
-		response = append(response, models.DoctorData{
-			ID:   doctor.ID,
-			Name: doctor.Name,
+		response = append(response, models.DoctorProfile{
+			ID:           doctor.ID,
+			Name:         doctor.Name,
+			PhoneNumber:  doctor.PhoneNumber,
+			Email:        doctor.Email,
+			Gender:       doctor.Gender,
+			PolyName:     doctor.PolyName,
+			HospitalName: doctor.HospitalName,
 		})
 	}
 
@@ -490,7 +495,7 @@ func ListInactiveDoctor(c *gin.Context) {
 		return
 	}
 
-	activationLink := "http://localhost:3000/api/user/activate/:user_id"
+	activationLink := "http://localhost:3000/api/user/activate/:user_idd"
 	doctorresponse.GetInactiveDoctorSuccessResponse(c, "Get Data Successfully", response, activationLink, http.StatusOK)
 }
 

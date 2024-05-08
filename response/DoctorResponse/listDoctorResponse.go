@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetInactiveDoctorFailedResponse(c *gin.Context, message string, data []models.DoctorData, link string, status int) {
+func GetInactiveDoctorFailedResponse(c *gin.Context, message string, data []models.DoctorProfile, link string, status int) {
 	linkItem := models.LinkItem{
 		Name: "Activate Doctor",
 		Link: link,
@@ -20,7 +20,7 @@ func GetInactiveDoctorFailedResponse(c *gin.Context, message string, data []mode
 	c.JSON(status, response)
 }
 
-func GetInactiveDoctorSuccessResponse(c *gin.Context, message string, data []models.DoctorData, link string, status int) {
+func GetInactiveDoctorSuccessResponse(c *gin.Context, message string, data []models.DoctorProfile, link string, status int) {
 	linkItem := models.LinkItem{
 		Name: "Activate Doctor",
 		Link: link,

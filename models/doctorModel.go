@@ -48,9 +48,9 @@ type DoctorPatientData struct {
 }
 
 type GetListDoctorSuccessResponse struct {
-	Message string       `json:"Message"`
-	Data    []DoctorData `json:"Data"`
-	Link    []LinkItem   `json:"Link"`
+	Message string          `json:"Message"`
+	Data    []DoctorProfile `json:"Data"`
+	Link    []LinkItem      `json:"Link"`
 }
 
 type RegisterDoctorSuccessResponse struct {
