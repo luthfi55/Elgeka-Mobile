@@ -5,6 +5,29 @@ import (
 	"gorm.io/gorm"
 )
 
+type HealthStatusData struct {
+	ID          uuid.UUID `json:"ID"`
+	UserID      uuid.UUID `json:"UserID"`
+	Name        string    `json:"Name"`
+	Email       string    `json:"Email"`
+	PhoneNumber string    `json:"PhoneNumber"`
+	Data        float32   `json:"Data"`
+	Notes       string    `json:"Notes"`
+	Date        string    `json:"Date"`
+}
+
+type HealthStatusDataBloodPressure struct {
+	ID          uuid.UUID `json:"ID"`
+	UserID      uuid.UUID `json:"UserID"`
+	Name        string    `json:"Name"`
+	Email       string    `json:"Email"`
+	PhoneNumber string    `json:"PhoneNumber"`
+	DataSys     float32   `json:"DataSys"`
+	DataDia     float32   `json:"DataDia"`
+	Notes       string    `json:"Notes"`
+	Date        string    `json:"Date"`
+}
+
 type BCR_ABL struct {
 	ID     uuid.UUID `gorm:"type:uuid;primaryKey;"`
 	UserID uuid.UUID `gorm:"type:uuid;foreignKey;"`

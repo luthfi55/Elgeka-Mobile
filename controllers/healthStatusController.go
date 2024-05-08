@@ -51,6 +51,12 @@ func HealthStatusController(r *gin.Engine) {
 	r.PUT("api/user/health_status/blood_pressure/:blood_pressure_id", middleware.RequireAuth, UpdateBloodPressure)
 	r.DELETE("api/user/health_status/blood_pressure/:blood_pressure_id", middleware.RequireAuth, DeleteBloodPressure)
 
+	r.GET("api/user/health_status/list_website/bcr_abl", GetBcrAblPatient)
+	r.GET("api/user/health_status/list_website/leukocytes", GetLeukocytesPatient)
+	r.GET("api/user/health_status/list_website/potential_hydrogen", GetPotentialHydrogenPatient)
+	r.GET("api/user/health_status/list_website/hemoglobin", GetHemoglobinPatient)
+	r.GET("api/user/health_status/list_website/heart_rate", GetHeartRatePatient)
+	r.GET("api/user/health_status/list_website/blood_pressure", GetBloodPressurePatient)
 }
 
 func CreateBcrAbl(c *gin.Context) {
@@ -1063,4 +1069,257 @@ func DeleteBloodPressure(c *gin.Context) {
 	bloodPressureData.Date = bloodPressure.Date
 
 	healthstatusresponse.BloodPressureSuccessResponse(c, "Success Delete Data", bloodPressureData, "http://localhost:3000/api/user/health_status/blood_pressure", http.StatusOK)
+}
+
+func GetBcrAblPatient(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	var bcr_abl_data []models.BCR_ABL
+	var response []models.HealthStatusData
+
+	query := `
+        SELECT ba.*
+        FROM bcr_abls ba
+        INNER JOIN (
+            SELECT user_id, MAX(created_at) AS max_created_at
+            FROM bcr_abls
+            GROUP BY user_id
+        ) subquery ON ba.user_id = subquery.user_id AND ba.created_at = subquery.max_created_at
+        ORDER BY ba.created_at DESC
+    `
+
+	result := initializers.DB.Raw(query).Scan(&bcr_abl_data)
+	if result.Error != nil {
+		healthstatusresponse.HealthStatusWebsiteFailedResponse(c, "Failed to Get BCR ABL Data", "", http.StatusInternalServerError)
+	}
+
+	for _, item := range bcr_abl_data {
+		var user models.User
+		initializers.DB.First(&user, "ID = ?", item.UserID)
+		response = append(response, models.HealthStatusData{
+			ID:          item.ID,
+			UserID:      item.UserID,
+			Name:        user.Name,
+			Email:       user.Email,
+			PhoneNumber: user.PhoneNumber,
+			Data:        item.Data,
+			Notes:       item.Notes,
+			Date:        item.Date,
+		})
+	}
+
+	healthstatusresponse.HealthStatusWebsiteSuccessResponse(c, "Success to Get BCR ABL Data", response, http.StatusOK)
+}
+
+func GetLeukocytesPatient(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	var leukocytes_data []models.Leukocytes
+	var response []models.HealthStatusData
+
+	query := `
+        SELECT ba.*
+        FROM leukocytes ba
+        INNER JOIN (
+            SELECT user_id, MAX(created_at) AS max_created_at
+            FROM leukocytes
+            GROUP BY user_id
+        ) subquery ON ba.user_id = subquery.user_id AND ba.created_at = subquery.max_created_at
+        ORDER BY ba.created_at DESC
+    `
+
+	result := initializers.DB.Raw(query).Scan(&leukocytes_data)
+	if result.Error != nil {
+		healthstatusresponse.HealthStatusWebsiteFailedResponse(c, "Failed to Get Leukocytes Data", "", http.StatusInternalServerError)
+	}
+
+	for _, item := range leukocytes_data {
+		var user models.User
+		initializers.DB.First(&user, "ID = ?", item.UserID)
+		response = append(response, models.HealthStatusData{
+			ID:          item.ID,
+			UserID:      item.UserID,
+			Name:        user.Name,
+			Email:       user.Email,
+			PhoneNumber: user.PhoneNumber,
+			Data:        item.Data,
+			Notes:       item.Notes,
+			Date:        item.Date,
+		})
+	}
+
+	healthstatusresponse.HealthStatusWebsiteSuccessResponse(c, "Success to Get Leukocytes Data", response, http.StatusOK)
+}
+
+func GetPotentialHydrogenPatient(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	var potential_hydrogen_data []models.PotentialHydrogen
+	var response []models.HealthStatusData
+
+	query := `
+        SELECT ba.*
+        FROM potential_hydrogens ba
+        INNER JOIN (
+            SELECT user_id, MAX(created_at) AS max_created_at
+            FROM potential_hydrogens
+            GROUP BY user_id
+        ) subquery ON ba.user_id = subquery.user_id AND ba.created_at = subquery.max_created_at
+        ORDER BY ba.created_at DESC
+    `
+
+	result := initializers.DB.Raw(query).Scan(&potential_hydrogen_data)
+	if result.Error != nil {
+		healthstatusresponse.HealthStatusWebsiteFailedResponse(c, "Failed to Get Potential Hydrogen Data", "", http.StatusInternalServerError)
+	}
+
+	for _, item := range potential_hydrogen_data {
+		var user models.User
+		initializers.DB.First(&user, "ID = ?", item.UserID)
+		response = append(response, models.HealthStatusData{
+			ID:          item.ID,
+			UserID:      item.UserID,
+			Name:        user.Name,
+			Email:       user.Email,
+			PhoneNumber: user.PhoneNumber,
+			Data:        item.Data,
+			Notes:       item.Notes,
+			Date:        item.Date,
+		})
+	}
+
+	healthstatusresponse.HealthStatusWebsiteSuccessResponse(c, "Success to Get Potential Hydrogen Data", response, http.StatusOK)
+}
+
+func GetHemoglobinPatient(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	var hemoglobin_data []models.Hemoglobin
+	var response []models.HealthStatusData
+
+	query := `
+        SELECT ba.*
+        FROM hemoglobins ba
+        INNER JOIN (
+            SELECT user_id, MAX(created_at) AS max_created_at
+            FROM hemoglobins
+            GROUP BY user_id
+        ) subquery ON ba.user_id = subquery.user_id AND ba.created_at = subquery.max_created_at
+        ORDER BY ba.created_at DESC
+    `
+
+	result := initializers.DB.Raw(query).Scan(&hemoglobin_data)
+	if result.Error != nil {
+		healthstatusresponse.HealthStatusWebsiteFailedResponse(c, "Failed to Get Hemoglobin Data", "", http.StatusInternalServerError)
+	}
+
+	for _, item := range hemoglobin_data {
+		var user models.User
+		initializers.DB.First(&user, "ID = ?", item.UserID)
+		response = append(response, models.HealthStatusData{
+			ID:          item.ID,
+			UserID:      item.UserID,
+			Name:        user.Name,
+			Email:       user.Email,
+			PhoneNumber: user.PhoneNumber,
+			Data:        item.Data,
+			Notes:       item.Notes,
+			Date:        item.Date,
+		})
+	}
+
+	healthstatusresponse.HealthStatusWebsiteSuccessResponse(c, "Success to Get Hemoglobin Data", response, http.StatusOK)
+}
+
+func GetHeartRatePatient(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	var heart_rate_data []models.HeartRate
+	var response []models.HealthStatusData
+
+	query := `
+        SELECT ba.*
+        FROM heart_rates ba
+        INNER JOIN (
+            SELECT user_id, MAX(created_at) AS max_created_at
+            FROM heart_rates
+            GROUP BY user_id
+        ) subquery ON ba.user_id = subquery.user_id AND ba.created_at = subquery.max_created_at
+        ORDER BY ba.created_at DESC
+    `
+
+	result := initializers.DB.Raw(query).Scan(&heart_rate_data)
+	if result.Error != nil {
+		healthstatusresponse.HealthStatusWebsiteFailedResponse(c, "Failed to Get Heart Rate Data", "", http.StatusInternalServerError)
+	}
+
+	for _, item := range heart_rate_data {
+		var user models.User
+		initializers.DB.First(&user, "ID = ?", item.UserID)
+		response = append(response, models.HealthStatusData{
+			ID:          item.ID,
+			UserID:      item.UserID,
+			Name:        user.Name,
+			Email:       user.Email,
+			PhoneNumber: user.PhoneNumber,
+			Data:        item.Data,
+			Notes:       item.Notes,
+			Date:        item.Date,
+		})
+	}
+
+	healthstatusresponse.HealthStatusWebsiteSuccessResponse(c, "Success to Get Heart Rate Data", response, http.StatusOK)
+}
+
+func GetBloodPressurePatient(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	var blood_pressure_data []models.BloodPressure
+	var response []models.HealthStatusDataBloodPressure
+
+	query := `
+        SELECT ba.*
+        FROM blood_pressures ba
+        INNER JOIN (
+            SELECT user_id, MAX(created_at) AS max_created_at
+            FROM blood_pressures
+            GROUP BY user_id
+        ) subquery ON ba.user_id = subquery.user_id AND ba.created_at = subquery.max_created_at
+        ORDER BY ba.created_at DESC
+    `
+
+	result := initializers.DB.Raw(query).Scan(&blood_pressure_data)
+	if result.Error != nil {
+		healthstatusresponse.HealthStatusWebsiteFailedResponse(c, "Failed to Get Blood Pressure Data", "", http.StatusInternalServerError)
+	}
+
+	for _, item := range blood_pressure_data {
+		var user models.User
+		initializers.DB.First(&user, "ID = ?", item.UserID)
+		response = append(response, models.HealthStatusDataBloodPressure{
+			ID:          item.ID,
+			UserID:      item.UserID,
+			Name:        user.Name,
+			Email:       user.Email,
+			PhoneNumber: user.PhoneNumber,
+			DataSys:     item.DataSys,
+			DataDia:     item.DataDia,
+			Notes:       item.Notes,
+			Date:        item.Date,
+		})
+	}
+
+	healthstatusresponse.HealthStatusWebsiteSuccessResponse(c, "Success to Get Blood Pressure Data", response, http.StatusOK)
 }
