@@ -81,12 +81,19 @@ func SubmitSymptom(c *gin.Context) {
 }
 
 func OralSymptom(c *gin.Context, body models.SymptomAnswer) {
-	body.Answer = strings.Trim(body.Answer, "'")
+
 	answers := strings.Split(body.Answer, ",")
+
+	word_answers := strings.Split(body.WordAnswer, ",")
 	length := len(answers)
 
 	if len(answers) != 8 {
 		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 8 for Oral Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+		return
+	}
+
+	if len(word_answers) != 8 {
+		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the word answer array must be 8 for Oral Type, current elements = '"+strconv.Itoa(len(word_answers))+"'", word_answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
 		return
 	}
 
@@ -95,16 +102,23 @@ func OralSymptom(c *gin.Context, body models.SymptomAnswer) {
 		return
 	}
 
-	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Oral Symptom", body.Answer, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
+	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Oral Symptom", body, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
 }
 
 func DigestiveSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
 	answers := strings.Split(body.Answer, ",")
+	body.WordAnswer = strings.Trim(body.WordAnswer, "'")
+	word_answers := strings.Split(body.WordAnswer, ",")
 	length := len(answers)
 
 	if len(answers) != 20 {
 		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 20 for Digestive Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+		return
+	}
+
+	if len(word_answers) != 20 {
+		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the word answer array must be 20 for Digestive Type, current elements = '"+strconv.Itoa(len(word_answers))+"'", word_answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
 		return
 	}
 
@@ -113,16 +127,23 @@ func DigestiveSymptom(c *gin.Context, body models.SymptomAnswer) {
 		return
 	}
 
-	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Digestive Symptom", body.Answer, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
+	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Digestive Symptom", body, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
 }
 
 func RespiratorySymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
 	answers := strings.Split(body.Answer, ",")
+	body.WordAnswer = strings.Trim(body.WordAnswer, "'")
+	word_answers := strings.Split(body.WordAnswer, ",")
 	length := len(answers)
 
 	if len(answers) != 6 {
 		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 6 for Respiratory Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+		return
+	}
+
+	if len(word_answers) != 6 {
+		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the word answer array must be 6 for Respiratory Type, current elements = '"+strconv.Itoa(len(word_answers))+"'", word_answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
 		return
 	}
 
@@ -131,16 +152,23 @@ func RespiratorySymptom(c *gin.Context, body models.SymptomAnswer) {
 		return
 	}
 
-	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Respiratory Symptom", body.Answer, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
+	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Respiratory Symptom", body, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
 }
 
 func SkinSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
 	answers := strings.Split(body.Answer, ",")
+	body.WordAnswer = strings.Trim(body.WordAnswer, "'")
+	word_answers := strings.Split(body.WordAnswer, ",")
 	length := len(answers)
 
 	if len(answers) != 20 {
 		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 20 for Skin Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+		return
+	}
+
+	if len(word_answers) != 20 {
+		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the word answer array must be 20 for Skin Type, current elements = '"+strconv.Itoa(len(word_answers))+"'", word_answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
 		return
 	}
 
@@ -149,16 +177,23 @@ func SkinSymptom(c *gin.Context, body models.SymptomAnswer) {
 		return
 	}
 
-	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Skin Symptom", body.Answer, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
+	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Skin Symptom", body, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
 }
 
 func HairSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
 	answers := strings.Split(body.Answer, ",")
+	body.WordAnswer = strings.Trim(body.WordAnswer, "'")
+	word_answers := strings.Split(body.WordAnswer, ",")
 	length := len(answers)
 
 	if len(answers) != 1 {
 		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 1 for Hair Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+		return
+	}
+
+	if len(word_answers) != 1 {
+		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 1 for Hair Type, current elements = '"+strconv.Itoa(len(word_answers))+"'", word_answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
 		return
 	}
 
@@ -167,16 +202,23 @@ func HairSymptom(c *gin.Context, body models.SymptomAnswer) {
 		return
 	}
 
-	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Hair Symptom", body.Answer, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
+	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Hair Symptom", body, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
 }
 
 func NailsSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
 	answers := strings.Split(body.Answer, ",")
+	body.WordAnswer = strings.Trim(body.WordAnswer, "'")
+	word_answers := strings.Split(body.WordAnswer, ",")
 	length := len(answers)
 
 	if len(answers) != 3 {
 		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 3 for Nails Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+		return
+	}
+
+	if len(word_answers) != 3 {
+		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the word answer array must be 3 for Nails Type, current elements = '"+strconv.Itoa(len(word_answers))+"'", word_answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
 		return
 	}
 
@@ -185,16 +227,23 @@ func NailsSymptom(c *gin.Context, body models.SymptomAnswer) {
 		return
 	}
 
-	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Nails Symptom", body.Answer, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
+	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Nails Symptom", body, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
 }
 
 func SwellingSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
 	answers := strings.Split(body.Answer, ",")
+	body.WordAnswer = strings.Trim(body.WordAnswer, "'")
+	word_answers := strings.Split(body.WordAnswer, ",")
 	length := len(answers)
 
 	if len(answers) != 3 {
 		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 3 for Swelling Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+		return
+	}
+
+	if len(word_answers) != 3 {
+		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the word answer array must be 3 for Swelling Type, current elements = '"+strconv.Itoa(len(word_answers))+"'", word_answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
 		return
 	}
 
@@ -203,16 +252,23 @@ func SwellingSymptom(c *gin.Context, body models.SymptomAnswer) {
 		return
 	}
 
-	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Swelling Symptom", body.Answer, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
+	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Swelling Symptom", body, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
 }
 
 func SensesSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
 	answers := strings.Split(body.Answer, ",")
+	body.WordAnswer = strings.Trim(body.WordAnswer, "'")
+	word_answers := strings.Split(body.WordAnswer, ",")
 	length := len(answers)
 
 	if len(answers) != 9 {
 		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 9 for Senses Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+		return
+	}
+
+	if len(word_answers) != 9 {
+		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the word answer array must be 9 for Senses Type, current elements = '"+strconv.Itoa(len(word_answers))+"'", word_answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
 		return
 	}
 
@@ -221,16 +277,23 @@ func SensesSymptom(c *gin.Context, body models.SymptomAnswer) {
 		return
 	}
 
-	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Senses Symptom", body.Answer, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
+	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Senses Symptom", body, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
 }
 
 func MoodsSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
 	answers := strings.Split(body.Answer, ",")
+	body.WordAnswer = strings.Trim(body.WordAnswer, "'")
+	word_answers := strings.Split(body.WordAnswer, ",")
 	length := len(answers)
 
 	if len(answers) != 9 {
 		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 9 for Moods Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+		return
+	}
+
+	if len(word_answers) != 9 {
+		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the word answer array must be 9 for Moods Type, current elements = '"+strconv.Itoa(len(word_answers))+"'", word_answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
 		return
 	}
 
@@ -239,16 +302,23 @@ func MoodsSymptom(c *gin.Context, body models.SymptomAnswer) {
 		return
 	}
 
-	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Moods Symptom", body.Answer, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
+	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Moods Symptom", body, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
 }
 
 func PainSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
 	answers := strings.Split(body.Answer, ",")
+	body.WordAnswer = strings.Trim(body.WordAnswer, "'")
+	word_answers := strings.Split(body.WordAnswer, ",")
 	length := len(answers)
 
 	if len(answers) != 13 {
 		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 13 for Pain Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+		return
+	}
+
+	if len(word_answers) != 13 {
+		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the word answer array must be 13 for Pain Type, current elements = '"+strconv.Itoa(len(word_answers))+"'", word_answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
 		return
 	}
 
@@ -257,16 +327,23 @@ func PainSymptom(c *gin.Context, body models.SymptomAnswer) {
 		return
 	}
 
-	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Pain Symptom", body.Answer, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
+	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Pain Symptom", body, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
 }
 
 func CognitiveSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
 	answers := strings.Split(body.Answer, ",")
+	body.WordAnswer = strings.Trim(body.WordAnswer, "'")
+	word_answers := strings.Split(body.WordAnswer, ",")
 	length := len(answers)
 
 	if len(answers) != 11 {
 		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 11 for Cognitive Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+		return
+	}
+
+	if len(word_answers) != 11 {
+		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the word answer array must be 11 for Cognitive Type, current elements = '"+strconv.Itoa(len(word_answers))+"'", word_answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
 		return
 	}
 
@@ -275,16 +352,23 @@ func CognitiveSymptom(c *gin.Context, body models.SymptomAnswer) {
 		return
 	}
 
-	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Cognitive Symptom", body.Answer, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
+	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Cognitive Symptom", body, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
 }
 
 func UrinarySymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
 	answers := strings.Split(body.Answer, ",")
+	body.WordAnswer = strings.Trim(body.WordAnswer, "'")
+	word_answers := strings.Split(body.WordAnswer, ",")
 	length := len(answers)
 
 	if len(answers) != 8 {
 		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 8 for Urinary Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+		return
+	}
+
+	if len(word_answers) != 8 {
+		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the word answer array must be 8 for Urinary Type, current elements = '"+strconv.Itoa(len(word_answers))+"'", word_answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
 		return
 	}
 
@@ -293,16 +377,23 @@ func UrinarySymptom(c *gin.Context, body models.SymptomAnswer) {
 		return
 	}
 
-	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Urinary Symptom", body.Answer, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
+	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Urinary Symptom", body, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
 }
 
 func GenitalsSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
 	answers := strings.Split(body.Answer, ",")
+	body.WordAnswer = strings.Trim(body.WordAnswer, "'")
+	word_answers := strings.Split(body.WordAnswer, ",")
 	length := len(answers)
 
 	if len(answers) != 6 {
 		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 6 for Genitals Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+		return
+	}
+
+	if len(word_answers) != 6 {
+		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the word answer array must be 6 for Genitals Type, current elements = '"+strconv.Itoa(len(word_answers))+"'", word_answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
 		return
 	}
 
@@ -311,16 +402,23 @@ func GenitalsSymptom(c *gin.Context, body models.SymptomAnswer) {
 		return
 	}
 
-	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Genitals Symptom", body.Answer, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
+	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Genitals Symptom", body, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
 }
 
 func ReproductiveSymptom(c *gin.Context, body models.SymptomAnswer) {
 	body.Answer = strings.Trim(body.Answer, "'")
 	answers := strings.Split(body.Answer, ",")
+	body.WordAnswer = strings.Trim(body.WordAnswer, "'")
+	word_answers := strings.Split(body.WordAnswer, ",")
 	length := len(answers)
 
 	if len(answers) != 5 {
 		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the answer array must be 5 for Reproductive Type, current elements = '"+strconv.Itoa(length)+"'", answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+		return
+	}
+
+	if len(word_answers) != 5 {
+		symptomresponse.SubmitSymptomFailedResponse(c, "Number of elements in the word answer array must be 5 for Reproductive Type, current elements = '"+strconv.Itoa(len(word_answers))+"'", word_answers, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
 		return
 	}
 
@@ -329,5 +427,5 @@ func ReproductiveSymptom(c *gin.Context, body models.SymptomAnswer) {
 		return
 	}
 
-	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Reproductive Symptom", body.Answer, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
+	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Reproductive Symptom", body, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
 }

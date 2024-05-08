@@ -16,6 +16,8 @@ func DoctorChartController(r *gin.Engine) {
 	r.GET("api/doctor/patient/data/age", middleware.RequireAuth, DataByAge)
 	r.GET("api/doctor/patient/data/diagnosis_date", middleware.RequireAuth, DataByDiagnosisDate)
 	r.GET("api/doctor/patient/data/treatment", middleware.RequireAuth, DataByTreatment)
+
+	r.GET("api/doctor/patient/data/symptom/:type/:user_id", middleware.RequireAuth, GetSymptomUserData)
 }
 
 func DataByGender(c *gin.Context) {
@@ -232,4 +234,227 @@ func DataByTreatment(c *gin.Context) {
 	response["TotalPatient"] = totalPatient
 
 	doctorresponse.TreatmentChartSuccessResponse(c, "Success to Get Patient Data by Treatment", response, http.StatusOK)
+}
+
+func GetSymptomUserData(c *gin.Context) {
+	doctor, _ := c.Get("doctor")
+	userID := c.Param("user_id")
+	typeSymptom := c.Param("type")
+	if !DoctorCheck(c, doctor) {
+		return
+	}
+
+	var user models.User
+	result := initializers.DB.First(&user, "ID = ?", userID)
+
+	if result.Error != nil {
+		doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Symptom User Data", "", http.StatusInternalServerError)
+	}
+
+	var symptom []models.SymptomAnswer
+	var response []models.SymptomAnswerData
+
+	if typeSymptom == "Oral" {
+		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Oral").Find(&symptom)
+		if result.Error != nil {
+			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+		}
+
+		for _, symptom_data := range symptom {
+			response = append(response, models.SymptomAnswerData{
+				ID:         symptom_data.ID,
+				Type:       symptom_data.Type,
+				Date:       symptom_data.Date,
+				WordAnswer: symptom_data.WordAnswer,
+			})
+		}
+
+		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Oral Symptom User Data", response, http.StatusOK)
+	} else if typeSymptom == "Digestive" {
+		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Digestive").Find(&symptom)
+		if result.Error != nil {
+			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+		}
+
+		for _, symptom_data := range symptom {
+			response = append(response, models.SymptomAnswerData{
+				ID:         symptom_data.ID,
+				Type:       symptom_data.Type,
+				Date:       symptom_data.Date,
+				WordAnswer: symptom_data.WordAnswer,
+			})
+		}
+
+		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Digestive Symptom User Data", response, http.StatusOK)
+	} else if typeSymptom == "Respiratory" {
+		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Respiratory").Find(&symptom)
+		if result.Error != nil {
+			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+		}
+		for _, symptom_data := range symptom {
+			response = append(response, models.SymptomAnswerData{
+				ID:         symptom_data.ID,
+				Type:       symptom_data.Type,
+				Date:       symptom_data.Date,
+				WordAnswer: symptom_data.WordAnswer,
+			})
+		}
+		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Respiratory Symptom User Data", response, http.StatusOK)
+	} else if typeSymptom == "Skin" {
+		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Skin").Find(&symptom)
+		if result.Error != nil {
+			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+		}
+		for _, symptom_data := range symptom {
+			response = append(response, models.SymptomAnswerData{
+				ID:         symptom_data.ID,
+				Type:       symptom_data.Type,
+				Date:       symptom_data.Date,
+				WordAnswer: symptom_data.WordAnswer,
+			})
+		}
+		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Skin Symptom User Data", response, http.StatusOK)
+	} else if typeSymptom == "Hair" {
+		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Hair").Find(&symptom)
+		if result.Error != nil {
+			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+		}
+		for _, symptom_data := range symptom {
+			response = append(response, models.SymptomAnswerData{
+				ID:         symptom_data.ID,
+				Type:       symptom_data.Type,
+				Date:       symptom_data.Date,
+				WordAnswer: symptom_data.WordAnswer,
+			})
+		}
+		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Hair Symptom User Data", response, http.StatusOK)
+	} else if typeSymptom == "Nails" {
+		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Nails").Find(&symptom)
+		if result.Error != nil {
+			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+		}
+		for _, symptom_data := range symptom {
+			response = append(response, models.SymptomAnswerData{
+				ID:         symptom_data.ID,
+				Type:       symptom_data.Type,
+				Date:       symptom_data.Date,
+				WordAnswer: symptom_data.WordAnswer,
+			})
+		}
+		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Nails Symptom User Data", response, http.StatusOK)
+	} else if typeSymptom == "Swelling" {
+		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Swelling").Find(&symptom)
+		if result.Error != nil {
+			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+		}
+		for _, symptom_data := range symptom {
+			response = append(response, models.SymptomAnswerData{
+				ID:         symptom_data.ID,
+				Type:       symptom_data.Type,
+				Date:       symptom_data.Date,
+				WordAnswer: symptom_data.WordAnswer,
+			})
+		}
+		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Swelling Symptom User Data", response, http.StatusOK)
+	} else if typeSymptom == "Senses" {
+		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Senses").Find(&symptom)
+		if result.Error != nil {
+			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+		}
+		for _, symptom_data := range symptom {
+			response = append(response, models.SymptomAnswerData{
+				ID:         symptom_data.ID,
+				Type:       symptom_data.Type,
+				Date:       symptom_data.Date,
+				WordAnswer: symptom_data.WordAnswer,
+			})
+		}
+		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Senses Symptom User Data", response, http.StatusOK)
+	} else if typeSymptom == "Moods" {
+		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Moods").Find(&symptom)
+		if result.Error != nil {
+			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+		}
+		for _, symptom_data := range symptom {
+			response = append(response, models.SymptomAnswerData{
+				ID:         symptom_data.ID,
+				Type:       symptom_data.Type,
+				Date:       symptom_data.Date,
+				WordAnswer: symptom_data.WordAnswer,
+			})
+		}
+		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Moods Symptom User Data", response, http.StatusOK)
+	} else if typeSymptom == "Pain" {
+		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Pain").Find(&symptom)
+		if result.Error != nil {
+			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+		}
+		for _, symptom_data := range symptom {
+			response = append(response, models.SymptomAnswerData{
+				ID:         symptom_data.ID,
+				Type:       symptom_data.Type,
+				Date:       symptom_data.Date,
+				WordAnswer: symptom_data.WordAnswer,
+			})
+		}
+		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Pain Symptom User Data", response, http.StatusOK)
+	} else if typeSymptom == "Cognitive" {
+		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Cognitive").Find(&symptom)
+		if result.Error != nil {
+			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+		}
+		for _, symptom_data := range symptom {
+			response = append(response, models.SymptomAnswerData{
+				ID:         symptom_data.ID,
+				Type:       symptom_data.Type,
+				Date:       symptom_data.Date,
+				WordAnswer: symptom_data.WordAnswer,
+			})
+		}
+		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Cognitive Symptom User Data", response, http.StatusOK)
+	} else if typeSymptom == "Urinary" {
+		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Urinary").Find(&symptom)
+		if result.Error != nil {
+			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+		}
+		for _, symptom_data := range symptom {
+			response = append(response, models.SymptomAnswerData{
+				ID:         symptom_data.ID,
+				Type:       symptom_data.Type,
+				Date:       symptom_data.Date,
+				WordAnswer: symptom_data.WordAnswer,
+			})
+		}
+		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Urinary Symptom User Data", response, http.StatusOK)
+	} else if typeSymptom == "Genitals" {
+		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Genitals").Find(&symptom)
+		if result.Error != nil {
+			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+		}
+		for _, symptom_data := range symptom {
+			response = append(response, models.SymptomAnswerData{
+				ID:         symptom_data.ID,
+				Type:       symptom_data.Type,
+				Date:       symptom_data.Date,
+				WordAnswer: symptom_data.WordAnswer,
+			})
+		}
+		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Genitals Symptom User Data", response, http.StatusOK)
+	} else if typeSymptom == "Reproductive" {
+		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Reproductive").Find(&symptom)
+		if result.Error != nil {
+			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+		}
+		for _, symptom_data := range symptom {
+			response = append(response, models.SymptomAnswerData{
+				ID:         symptom_data.ID,
+				Type:       symptom_data.Type,
+				Date:       symptom_data.Date,
+				WordAnswer: symptom_data.WordAnswer,
+			})
+		}
+		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Reproductive Symptom User Data", response, http.StatusOK)
+	} else {
+		doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Symptom Type Not Found", "", http.StatusBadRequest)
+	}
 }

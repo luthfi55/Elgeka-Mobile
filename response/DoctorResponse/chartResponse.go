@@ -125,3 +125,33 @@ func TreatmentChartSuccessResponse(c *gin.Context, message string, data interfac
 
 	c.JSON(status, response)
 }
+
+func SymptomAnswerDoctorFailedResponse(c *gin.Context, message string, data string, status int) {
+	linkItem := models.LinkItem{
+		Name: "Get Symptom Patient Data",
+		Link: "http://localhost:3000/api/doctor/patient/data/symptom/:type/:user_id",
+	}
+
+	response := models.ListAcceptancePatientFailedResponse{
+		ErrorMessage: message,
+		Data:         data,
+		Link:         []models.LinkItem{linkItem},
+	}
+
+	c.JSON(status, response)
+}
+
+func SymptomAnswerDoctorSuccessResponse(c *gin.Context, message string, data interface{}, status int) {
+	linkItem := models.LinkItem{
+		Name: "Get Symptom Patient Data",
+		Link: "http://localhost:3000/api/doctor/patient/data/symptom/:type/:user_id",
+	}
+
+	response := models.ListAcceptancePatientSuccessResponse{
+		Message: message,
+		Data:    data,
+		Link:    []models.LinkItem{linkItem},
+	}
+
+	c.JSON(status, response)
+}

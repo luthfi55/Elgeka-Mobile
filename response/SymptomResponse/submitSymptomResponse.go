@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SubmitSymptomSuccessResponse(c *gin.Context, message string, data string, link string, status int) {
+func SubmitSymptomSuccessResponse(c *gin.Context, message string, data interface{}, link string, status int) {
 	linkItem := models.LinkItem{
 		Name: "Submit Symptom",
 		Link: link,
