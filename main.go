@@ -26,8 +26,10 @@ func main() {
 	r := gin.Default()
 
 	r.Use(func(c *gin.Context) {
-		allowedOrigins := "https://stirring-pixie-ed5c9b.netlify.app, https://elgeka-community-hub.netlify.app"
-		c.Writer.Header().Set("Access-Control-Allow-Origin", allowedOrigins)
+		origin := c.Request.Header.Get("Origin")
+		if origin == "https://stirring-pixie-ed5c9b.netlify.app" || origin == "https://elgeka-community-hub.netlify.app" {
+			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+		}
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
