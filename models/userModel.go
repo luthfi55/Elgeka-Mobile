@@ -33,8 +33,31 @@ type User struct {
 	MedicineSchedule   []MedicineSchedule   `gorm:"foreignKey:UserID"`
 	Symptom            []SymptomAnswer      `gorm:"foreignKey:UserID"`
 	UserTreatment      []UserTreatment      `gorm:"foreignKey:UserID"`
+	UserInformation    []UserInformation    `gorm:"foreignKey:UserID"`
 
 	gorm.Model
+}
+
+type UserInformationData struct {
+	ID                uuid.UUID `json:"ID"`
+	Name              string    `json:"Name"`
+	Email             string    `json:"Email"`
+	Address           string    `json:"Address"`
+	Province          string    `json:"Province"`
+	District          string    `json:"District"`
+	SubDistrict       string    `json:"SubDistrict"`
+	Village           string    `json:"Village"`
+	Gender            string    `json:"Gender"`
+	BirthDate         string    `json:"BirthDate"`
+	BloodGroup        string    `json:"BloodGroup"`
+	DiagnosisDate     string    `json:"DiagnosisDate"`
+	PhoneNumber       string    `json:"PhoneNumber"`
+	PcrLevel          string    `json:"PcrLevel"`
+	TherapyActive     bool      `json:"TherapyActive"`
+	TreatmentFree     bool      `json:"TreatmentFree"`
+	TreatmentFreeDate string    `json:"TreatmentFreeDate"`
+	MonitoringPlace   string    `json:"MonitoringPlace"`
+	PcrFrequent       string    `json:"PcrFrequent"`
 }
 
 type UserData struct {
@@ -177,9 +200,9 @@ type UpdateUserProfileFailedResponse struct {
 }
 
 type GetProfileSuccessResponse struct {
-	Message string     `json:"Message"`
-	Data    []UserData `json:"Data"`
-	Link    []LinkItem `json:"Link"`
+	Message string                `json:"Message"`
+	Data    []UserInformationData `json:"Data"`
+	Link    []LinkItem            `json:"Link"`
 }
 
 type GetProfileFailedResponse struct {

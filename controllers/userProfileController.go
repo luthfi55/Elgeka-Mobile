@@ -17,6 +17,7 @@ import (
 func UserProfileController(r *gin.Engine) {
 	r.GET("api/user/profile", middleware.RequireAuth, ProfileData)
 	r.PUT("api/user/profile/edit", middleware.RequireAuth, EditProfile)
+	r.PUT("api/user/profile/information/edit", middleware.RequireAuth, EditUserInformation)
 	r.POST("api/user/add/personal_doctor", middleware.RequireAuth, AddPersonalDoctor)
 	r.GET("api/user/list/personal_doctor", middleware.RequireAuth, GetPersonalDoctor)
 	r.GET("api/user/list/activate_doctor", middleware.RequireAuth, ListActivateDoctor)
@@ -32,20 +33,32 @@ func ProfileData(c *gin.Context) {
 		return
 	}
 
-	profile_data := models.UserData{
-		ID:            user_data.ID,
-		Name:          user_data.Name,
-		Email:         user_data.Email,
-		Address:       user_data.Address,
-		Province:      user_data.Province,
-		District:      user_data.District,
-		SubDistrict:   user_data.SubDistrict,
-		Village:       user_data.Village,
-		Gender:        user_data.Gender,
-		BirthDate:     user_data.BirthDate,
-		BloodGroup:    user_data.BloodGroup,
-		DiagnosisDate: user_data.DiagnosisDate,
-		PhoneNumber:   user_data.PhoneNumber,
+	var patient_information models.UserInformation
+	if err := initializers.DB.First(&patient_information, "user_id = ?", user).Error; err != nil {
+		userresponse.GetProfileFailedResponse(c, "Failed To Find User Information", "", "Get Profile", "http://localhost:3000/api/user/profile", http.StatusBadRequest)
+		return
+	}
+
+	profile_data := models.UserInformationData{
+		ID:                user_data.ID,
+		Name:              user_data.Name,
+		Email:             user_data.Email,
+		Address:           user_data.Address,
+		Province:          user_data.Province,
+		District:          user_data.District,
+		SubDistrict:       user_data.SubDistrict,
+		Village:           user_data.Village,
+		Gender:            user_data.Gender,
+		BirthDate:         user_data.BirthDate,
+		BloodGroup:        user_data.BloodGroup,
+		DiagnosisDate:     user_data.DiagnosisDate,
+		PhoneNumber:       user_data.PhoneNumber,
+		PcrLevel:          patient_information.PcrLevel,
+		TherapyActive:     patient_information.TherapyActive,
+		TreatmentFree:     patient_information.TreatmentFree,
+		TreatmentFreeDate: patient_information.TreatmentFreeDate,
+		MonitoringPlace:   patient_information.MonitoringPlace,
+		PcrFrequent:       patient_information.PcrFrequent,
 	}
 
 	userresponse.GetProfileSuccessResponse(c, "Success Get Profile", profile_data, "http://localhost:3000/api/user/profile", http.StatusOK)
@@ -122,6 +135,104 @@ func EditProfile(c *gin.Context) {
 	}
 
 	userresponse.UpdateUserProfileSuccessResponse(c, "Success Update User", user_data.ID, "http://localhost:3000/api/user/profile/edit", http.StatusOK)
+
+}
+
+func EditUserInformation(c *gin.Context) {
+	user, _ := c.Get("user")
+
+	var body models.UserInformation
+
+	if c.Bind(&body) != nil {
+		userresponse.UpdateUserInformationProfileFailedResponse(c, "Failed to read body", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
+		return
+	}
+
+	var user_data models.UserInformation
+	if err := initializers.DB.First(&user_data, "user_id = ?", user).Error; err != nil {
+		userresponse.UpdateUserInformationProfileFailedResponse(c, "Failed To Find User Information", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
+		return
+	}
+
+	if body.PcrLevel != "" {
+		user_data.PcrLevel = body.PcrLevel
+	}
+
+	user_data.TherapyActive = body.TherapyActive
+	user_data.TreatmentFree = body.TreatmentFree
+
+	if body.TreatmentFreeDate != "" {
+		user_data.TreatmentFreeDate = body.TreatmentFreeDate
+	}
+
+	if body.MonitoringPlace != "" {
+		user_data.MonitoringPlace = body.MonitoringPlace
+	}
+
+	if body.PcrFrequent != "" {
+		user_data.PcrFrequent = body.PcrFrequent
+	}
+
+	if body.PcrLevel == "" && body.TreatmentFreeDate == "" && body.MonitoringPlace == "" && body.PcrFrequent == "" {
+		userresponse.UpdateUserInformationProfileFailedResponse(c, "Body Can't Null", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
+		return
+	}
+
+	if err := initializers.DB.Save(&user_data).Error; err != nil {
+		userresponse.UpdateUserInformationProfileFailedResponse(c, "Failed Update User", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
+		return
+	}
+
+	userresponse.UpdateUserProfileSuccessResponse(c, "Success Update User Information", user_data.ID, "http://localhost:3000/api/user/profile/edit", http.StatusOK)
+
+}
+
+func EditUserPassword(c *gin.Context) {
+	user, _ := c.Get("user")
+
+	var body models.UserInformation
+
+	if c.Bind(&body) != nil {
+		userresponse.UpdateUserInformationProfileFailedResponse(c, "Failed to read body", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
+		return
+	}
+
+	var user_data models.UserInformation
+	if err := initializers.DB.First(&user_data, "user_id = ?", user).Error; err != nil {
+		userresponse.UpdateUserInformationProfileFailedResponse(c, "Failed To Find User Information", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
+		return
+	}
+
+	if body.PcrLevel != "" {
+		user_data.PcrLevel = body.PcrLevel
+	}
+
+	user_data.TherapyActive = body.TherapyActive
+	user_data.TreatmentFree = body.TreatmentFree
+
+	if body.TreatmentFreeDate != "" {
+		user_data.TreatmentFreeDate = body.TreatmentFreeDate
+	}
+
+	if body.MonitoringPlace != "" {
+		user_data.MonitoringPlace = body.MonitoringPlace
+	}
+
+	if body.PcrFrequent != "" {
+		user_data.PcrFrequent = body.PcrFrequent
+	}
+
+	if body.PcrLevel == "" && body.TreatmentFreeDate == "" && body.MonitoringPlace == "" && body.PcrFrequent == "" {
+		userresponse.UpdateUserInformationProfileFailedResponse(c, "Body Can't Null", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
+		return
+	}
+
+	if err := initializers.DB.Save(&user_data).Error; err != nil {
+		userresponse.UpdateUserInformationProfileFailedResponse(c, "Failed Update User", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
+		return
+	}
+
+	userresponse.UpdateUserProfileSuccessResponse(c, "Success Update User Information", user_data.ID, "http://localhost:3000/api/user/profile/edit", http.StatusOK)
 
 }
 

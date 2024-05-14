@@ -6,23 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetProfileSuccessResponse(c *gin.Context, message string, data models.UserData, link string, status int) {
-	datas := models.UserData{
-		ID:            data.ID,
-		Name:          data.Name,
-		Email:         data.Email,
-		Address:       data.Address,
-		Province:      data.Province,
-		District:      data.District,
-		SubDistrict:   data.SubDistrict,
-		Village:       data.Village,
-		Gender:        data.Gender,
-		BirthDate:     data.BirthDate,
-		BloodGroup:    data.BloodGroup,
-		DiagnosisDate: data.DiagnosisDate,
-		PhoneNumber:   data.PhoneNumber,
-	}
-
+func GetProfileSuccessResponse(c *gin.Context, message string, data models.UserInformationData, link string, status int) {
 	linkItem := models.LinkItem{
 		Name: "Get Profile",
 		Link: link,
@@ -30,7 +14,7 @@ func GetProfileSuccessResponse(c *gin.Context, message string, data models.UserD
 
 	response := models.GetProfileSuccessResponse{
 		Message: message,
-		Data:    []models.UserData{datas},
+		Data:    []models.UserInformationData{data},
 		Link:    []models.LinkItem{linkItem},
 	}
 

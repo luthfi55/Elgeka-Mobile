@@ -25,6 +25,7 @@ func DoctorProfileController(r *gin.Engine) {
 	r.GET("api/doctor/patient/list", middleware.RequireAuth, DoctorPatientList)
 	r.GET("api/doctor/patient/profile/:acceptance_id", middleware.RequireAuth, DoctorPatientProfile)
 	r.GET("api/doctor/patient/health_status/:acceptance_id", middleware.RequireAuth, DoctorPatientHealthStatus)
+	r.GET("api/doctor/patient/medicine/:acceptance_id", middleware.RequireAuth, DoctorPatientMedicine)
 
 	r.GET("api/doctor/list/website", ListDoctorWebsite)
 	r.GET("api/doctor/list_patient/website", ListPatientDoctorWebsite)
@@ -295,19 +296,31 @@ func DoctorPatientProfile(c *gin.Context) {
 		return
 	}
 
-	data := models.UserData{
-		ID:          patient_data.ID,
-		Name:        patient_data.Name,
-		Email:       patient_data.Email,
-		Address:     patient_data.Address,
-		Province:    patient_data.Province,
-		District:    patient_data.District,
-		SubDistrict: patient_data.SubDistrict,
-		Village:     patient_data.Village,
-		Gender:      patient_data.Gender,
-		BirthDate:   patient_data.BirthDate,
-		BloodGroup:  patient_data.BloodGroup,
-		PhoneNumber: patient_data.PhoneNumber,
+	var patient_information models.UserInformation
+	if err := initializers.DB.First(&patient_information, "user_id = ?", patient_profile.UserID).Error; err != nil {
+		doctorresponse.DoctorPatientProfileFailedResponse(c, "Failed to Get Patient Information Data", "", http.StatusNotFound)
+		return
+	}
+
+	data := models.UserInformationData{
+		ID:                patient_data.ID,
+		Name:              patient_data.Name,
+		Email:             patient_data.Email,
+		Address:           patient_data.Address,
+		Province:          patient_data.Province,
+		District:          patient_data.District,
+		SubDistrict:       patient_data.SubDistrict,
+		Village:           patient_data.Village,
+		Gender:            patient_data.Gender,
+		BirthDate:         patient_data.BirthDate,
+		BloodGroup:        patient_data.BloodGroup,
+		PhoneNumber:       patient_data.PhoneNumber,
+		PcrLevel:          patient_information.PcrLevel,
+		TherapyActive:     patient_information.TherapyActive,
+		TreatmentFree:     patient_information.TreatmentFree,
+		TreatmentFreeDate: patient_information.TreatmentFreeDate,
+		MonitoringPlace:   patient_information.MonitoringPlace,
+		PcrFrequent:       patient_information.PcrFrequent,
 	}
 
 	doctorresponse.DoctorPatientProfileSuccessResponse(c, "Success to Get Patient Data", data, http.StatusOK)
@@ -602,4 +615,50 @@ func ListPatientDoctorWebsite(c *gin.Context) {
 	}
 
 	doctorresponse.ListPatientDoctorWebsiteSuccessResponse(c, "Success to Get Patient Doctor List", doctor_data, http.StatusOK)
+}
+
+func DoctorPatientMedicine(c *gin.Context) {
+	doctor, _ := c.Get("doctor")
+	acceptanceID := c.Param("acceptance_id")
+
+	if !DoctorCheck(c, doctor) {
+		return
+	}
+
+	var patient_profile models.UserPersonalDoctor
+	if err := initializers.DB.First(&patient_profile, "id = ? AND doctor_id = ? AND request = ? AND end_date = ?", acceptanceID, doctor, "Accepted", "").Error; err != nil {
+		doctorresponse.DoctorPatientHealthStatusFailedResponse(c, "Patient Profile Not Found", "", http.StatusNotFound)
+		return
+	}
+
+	var patient_data models.User
+	if err := initializers.DB.First(&patient_data, "id = ?", patient_profile.UserID).Error; err != nil {
+		doctorresponse.DoctorPatientHealthStatusFailedResponse(c, "Failed to Get Patient Data", "", http.StatusNotFound)
+		return
+	}
+
+	var medicine_data []models.Medicine
+	if err := initializers.DB.Where("user_id = ?", patient_data.ID).Find(&medicine_data).Error; err != nil {
+		doctorresponse.DoctorPatientHealthStatusFailedResponse(c, "Failed to Get Medicine Data", "", http.StatusNotFound)
+		return
+	}
+
+	var medicine models.MedicineDataResponse
+
+	var medicine_list []models.MedicineData
+
+	for _, item := range medicine_data {
+		medicine_list = append(medicine_list, models.MedicineData{
+			ID:     item.ID,
+			Name:   item.Name,
+			Dosage: item.Dosage,
+			Stock:  item.Stock,
+		})
+	}
+
+	medicine.UserID = patient_data.ID
+	medicine.Name = patient_data.Name
+	medicine.Medicine = medicine_list
+
+	doctorresponse.DoctorPatientHealthStatusSuccessResponse(c, "Success to Get Medicine Data", medicine, http.StatusOK)
 }

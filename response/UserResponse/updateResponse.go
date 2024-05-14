@@ -26,6 +26,25 @@ func UpdateUserProfileFailedResponse(c *gin.Context, message string, data models
 	c.JSON(status, response)
 }
 
+func UpdateUserInformationProfileFailedResponse(c *gin.Context, message string, data models.UserInformation, link_name string, link string, status int) {
+	datas := models.UserIdData{
+		ID: data.ID,
+	}
+
+	linkItem := models.LinkItem{
+		Name: link_name,
+		Link: link,
+	}
+
+	response := models.LoginUserFailedResponse{
+		ErrorMessage: message,
+		Data:         []models.UserIdData{datas},
+		Link:         []models.LinkItem{linkItem},
+	}
+
+	c.JSON(status, response)
+}
+
 func UpdateUserProfileSuccessResponse(c *gin.Context, message string, data uuid.UUID, link string, status int) {
 	datas := models.UserIdData{
 		ID: data,

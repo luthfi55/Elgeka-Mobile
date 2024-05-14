@@ -228,6 +228,15 @@ func Activate(c *gin.Context) {
 			return
 		}
 
+		var user_information models.UserInformation
+		user_newUUID := uuid.New()
+		user_information.ID = user_newUUID
+		user_information.UserID = user.ID
+		if err := initializers.DB.Create(&user_information).Error; err != nil {
+			userresponse.GetTreatmentDataFailedResponse(c, "Failed To Create User Information Data", "", http.StatusInternalServerError)
+			return
+		}
+
 		activationLink := "http://localhost:3000/api/user/login"
 		otpresponse.SuccessResponse(c, "User Activated Successfully", user.Email, activationLink, http.StatusOK)
 		return

@@ -9,6 +9,7 @@ import (
 func SyncDatabase() {
 	DB.AutoMigrate(
 		&models.User{},
+		&models.UserInformation{},
 		&models.Doctor{},
 		&models.BCR_ABL{},
 		&models.Leukocytes{},

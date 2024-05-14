@@ -31,6 +31,12 @@ type MedicineData struct {
 	Stock  int       `json:"Stock"`
 }
 
+type MedicineDataResponse struct {
+	UserID   uuid.UUID   `json:"UserID"`
+	Name     string      `json:"Name"`
+	Medicine interface{} `json:"Medicine"`
+}
+
 type MedicineDataWebsite struct {
 	ID           uuid.UUID   `json:"ID"`
 	Name         string      `json:"Name"`
