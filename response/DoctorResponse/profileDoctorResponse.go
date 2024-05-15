@@ -65,3 +65,33 @@ func UpdateDoctorProfileSuccessResponse(c *gin.Context, message string, data int
 
 	c.JSON(status, response)
 }
+
+func UpdatePasswordDoctorFailedResponse(c *gin.Context, message string, data string, status int) {
+	linkItem := models.LinkItem{
+		Name: "Update Doctor Password",
+		Link: "http://localhost:3000/api/doctor/profile/password/edit",
+	}
+
+	response := models.GetTreatmentDataFailedResponse{
+		ErrorMessage: message,
+		Data:         data,
+		Link:         []models.LinkItem{linkItem},
+	}
+
+	c.JSON(status, response)
+}
+
+func UpdatePasswordDoctorSuccessResponse(c *gin.Context, message string, data interface{}, status int) {
+	linkItem := models.LinkItem{
+		Name: "Update Doctor Password",
+		Link: "http://localhost:3000/api/doctor/profile/password/edit",
+	}
+
+	response := models.GetTreatmentDataSuccessResponse{
+		Message: message,
+		Data:    data,
+		Link:    []models.LinkItem{linkItem},
+	}
+
+	c.JSON(status, response)
+}

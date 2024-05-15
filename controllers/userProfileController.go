@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -18,6 +19,7 @@ func UserProfileController(r *gin.Engine) {
 	r.GET("api/user/profile", middleware.RequireAuth, ProfileData)
 	r.PUT("api/user/profile/edit", middleware.RequireAuth, EditProfile)
 	r.PUT("api/user/profile/information/edit", middleware.RequireAuth, EditUserInformation)
+	r.PUT("api/user/profile/password/edit", middleware.RequireAuth, EditUserPassword)
 	r.POST("api/user/add/personal_doctor", middleware.RequireAuth, AddPersonalDoctor)
 	r.GET("api/user/list/personal_doctor", middleware.RequireAuth, GetPersonalDoctor)
 	r.GET("api/user/list/activate_doctor", middleware.RequireAuth, ListActivateDoctor)
@@ -190,50 +192,55 @@ func EditUserInformation(c *gin.Context) {
 func EditUserPassword(c *gin.Context) {
 	user, _ := c.Get("user")
 
-	var body models.UserInformation
+	var body struct {
+		OldPassword          string
+		Password             string
+		PasswordConfirmation string
+	}
 
 	if c.Bind(&body) != nil {
-		userresponse.UpdateUserInformationProfileFailedResponse(c, "Failed to read body", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
+		userresponse.UpdatePasswordUserFailedResponse(c, "Failed to read body", "", http.StatusBadRequest)
 		return
 	}
 
-	var user_data models.UserInformation
-	if err := initializers.DB.First(&user_data, "user_id = ?", user).Error; err != nil {
-		userresponse.UpdateUserInformationProfileFailedResponse(c, "Failed To Find User Information", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
+	var user_data models.User
+	if err := initializers.DB.First(&user_data, "id = ?", user).Error; err != nil {
+		userresponse.UpdatePasswordUserFailedResponse(c, "Failed To Find User Account", "", http.StatusBadRequest)
 		return
 	}
 
-	if body.PcrLevel != "" {
-		user_data.PcrLevel = body.PcrLevel
-	}
+	err := bcrypt.CompareHashAndPassword([]byte(user_data.Password), []byte(body.OldPassword))
 
-	user_data.TherapyActive = body.TherapyActive
-	user_data.TreatmentFree = body.TreatmentFree
-
-	if body.TreatmentFreeDate != "" {
-		user_data.TreatmentFreeDate = body.TreatmentFreeDate
-	}
-
-	if body.MonitoringPlace != "" {
-		user_data.MonitoringPlace = body.MonitoringPlace
-	}
-
-	if body.PcrFrequent != "" {
-		user_data.PcrFrequent = body.PcrFrequent
-	}
-
-	if body.PcrLevel == "" && body.TreatmentFreeDate == "" && body.MonitoringPlace == "" && body.PcrFrequent == "" {
-		userresponse.UpdateUserInformationProfileFailedResponse(c, "Body Can't Null", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
+	if err != nil {
+		userresponse.UpdatePasswordUserFailedResponse(c, "Wrong Old Password", "", http.StatusBadRequest)
 		return
 	}
+
+	if !isPasswordValid(body.Password) {
+		errorMessage := "Password must contain at least 8 letter, 1 uppercase letter, 1 digit, and 1 symbol."
+		userresponse.UpdatePasswordUserFailedResponse(c, errorMessage, "", http.StatusBadRequest)
+		return
+	}
+
+	if body.Password != body.PasswordConfirmation {
+		userresponse.UpdatePasswordUserFailedResponse(c, "Password And Password Confirmation Must Be The Same", "", http.StatusBadRequest)
+		return
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
+	if err != nil {
+		userresponse.UpdatePasswordUserFailedResponse(c, "Failed To Hash Password", "", http.StatusBadRequest)
+		return
+	}
+
+	user_data.Password = string(hash)
 
 	if err := initializers.DB.Save(&user_data).Error; err != nil {
-		userresponse.UpdateUserInformationProfileFailedResponse(c, "Failed Update User", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
+		userresponse.UpdatePasswordUserFailedResponse(c, "Failed To Update User Password", "", http.StatusBadRequest)
 		return
 	}
 
-	userresponse.UpdateUserProfileSuccessResponse(c, "Success Update User Information", user_data.ID, "http://localhost:3000/api/user/profile/edit", http.StatusOK)
-
+	userresponse.UpdatePasswordUserSuccessResponse(c, "Success Update User Password", user_data.ID, http.StatusOK)
 }
 
 func AddPersonalDoctor(c *gin.Context) {

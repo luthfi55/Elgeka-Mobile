@@ -11,12 +11,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 func DoctorProfileController(r *gin.Engine) {
 	r.GET("api/doctor/profile", middleware.RequireAuth, DoctorProfile)
 	r.PUT("api/doctor/profile/edit", middleware.RequireAuth, EditDoctorProfile)
+	r.PUT("api/doctor/profile/password/edit", middleware.RequireAuth, EditDoctorPassword)
 
 	r.GET("api/doctor/patient_request", middleware.RequireAuth, DoctorPatientRequest)
 	r.PUT("api/doctor/patient_request/accept/:acceptance_id", middleware.RequireAuth, DoctorPatientAccept)
@@ -125,6 +127,64 @@ func EditDoctorProfile(c *gin.Context) {
 	doctor_data.PolyName = doctor_account.PolyName
 
 	doctorresponse.UpdateDoctorProfileSuccessResponse(c, "Success to Update Doctor Profile Data", doctor_data, http.StatusOK)
+}
+
+func EditDoctorPassword(c *gin.Context) {
+	doctor, _ := c.Get("doctor")
+
+	if !DoctorCheck(c, doctor) {
+		return
+	}
+
+	var body struct {
+		OldPassword          string
+		Password             string
+		PasswordConfirmation string
+	}
+
+	if c.Bind(&body) != nil {
+		doctorresponse.UpdatePasswordDoctorFailedResponse(c, "Failed to read body", "", http.StatusBadRequest)
+		return
+	}
+
+	var doctor_data models.Doctor
+	if err := initializers.DB.First(&doctor_data, "id = ?", doctor).Error; err != nil {
+		doctorresponse.UpdatePasswordDoctorFailedResponse(c, "Failed To Find Doctor Account", "", http.StatusBadRequest)
+		return
+	}
+
+	err := bcrypt.CompareHashAndPassword([]byte(doctor_data.Password), []byte(body.OldPassword))
+
+	if err != nil {
+		doctorresponse.UpdatePasswordDoctorFailedResponse(c, "Wrong Old Password", "", http.StatusBadRequest)
+		return
+	}
+
+	if !isPasswordValid(body.Password) {
+		errorMessage := "Password must contain at least 8 letter, 1 uppercase letter, 1 digit, and 1 symbol."
+		doctorresponse.UpdatePasswordDoctorFailedResponse(c, errorMessage, "", http.StatusBadRequest)
+		return
+	}
+
+	if body.Password != body.PasswordConfirmation {
+		doctorresponse.UpdatePasswordDoctorFailedResponse(c, "Password And Password Confirmation Must Be The Same", "", http.StatusBadRequest)
+		return
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
+	if err != nil {
+		doctorresponse.UpdatePasswordDoctorFailedResponse(c, "Failed To Hash Password", "", http.StatusBadRequest)
+		return
+	}
+
+	doctor_data.Password = string(hash)
+
+	if err := initializers.DB.Save(&doctor_data).Error; err != nil {
+		doctorresponse.UpdatePasswordDoctorFailedResponse(c, "Failed To Update Doctor Password", "", http.StatusBadRequest)
+		return
+	}
+
+	doctorresponse.UpdatePasswordDoctorSuccessResponse(c, "Success Update Doctor Password", doctor_data.ID, http.StatusOK)
 }
 
 func DoctorPatientRequest(c *gin.Context) {

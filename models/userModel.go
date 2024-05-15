@@ -8,32 +8,33 @@ import (
 )
 
 type User struct {
-	ID                 uuid.UUID `gorm:"type:uuid;primaryKey;"`
-	Name               string    `validate:"required"`
-	Gender             string    `validate:"required"`
-	BirthDate          string    `validate:"required"`
-	BloodGroup         string    `validate:"required"`
-	DiagnosisDate      string    `validate:"required"`
-	Province           string    `validate:"required"`
-	District           string    `validate:"required"`
-	SubDistrict        string    `validate:"required"`
-	Village            string    `validate:"required"`
-	Address            string    `validate:"required"`
-	PhoneNumber        string    `validate:"required,max=14"`
-	Email              string    `gorm:"unique" validate:"required,email"`
-	Password           string    `validate:"required,min=8"`
-	IsActive           bool
-	OtpCode            string
-	OtpCreatedAt       time.Time
-	OtpType            string
-	ForgotPasswordCode string
-	BCR_ABL            []BCR_ABL            `gorm:"foreignKey:UserID"`
-	UserPersonalDoctor []UserPersonalDoctor `gorm:"foreignKey:UserID"`
-	Medicine           []Medicine           `gorm:"foreignKey:UserID"`
-	MedicineSchedule   []MedicineSchedule   `gorm:"foreignKey:UserID"`
-	Symptom            []SymptomAnswer      `gorm:"foreignKey:UserID"`
-	UserTreatment      []UserTreatment      `gorm:"foreignKey:UserID"`
-	UserInformation    []UserInformation    `gorm:"foreignKey:UserID"`
+	ID                   uuid.UUID `gorm:"type:uuid;primaryKey;"`
+	Name                 string    `validate:"required"`
+	Gender               string    `validate:"required"`
+	BirthDate            string    `validate:"required"`
+	BloodGroup           string    `validate:"required"`
+	DiagnosisDate        string    `validate:"required"`
+	Province             string    `validate:"required"`
+	District             string    `validate:"required"`
+	SubDistrict          string    `validate:"required"`
+	Village              string    `validate:"required"`
+	Address              string    `validate:"required"`
+	PhoneNumber          string    `validate:"required,max=14"`
+	Email                string    `gorm:"unique" validate:"required,email"`
+	Password             string    `validate:"required,min=8"`
+	PasswordConfirmation string    `validate:"required,eqfield=Password"`
+	IsActive             bool
+	OtpCode              string
+	OtpCreatedAt         time.Time
+	OtpType              string
+	ForgotPasswordCode   string
+	BCR_ABL              []BCR_ABL            `gorm:"foreignKey:UserID"`
+	UserPersonalDoctor   []UserPersonalDoctor `gorm:"foreignKey:UserID"`
+	Medicine             []Medicine           `gorm:"foreignKey:UserID"`
+	MedicineSchedule     []MedicineSchedule   `gorm:"foreignKey:UserID"`
+	Symptom              []SymptomAnswer      `gorm:"foreignKey:UserID"`
+	UserTreatment        []UserTreatment      `gorm:"foreignKey:UserID"`
+	UserInformation      []UserInformation    `gorm:"foreignKey:UserID"`
 
 	gorm.Model
 }
