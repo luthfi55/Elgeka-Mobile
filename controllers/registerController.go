@@ -53,6 +53,19 @@ func isEmailUnique(email string) bool {
 	return (userCount + doctorCount) == 0
 }
 
+func isPhoneNumberUnique(phone_number string) bool {
+	var userCount, doctorCount int64
+
+	// Pengecekan phone_number di tabel User
+	initializers.DB.Model(&models.User{}).Where("phone_number = ?", phone_number).Count(&userCount)
+
+	// Pengecekan phone_number di tabel Doctor
+	initializers.DB.Model(&models.Doctor{}).Where("phone_number = ?", phone_number).Count(&doctorCount)
+
+	// Jika jumlah lebih dari 0, email sudah ada di salah satu tabel
+	return (userCount + doctorCount) == 0
+}
+
 func isPasswordValid(password string) bool {
 	if len(password) < 8 {
 		return false
@@ -86,6 +99,13 @@ func UserRegister(c *gin.Context) {
 		data := body
 		activationLink := "http://localhost:3000/api/user/register"
 		userresponse.RegisterFailedResponse(c, "Email Already Use", data, activationLink, http.StatusBadRequest)
+		return
+	}
+
+	if !isPhoneNumberUnique(body.PhoneNumber) {
+		data := body
+		activationLink := "http://localhost:3000/api/user/register"
+		userresponse.RegisterFailedResponse(c, "Phone Number Already Use", data, activationLink, http.StatusBadRequest)
 		return
 	}
 
@@ -142,7 +162,6 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
-	//hash the password
 	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
 	if err != nil {
 		data := body
@@ -226,10 +245,17 @@ func DoctorRegister(c *gin.Context) {
 		return
 	}
 
+	if !isPhoneNumberUnique(body.PhoneNumber) {
+		data := body
+		activationLink := "http://localhost:3000/api/doctor/register"
+		doctorresponse.RegisterFailedResponse(c, "Phone Number Already Use", data, activationLink, http.StatusBadRequest)
+		return
+	}
+
 	if !isPasswordValid(body.Password) {
 		errorMessage := "Password must contain at least 1 uppercase letter, 1 digit, and 1 symbol."
 		data := body
-		activationLink := "http://localhost:3000/api/user/register"
+		activationLink := "http://localhost:3000/api/doctor/register"
 		doctorresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
 		return
 	}
@@ -237,7 +263,7 @@ func DoctorRegister(c *gin.Context) {
 	if body.Gender != "male" && body.Gender != "female" {
 		errorMessage := "Gender must male or female."
 		data := body
-		activationLink := "http://localhost:3000/api/user/register"
+		activationLink := "http://localhost:3000/api/doctor/register"
 		doctorresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
 		return
 	}

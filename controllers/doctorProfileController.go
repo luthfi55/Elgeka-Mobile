@@ -31,6 +31,7 @@ func DoctorProfileController(r *gin.Engine) {
 
 	r.GET("api/doctor/list/website", ListDoctorWebsite)
 	r.GET("api/doctor/list_patient/website", ListPatientDoctorWebsite)
+	r.DELETE("api/doctor/delete/account/website/:doctor_id", DeleteDoctorAccountWebsite)
 }
 
 func DoctorCheck(c *gin.Context, doctor any) bool {
@@ -721,4 +722,43 @@ func DoctorPatientMedicine(c *gin.Context) {
 	medicine.Medicine = medicine_list
 
 	doctorresponse.DoctorPatientHealthStatusSuccessResponse(c, "Success to Get Medicine Data", medicine, http.StatusOK)
+}
+
+func DeleteDoctorAccountWebsite(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	doctorID := c.Param("doctor_id")
+
+	var doctor_account models.Doctor
+	resultDoctorAccount := initializers.DB.Find(&doctor_account, "id = ?", doctorID)
+	if resultDoctorAccount.Error != nil {
+		doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Get Doctor Account", "", http.StatusNotFound)
+		return
+	}
+
+	var doctor_relation []models.UserPersonalDoctor
+
+	resultDoctorRelation := initializers.DB.Where("doctor_id = ?", doctorID).Find(&doctor_relation)
+	if resultDoctorRelation.Error != nil {
+		doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Get Doctor Relation", "", http.StatusInternalServerError)
+		return
+	}
+
+	if resultDoctorRelation.RowsAffected > 0 {
+		deleteResult := initializers.DB.Unscoped().Delete(&doctor_relation)
+		if deleteResult.Error != nil {
+			doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Delete Doctor Relation", "", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	deleteResult := initializers.DB.Unscoped().Delete(&doctor_account)
+	if deleteResult.Error != nil {
+		doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Delete Doctor Account", "", http.StatusInternalServerError)
+		return
+	}
+
+	doctorresponse.ListDoctorWebsiteSuccessResponse(c, "Success to Delete Doctor Account", doctorID, http.StatusOK)
 }

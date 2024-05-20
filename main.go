@@ -1,9 +1,11 @@
 package main
 
 import (
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"elgeka-mobile/controllers"
 	"elgeka-mobile/initializers"
@@ -17,12 +19,19 @@ func init() {
 	initializers.SyncDatabase()
 }
 
+func connectToWhatsappWithRetry() {
+	for {
+		initializers.ConnectToWhatsapp()
+		log.Println("Connected to WhatsApp")
+		time.Sleep(5 * time.Second)
+	}
+}
+
 func main() {
 	shutdownSignal := make(chan os.Signal, 1)
 	signal.Notify(shutdownSignal, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		initializers.ConnectToWhatsapp()
-	}()
+
+	go connectToWhatsappWithRetry()
 	r := gin.Default()
 
 	r.Use(func(c *gin.Context) {
