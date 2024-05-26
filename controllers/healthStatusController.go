@@ -5,7 +5,6 @@ import (
 	"elgeka-mobile/middleware"
 	"elgeka-mobile/models"
 	healthstatusresponse "elgeka-mobile/response/HealthStatusResponse"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -80,12 +79,13 @@ func CreateBcrAbl(c *gin.Context) {
 
 	validate := validator.New()
 	if err := validate.Struct(body); err != nil {
-		var validationErrors []string
-		for _, err := range err.(validator.ValidationErrors) {
-			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
 		}
-		errorMessage := strings.Join(validationErrors, ", ") // Join errors into a single string
-		healthstatusresponse.BcrAblFailedResponse(c, errorMessage, bcr_abl_data, "Create BCR-ABL", "http://localhost:3000/api/user/health_status/bcr_abl", http.StatusBadRequest)
+
+		healthstatusresponse.BcrAblFailedResponse(c, strings.Join(errorMessages, ", "), bcr_abl_data, "Create BCR-ABL", "http://localhost:3000/api/user/health_status/bcr_abl", http.StatusBadRequest)
 		return
 	}
 
@@ -174,12 +174,13 @@ func UpdateBcrAbl(c *gin.Context) {
 
 	validate := validator.New()
 	if err := validate.Struct(body); err != nil {
-		var validationErrors []string
-		for _, err := range err.(validator.ValidationErrors) {
-			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
 		}
-		errorMessage := strings.Join(validationErrors, ", ")
-		healthstatusresponse.BcrAblFailedResponse(c, errorMessage, bcr_abl_data, "Create BCR-ABL", "http://localhost:3000/api/user/health_status/bcr_abl", http.StatusBadRequest)
+
+		healthstatusresponse.BcrAblFailedResponse(c, strings.Join(errorMessages, ", "), bcr_abl_data, "Create BCR-ABL", "http://localhost:3000/api/user/health_status/bcr_abl", http.StatusBadRequest)
 		return
 	}
 
@@ -247,12 +248,12 @@ func CreateLeukocytes(c *gin.Context) {
 
 	validate := validator.New()
 	if err := validate.Struct(body); err != nil {
-		var validationErrors []string
-		for _, err := range err.(validator.ValidationErrors) {
-			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
 		}
-		errorMessage := strings.Join(validationErrors, ", ") // Join errors into a single string
-		healthstatusresponse.LeukocytesFailedResponse(c, errorMessage, leukocytesData, "Create Leukocytes", "http://localhost:3000/api/user/health_status/leukocytes", http.StatusBadRequest)
+		healthstatusresponse.LeukocytesFailedResponse(c, strings.Join(errorMessages, ", "), leukocytesData, "Create Leukocytes", "http://localhost:3000/api/user/health_status/leukocytes", http.StatusBadRequest)
 		return
 	}
 
@@ -341,12 +342,12 @@ func UpdateLeukocytes(c *gin.Context) {
 
 	validate := validator.New()
 	if err := validate.Struct(body); err != nil {
-		var validationErrors []string
-		for _, err := range err.(validator.ValidationErrors) {
-			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
 		}
-		errorMessage := strings.Join(validationErrors, ", ")
-		healthstatusresponse.LeukocytesFailedResponse(c, errorMessage, leukocytesData, "Create Leukocytes", "http://localhost:3000/api/user/health_status/leukocytes", http.StatusBadRequest)
+		healthstatusresponse.LeukocytesFailedResponse(c, strings.Join(errorMessages, ", "), leukocytesData, "Create Leukocytes", "http://localhost:3000/api/user/health_status/leukocytes", http.StatusBadRequest)
 		return
 	}
 
@@ -414,12 +415,12 @@ func CreatePotentialHydrogen(c *gin.Context) {
 
 	validate := validator.New()
 	if err := validate.Struct(body); err != nil {
-		var validationErrors []string
-		for _, err := range err.(validator.ValidationErrors) {
-			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
 		}
-		errorMessage := strings.Join(validationErrors, ", ") // Join errors into a single string
-		healthstatusresponse.PotentialHydrogenFailedResponse(c, errorMessage, potentialHydrogenData, "Create Potential Hydrogen", "http://localhost:3000/api/user/health_status/potential_hydrogen", http.StatusBadRequest)
+		healthstatusresponse.PotentialHydrogenFailedResponse(c, strings.Join(errorMessages, ", "), potentialHydrogenData, "Create Potential Hydrogen", "http://localhost:3000/api/user/health_status/potential_hydrogen", http.StatusBadRequest)
 		return
 	}
 
@@ -508,12 +509,12 @@ func UpdatePotentialHydrogen(c *gin.Context) {
 
 	validate := validator.New()
 	if err := validate.Struct(body); err != nil {
-		var validationErrors []string
-		for _, err := range err.(validator.ValidationErrors) {
-			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
 		}
-		errorMessage := strings.Join(validationErrors, ", ")
-		healthstatusresponse.PotentialHydrogenFailedResponse(c, errorMessage, potentialHydrogenData, "Create Potential Hydrogen", "http://localhost:3000/api/user/health_status/potential_hydrogen", http.StatusBadRequest)
+		healthstatusresponse.PotentialHydrogenFailedResponse(c, strings.Join(errorMessages, ", "), potentialHydrogenData, "Create Potential Hydrogen", "http://localhost:3000/api/user/health_status/potential_hydrogen", http.StatusBadRequest)
 		return
 	}
 
@@ -581,12 +582,12 @@ func CreateHemoglobin(c *gin.Context) {
 
 	validate := validator.New()
 	if err := validate.Struct(body); err != nil {
-		var validationErrors []string
-		for _, err := range err.(validator.ValidationErrors) {
-			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
 		}
-		errorMessage := strings.Join(validationErrors, ", ") // Join errors into a single string
-		healthstatusresponse.HemoglobinFailedResponse(c, errorMessage, hemoglobinData, "Create Hemoglobin", "http://localhost:3000/api/user/health_status/hemoglobin", http.StatusBadRequest)
+		healthstatusresponse.HemoglobinFailedResponse(c, strings.Join(errorMessages, ", "), hemoglobinData, "Create Hemoglobin", "http://localhost:3000/api/user/health_status/hemoglobin", http.StatusBadRequest)
 		return
 	}
 
@@ -675,12 +676,12 @@ func UpdateHemoglobin(c *gin.Context) {
 
 	validate := validator.New()
 	if err := validate.Struct(body); err != nil {
-		var validationErrors []string
-		for _, err := range err.(validator.ValidationErrors) {
-			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
 		}
-		errorMessage := strings.Join(validationErrors, ", ")
-		healthstatusresponse.HemoglobinFailedResponse(c, errorMessage, hemoglobinData, "Create Hemoglobin", "http://localhost:3000/api/user/health_status/hemoglobin", http.StatusBadRequest)
+		healthstatusresponse.HemoglobinFailedResponse(c, strings.Join(errorMessages, ", "), hemoglobinData, "Create Hemoglobin", "http://localhost:3000/api/user/health_status/hemoglobin", http.StatusBadRequest)
 		return
 	}
 
@@ -748,12 +749,12 @@ func CreateHeartRate(c *gin.Context) {
 
 	validate := validator.New()
 	if err := validate.Struct(body); err != nil {
-		var validationErrors []string
-		for _, err := range err.(validator.ValidationErrors) {
-			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
 		}
-		errorMessage := strings.Join(validationErrors, ", ") // Join errors into a single string
-		healthstatusresponse.HeartRateFailedResponse(c, errorMessage, heartRateData, "Create Heart Rate", "http://localhost:3000/api/user/health_status/heart_rate", http.StatusBadRequest)
+		healthstatusresponse.HeartRateFailedResponse(c, strings.Join(errorMessages, ", "), heartRateData, "Create Heart Rate", "http://localhost:3000/api/user/health_status/heart_rate", http.StatusBadRequest)
 		return
 	}
 
@@ -842,12 +843,12 @@ func UpdateHeartRate(c *gin.Context) {
 
 	validate := validator.New()
 	if err := validate.Struct(body); err != nil {
-		var validationErrors []string
-		for _, err := range err.(validator.ValidationErrors) {
-			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
 		}
-		errorMessage := strings.Join(validationErrors, ", ")
-		healthstatusresponse.HeartRateFailedResponse(c, errorMessage, heartRateData, "Create Heart Rate", "http://localhost:3000/api/user/health_status/heart_rate", http.StatusBadRequest)
+		healthstatusresponse.HeartRateFailedResponse(c, strings.Join(errorMessages, ", "), heartRateData, "Create Heart Rate", "http://localhost:3000/api/user/health_status/heart_rate", http.StatusBadRequest)
 		return
 	}
 
@@ -917,12 +918,12 @@ func CreateBloodPressure(c *gin.Context) {
 
 	validate := validator.New()
 	if err := validate.Struct(body); err != nil {
-		var validationErrors []string
-		for _, err := range err.(validator.ValidationErrors) {
-			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
 		}
-		errorMessage := strings.Join(validationErrors, ", ") // Join errors into a single string
-		healthstatusresponse.BloodPressureFailedResponse(c, errorMessage, bloodPressureData, "Create Blood Pressure", "http://localhost:3000/api/user/health_status/blood_pressure", http.StatusBadRequest)
+		healthstatusresponse.BloodPressureFailedResponse(c, strings.Join(errorMessages, ", "), bloodPressureData, "Create Blood Pressure", "http://localhost:3000/api/user/health_status/blood_pressure", http.StatusBadRequest)
 		return
 	}
 
@@ -1017,12 +1018,12 @@ func UpdateBloodPressure(c *gin.Context) {
 
 	validate := validator.New()
 	if err := validate.Struct(body); err != nil {
-		var validationErrors []string
-		for _, err := range err.(validator.ValidationErrors) {
-			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
 		}
-		errorMessage := strings.Join(validationErrors, ", ")
-		healthstatusresponse.BloodPressureFailedResponse(c, errorMessage, bloodPressureData, "Create Blood Pressure", "http://localhost:3000/api/user/health_status/blood_pressure", http.StatusBadRequest)
+		healthstatusresponse.BloodPressureFailedResponse(c, strings.Join(errorMessages, ", "), bloodPressureData, "Create Blood Pressure", "http://localhost:3000/api/user/health_status/blood_pressure", http.StatusBadRequest)
 		return
 	}
 

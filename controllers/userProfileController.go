@@ -7,9 +7,11 @@ import (
 	userresponse "elgeka-mobile/response/UserResponse"
 	"errors"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -153,6 +155,17 @@ func EditUserInformation(c *gin.Context) {
 	var user_data models.UserInformation
 	if err := initializers.DB.First(&user_data, "user_id = ?", user).Error; err != nil {
 		userresponse.UpdateUserInformationProfileFailedResponse(c, "Failed To Find User Information", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
+		return
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(body); err != nil {
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
+		}
+		userresponse.UpdateUserInformationProfileFailedResponse(c, strings.Join(errorMessages, ", "), body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
 		return
 	}
 

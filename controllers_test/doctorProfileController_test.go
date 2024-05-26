@@ -411,3 +411,185 @@ func TestDoctorPatientHealthStatus_Failed(t *testing.T) {
 		t.Errorf("expected message body %s but got %s", "Patient Profile Not Found", expectedBody.ErrorMessage)
 	}
 }
+
+func TestListDoctorWebsite_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/doctor/list/website", middleware.RequireAuth, controllers.ListDoctorWebsite)
+
+	req, err := http.NewRequest("GET", "/api/doctor/list/website", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.AddCookie(WebsiteBearierTokenConfiguration())
+
+	bearerToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNGUyZDY4NDgtM2FlMy00NjdjLTk5NzQtZTVkMTdhYWJhMGU3IiwidXNlcm5hbWUiOiJwZW5ndXJ1c2VsZ2VrYSIsImZ1bGxfbmFtZSI6IlBlbmd1cnVzIFV0YW1hIEVMR0VLQSBKQUJBUiIsImlzX2FjdGl2ZSI6dHJ1ZSwic3VwZXJVc2VyIjp0cnVlfSwiaWF0IjoxNzE2Mzg3ODYyLCJleHAiOjE3MTY0MDk0NjJ9.Vi9bw3Qf4SZELmZ04fIbNL9WTqcRE5zxKNjYmKyTmDg"
+	req.Header.Set("Authorization", "Bearer "+bearerToken)
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success to Get Doctor List" {
+		t.Errorf("expected message body %s but got %s", "Success to Get Doctor List", expectedBody.Message)
+	}
+}
+
+func TestListDoctorWebsite_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/doctor/list/website", middleware.RequireAuth, controllers.ListDoctorWebsite)
+
+	req, err := http.NewRequest("GET", "/api/doctor/list/website", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+}
+
+func TestListPatientDoctorWebsite_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/doctor/list_patient/website", middleware.RequireAuth, controllers.ListPatientDoctorWebsite)
+
+	req, err := http.NewRequest("GET", "/api/doctor/list_patient/website", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.AddCookie(WebsiteBearierTokenConfiguration())
+
+	bearerToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNGUyZDY4NDgtM2FlMy00NjdjLTk5NzQtZTVkMTdhYWJhMGU3IiwidXNlcm5hbWUiOiJwZW5ndXJ1c2VsZ2VrYSIsImZ1bGxfbmFtZSI6IlBlbmd1cnVzIFV0YW1hIEVMR0VLQSBKQUJBUiIsImlzX2FjdGl2ZSI6dHJ1ZSwic3VwZXJVc2VyIjp0cnVlfSwiaWF0IjoxNzE2Mzg3ODYyLCJleHAiOjE3MTY0MDk0NjJ9.Vi9bw3Qf4SZELmZ04fIbNL9WTqcRE5zxKNjYmKyTmDg"
+	req.Header.Set("Authorization", "Bearer "+bearerToken)
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success to Get Patient Doctor List" {
+		t.Errorf("expected message body %s but got %s", "Success to Get Patient Doctor List", expectedBody.Message)
+	}
+}
+
+func TestListPatientDoctorWebsite_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/doctor/list_patient/website", middleware.RequireAuth, controllers.ListPatientDoctorWebsite)
+
+	req, err := http.NewRequest("GET", "/api/doctor/list_patient/website", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+}
+
+func TestDeleteDoctorAccountWebsite_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.DELETE("/api/doctor/delete/account/website/:doctor_id", middleware.RequireAuth, controllers.DeleteDoctorAccountWebsite)
+
+	doctor_id := "b79a2300-f9bd-4c57-bed5-f18c5fd47ff6"
+	req, err := http.NewRequest("DELETE", "/api/doctor/delete/account/website/"+doctor_id, nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.AddCookie(WebsiteBearierTokenConfiguration())
+
+	bearerToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNGUyZDY4NDgtM2FlMy00NjdjLTk5NzQtZTVkMTdhYWJhMGU3IiwidXNlcm5hbWUiOiJwZW5ndXJ1c2VsZ2VrYSIsImZ1bGxfbmFtZSI6IlBlbmd1cnVzIFV0YW1hIEVMR0VLQSBKQUJBUiIsImlzX2FjdGl2ZSI6dHJ1ZSwic3VwZXJVc2VyIjp0cnVlfSwiaWF0IjoxNzE2Mzg3ODYyLCJleHAiOjE3MTY0MDk0NjJ9.Vi9bw3Qf4SZELmZ04fIbNL9WTqcRE5zxKNjYmKyTmDg"
+	req.Header.Set("Authorization", "Bearer "+bearerToken)
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success to Delete Doctor Account" {
+		t.Errorf("expected message body %s but got %s", "Success to Delete Doctor Account", expectedBody.Message)
+	}
+}
+
+func TestDeleteDoctorAccountWebsite_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.DELETE("/api/doctor/delete/account/website/:doctor_id", middleware.RequireAuth, controllers.DeleteDoctorAccountWebsite)
+
+	doctor_id := "b79a2300-f9bd-4c57-bed5-f18c5fd47fzl"
+	req, err := http.NewRequest("DELETE", "/api/doctor/delete/account/website/"+doctor_id, nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.AddCookie(WebsiteBearierTokenConfiguration())
+
+	bearerToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNGUyZDY4NDgtM2FlMy00NjdjLTk5NzQtZTVkMTdhYWJhMGU3IiwidXNlcm5hbWUiOiJwZW5ndXJ1c2VsZ2VrYSIsImZ1bGxfbmFtZSI6IlBlbmd1cnVzIFV0YW1hIEVMR0VLQSBKQUJBUiIsImlzX2FjdGl2ZSI6dHJ1ZSwic3VwZXJVc2VyIjp0cnVlfSwiaWF0IjoxNzE2Mzg3ODYyLCJleHAiOjE3MTY0MDk0NjJ9.Vi9bw3Qf4SZELmZ04fIbNL9WTqcRE5zxKNjYmKyTmDg"
+	req.Header.Set("Authorization", "Bearer "+bearerToken)
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusNotFound {
+		t.Errorf("expected status code %d but got %d", http.StatusNotFound, rec.Code)
+	}
+
+	var expectedBody ExpectedFailedResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Failed to Get Doctor Account" {
+		t.Errorf("expected message body %s but got %s", "Failed to Get Doctor Account", expectedBody.ErrorMessage)
+	}
+}

@@ -8,8 +8,8 @@ import (
 type Medicine struct {
 	ID               uuid.UUID          `gorm:"type:uuid;primaryKey;"`
 	UserID           uuid.UUID          `gorm:"type:uuid;foreignKey;"`
-	Name             string             `json:"Name"`
-	Dosage           string             `json:"Dosage"`
+	Name             string             `validate:"required,min=2,max=100" json:"Name"`
+	Dosage           string             `validate:"required,min=1,max=10" json:"Dosage"`
 	Stock            int                `json:"Stock"`
 	MedicineSchedule []MedicineSchedule `gorm:"foreignKey:MedicineID"`
 	gorm.Model
@@ -19,7 +19,7 @@ type MedicineSchedule struct {
 	ID         uuid.UUID `gorm:"type:uuid;primaryKey;"`
 	UserID     uuid.UUID `gorm:"type:uuid;foreignKey;"`
 	MedicineID uuid.UUID `gorm:"type:uuid;foreignKey;"`
-	Date       string    `json:"Date"`
+	Date       string    `validate:"required,min=21,max28" json:"Date"`
 	Status     bool      `json:"Status" gorm:"default:false"`
 	gorm.Model
 }

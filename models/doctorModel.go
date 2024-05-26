@@ -9,13 +9,13 @@ import (
 
 type Doctor struct {
 	ID                   uuid.UUID `gorm:"type:uuid;primaryKey;"`
-	Name                 string    `validate:"required"`
-	PhoneNumber          string    `validate:"required,max=13"`
-	Gender               string    `validate:"required"`
-	PolyName             string    `validate:"required"`
-	HospitalName         string    `validate:"required"`
-	Email                string    `gorm:"unique" validate:"required,email"`
-	Password             string    `validate:"required,min=8"`
+	Name                 string    `validate:"required,min=2,max=100"`
+	PhoneNumber          string    `validate:"required,min=10,max=14"`
+	Gender               string    `validate:"required,min=1,max=10"`
+	PolyName             string    `validate:"required,min=2,max=100"`
+	HospitalName         string    `validate:"required,min=2,max=100"`
+	Email                string    `gorm:"unique" validate:"required,email,max=100"`
+	Password             string    `validate:"required,min=8,max=50"`
 	PasswordConfirmation string    `validate:"required,eqfield=Password"`
 	EmailActive          bool
 	IsActive             bool

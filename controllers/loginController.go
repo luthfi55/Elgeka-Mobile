@@ -630,7 +630,7 @@ func RefreshForgotPasswordOtp(c *gin.Context) {
 func UserLogoutWebsite(c *gin.Context) {
 	cookie, err := c.Request.Cookie("Authorization")
 	if err != nil {
-		userresponse.LogoutSuccessResponse(c, "Failed to Get Cookie", "http://localhost:3000/api/user/login", http.StatusOK)
+		userresponse.LogoutFailedResponse(c, "Failed to Get Cookie", "http://localhost:3000/api/user/login", http.StatusOK)
 		return
 	}
 

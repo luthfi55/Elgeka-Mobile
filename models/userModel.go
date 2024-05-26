@@ -9,19 +9,19 @@ import (
 
 type User struct {
 	ID                   uuid.UUID `gorm:"type:uuid;primaryKey;"`
-	Name                 string    `validate:"required"`
-	Gender               string    `validate:"required"`
-	BirthDate            string    `validate:"required"`
-	BloodGroup           string    `validate:"required"`
-	DiagnosisDate        string    `validate:"required"`
-	Province             string    `validate:"required"`
-	District             string    `validate:"required"`
-	SubDistrict          string    `validate:"required"`
-	Village              string    `validate:"required"`
-	Address              string    `validate:"required"`
-	PhoneNumber          string    `validate:"required,max=14"`
-	Email                string    `gorm:"unique" validate:"required,email"`
-	Password             string    `validate:"required,min=8"`
+	Name                 string    `validate:"required,min=2,max=100"`
+	Gender               string    `validate:"required,min=1,max=10"`
+	BirthDate            string    `validate:"required,len=10"`
+	BloodGroup           string    `validate:"required,min=1,max=3"`
+	DiagnosisDate        string    `validate:"required,len=10"`
+	Province             string    `validate:"required,min=2,max=100"`
+	District             string    `validate:"required,min=2,max=100"`
+	SubDistrict          string    `validate:"required,min=2,max=100"`
+	Village              string    `validate:"required,min=2,max=100"`
+	Address              string    `validate:"required,min=10,max=200"`
+	PhoneNumber          string    `validate:"required,min=10,max=14"`
+	Email                string    `gorm:"unique" validate:"required,email,max=100"`
+	Password             string    `validate:"required,min=8,max=50"`
 	PasswordConfirmation string    `validate:"required,eqfield=Password"`
 	IsActive             bool
 	OtpCode              string

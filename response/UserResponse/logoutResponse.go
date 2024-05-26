@@ -27,10 +27,10 @@ func LogoutSuccessResponse(c *gin.Context, message string, link string, status i
 		Link: link,
 	}
 
-	response := models.LogoutUserFailedResponse{
-		ErrorMessage: message,
-		Data:         "",
-		Link:         []models.LinkItem{linkItem},
+	response := models.LogoutUserSuccessResponse{
+		Message: message,
+		Data:    "",
+		Link:    []models.LinkItem{linkItem},
 	}
 
 	c.JSON(status, response)

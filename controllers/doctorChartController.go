@@ -249,6 +249,7 @@ func GetSymptomUserData(c *gin.Context) {
 
 	if result.Error != nil {
 		doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Symptom User Data", "", http.StatusInternalServerError)
+		return
 	}
 
 	var symptom []models.SymptomAnswer
@@ -258,6 +259,7 @@ func GetSymptomUserData(c *gin.Context) {
 		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Oral").Find(&symptom)
 		if result.Error != nil {
 			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+			return
 		}
 
 		for _, symptom_data := range symptom {
@@ -270,10 +272,12 @@ func GetSymptomUserData(c *gin.Context) {
 		}
 
 		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Oral Symptom User Data", response, http.StatusOK)
+		return
 	} else if typeSymptom == "Digestive" {
 		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Digestive").Find(&symptom)
 		if result.Error != nil {
 			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+			return
 		}
 
 		for _, symptom_data := range symptom {
@@ -286,10 +290,12 @@ func GetSymptomUserData(c *gin.Context) {
 		}
 
 		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Digestive Symptom User Data", response, http.StatusOK)
+		return
 	} else if typeSymptom == "Respiratory" {
 		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Respiratory").Find(&symptom)
 		if result.Error != nil {
 			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+			return
 		}
 		for _, symptom_data := range symptom {
 			response = append(response, models.SymptomAnswerData{
@@ -300,10 +306,12 @@ func GetSymptomUserData(c *gin.Context) {
 			})
 		}
 		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Respiratory Symptom User Data", response, http.StatusOK)
+		return
 	} else if typeSymptom == "Skin" {
 		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Skin").Find(&symptom)
 		if result.Error != nil {
 			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+			return
 		}
 		for _, symptom_data := range symptom {
 			response = append(response, models.SymptomAnswerData{
@@ -314,10 +322,12 @@ func GetSymptomUserData(c *gin.Context) {
 			})
 		}
 		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Skin Symptom User Data", response, http.StatusOK)
+		return
 	} else if typeSymptom == "Hair" {
 		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Hair").Find(&symptom)
 		if result.Error != nil {
 			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+			return
 		}
 		for _, symptom_data := range symptom {
 			response = append(response, models.SymptomAnswerData{
@@ -328,10 +338,12 @@ func GetSymptomUserData(c *gin.Context) {
 			})
 		}
 		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Hair Symptom User Data", response, http.StatusOK)
+		return
 	} else if typeSymptom == "Nails" {
 		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Nails").Find(&symptom)
 		if result.Error != nil {
 			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+			return
 		}
 		for _, symptom_data := range symptom {
 			response = append(response, models.SymptomAnswerData{
@@ -342,10 +354,12 @@ func GetSymptomUserData(c *gin.Context) {
 			})
 		}
 		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Nails Symptom User Data", response, http.StatusOK)
+		return
 	} else if typeSymptom == "Swelling" {
 		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Swelling").Find(&symptom)
 		if result.Error != nil {
 			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+			return
 		}
 		for _, symptom_data := range symptom {
 			response = append(response, models.SymptomAnswerData{
@@ -356,10 +370,12 @@ func GetSymptomUserData(c *gin.Context) {
 			})
 		}
 		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Swelling Symptom User Data", response, http.StatusOK)
+		return
 	} else if typeSymptom == "Senses" {
 		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Senses").Find(&symptom)
 		if result.Error != nil {
 			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+			return
 		}
 		for _, symptom_data := range symptom {
 			response = append(response, models.SymptomAnswerData{
@@ -370,10 +386,12 @@ func GetSymptomUserData(c *gin.Context) {
 			})
 		}
 		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Senses Symptom User Data", response, http.StatusOK)
+		return
 	} else if typeSymptom == "Moods" {
 		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Moods").Find(&symptom)
 		if result.Error != nil {
 			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+			return
 		}
 		for _, symptom_data := range symptom {
 			response = append(response, models.SymptomAnswerData{
@@ -384,10 +402,12 @@ func GetSymptomUserData(c *gin.Context) {
 			})
 		}
 		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Moods Symptom User Data", response, http.StatusOK)
+		return
 	} else if typeSymptom == "Pain" {
 		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Pain").Find(&symptom)
 		if result.Error != nil {
 			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+			return
 		}
 		for _, symptom_data := range symptom {
 			response = append(response, models.SymptomAnswerData{
@@ -398,10 +418,12 @@ func GetSymptomUserData(c *gin.Context) {
 			})
 		}
 		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Pain Symptom User Data", response, http.StatusOK)
+		return
 	} else if typeSymptom == "Cognitive" {
 		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Cognitive").Find(&symptom)
 		if result.Error != nil {
 			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+			return
 		}
 		for _, symptom_data := range symptom {
 			response = append(response, models.SymptomAnswerData{
@@ -412,10 +434,12 @@ func GetSymptomUserData(c *gin.Context) {
 			})
 		}
 		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Cognitive Symptom User Data", response, http.StatusOK)
+		return
 	} else if typeSymptom == "Urinary" {
 		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Urinary").Find(&symptom)
 		if result.Error != nil {
 			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+			return
 		}
 		for _, symptom_data := range symptom {
 			response = append(response, models.SymptomAnswerData{
@@ -426,10 +450,12 @@ func GetSymptomUserData(c *gin.Context) {
 			})
 		}
 		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Urinary Symptom User Data", response, http.StatusOK)
+		return
 	} else if typeSymptom == "Genitals" {
 		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Genitals").Find(&symptom)
 		if result.Error != nil {
 			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+			return
 		}
 		for _, symptom_data := range symptom {
 			response = append(response, models.SymptomAnswerData{
@@ -440,10 +466,12 @@ func GetSymptomUserData(c *gin.Context) {
 			})
 		}
 		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Genitals Symptom User Data", response, http.StatusOK)
+		return
 	} else if typeSymptom == "Reproductive" {
 		result := initializers.DB.Where("user_id = ? AND type = ?", userID, "Reproductive").Find(&symptom)
 		if result.Error != nil {
 			doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Failed to Get Data", "", http.StatusInternalServerError)
+			return
 		}
 		for _, symptom_data := range symptom {
 			response = append(response, models.SymptomAnswerData{
@@ -454,7 +482,9 @@ func GetSymptomUserData(c *gin.Context) {
 			})
 		}
 		doctorresponse.SymptomAnswerDoctorSuccessResponse(c, "Success to Get Reproductive Symptom User Data", response, http.StatusOK)
+		return
 	} else {
 		doctorresponse.SymptomAnswerDoctorFailedResponse(c, "Symptom Type Not Found", "", http.StatusBadRequest)
+		return
 	}
 }

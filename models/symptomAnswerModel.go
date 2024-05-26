@@ -8,10 +8,10 @@ import (
 type SymptomAnswer struct {
 	ID         uuid.UUID `gorm:"type:uuid;primaryKey;"`
 	UserID     uuid.UUID `gorm:"type:uuid;foreignKey;"`
-	Type       string    `validate:"required"`
-	Answer     string    `validate:"required"`
-	WordAnswer string    `validate:"required"`
-	Date       string    `validate:"required"`
+	Type       string    `validate:"required,min=3,max=20"`
+	Answer     string    `validate:"required,min=2,max=500"`
+	WordAnswer string    `validate:"required,min=2,max=500"`
+	Date       string    `validate:"required,len=10"`
 	gorm.Model
 }
 

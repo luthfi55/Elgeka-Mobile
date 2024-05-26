@@ -33,10 +33,10 @@ func TestMain(m *testing.M) {
 }
 
 func CookieConfiguration() *http.Cookie {
-	expiresTime, _ := time.Parse(time.RFC1123, "Mon, 15 Apr 2024 17:00:20 GMT")
+	expiresTime, _ := time.Parse(time.RFC1123, "Sat, 22 Jun 2024 10:02:25 GMT")
 	return &http.Cookie{
 		Name:     "Authorization",
-		Value:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTUxNzQyNzcsInN1YiI6IjE0YzlhNDQzLTAzZTUtNGJhNi05NjY0LTBmODIwYjE5ZDhhYiJ9.1RiMdIq9MauOouHVg5vxm9MC7oah3t1nQhqMIgi6I68",
+		Value:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTkwNTA1NDUsInN1YiI6IjE0YzlhNDQzLTAzZTUtNGJhNi05NjY0LTBmODIwYjE5ZDhhYiJ9.A9zLQeWYlOZwztxHhB_ZBU3qZQUsWpQjvpI3ucus7k8",
 		Path:     "/",
 		HttpOnly: true,
 		Expires:  expiresTime,
@@ -44,12 +44,21 @@ func CookieConfiguration() *http.Cookie {
 }
 
 func DoctorCookieConfiguration() *http.Cookie {
-	expiresTime, _ := time.Parse(time.RFC1123, "Mon, 15 Apr 2024 17:00:20 GMT")
+	expiresTime, _ := time.Parse(time.RFC1123, "Sat, 22 Jun 2024 10:02:25 GMT")
 	return &http.Cookie{
 		Name:     "Authorization",
 		Value:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTcwNTgxNjQsInN1YiI6IjVmYWUwYjVkLTAxZDAtNDhmYi05ZTIzLWNhMWU5YWNhMmYyMCJ9.j4kcnBLIyOPnXl5Ok1gZKhqsAysXs2MTsEmzN23sVi0",
 		Path:     "/",
 		HttpOnly: true,
 		Expires:  expiresTime,
+	}
+}
+
+func WebsiteBearierTokenConfiguration() *http.Cookie {
+	return &http.Cookie{
+		Name:     "Authorization",
+		Value:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTg4MTEwMzYsInN1YiI6IjE0YzlhNDIzLTAzZTEtNGJhNi05NjY0LTBmODIwYjE5ZDhhYiJ9.mJ7Xmk5yJwj2ISKci06xl0Gapn3VSNTGTaRXOZcRAKY",
+		Path:     "/",
+		HttpOnly: true,
 	}
 }

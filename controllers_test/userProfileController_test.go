@@ -381,3 +381,60 @@ func TestGetPersonalDoctor_Failed(t *testing.T) {
 		t.Errorf("expected message %s but got %s", "", rec.Body.String())
 	}
 }
+
+func TestListUserWebsite_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/user/list/website", middleware.RequireAuth, controllers.ListUserWebsite)
+
+	req, err := http.NewRequest("GET", "/api/user/list/website", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.AddCookie(WebsiteBearierTokenConfiguration())
+
+	bearerToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNGUyZDY4NDgtM2FlMy00NjdjLTk5NzQtZTVkMTdhYWJhMGU3IiwidXNlcm5hbWUiOiJwZW5ndXJ1c2VsZ2VrYSIsImZ1bGxfbmFtZSI6IlBlbmd1cnVzIFV0YW1hIEVMR0VLQSBKQUJBUiIsImlzX2FjdGl2ZSI6dHJ1ZSwic3VwZXJVc2VyIjp0cnVlfSwiaWF0IjoxNzE2Mzg3ODYyLCJleHAiOjE3MTY0MDk0NjJ9.Vi9bw3Qf4SZELmZ04fIbNL9WTqcRE5zxKNjYmKyTmDg"
+	req.Header.Set("Authorization", "Bearer "+bearerToken)
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	t.Logf("Response Body: %s", rec.Body.String())
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success to Get Patient List" {
+		t.Errorf("expected message body %s but got %s", "Success to Get Patient List", expectedBody.Message)
+	}
+}
+
+func TestListUserWebsite_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/user/list/website", middleware.RequireAuth, controllers.ListUserWebsite)
+
+	req, err := http.NewRequest("GET", "/api/user/list/website", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+}

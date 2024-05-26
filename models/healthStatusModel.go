@@ -32,8 +32,54 @@ type BCR_ABL struct {
 	ID     uuid.UUID `gorm:"type:uuid;primaryKey;"`
 	UserID uuid.UUID `gorm:"type:uuid;foreignKey;"`
 	Data   float32   `validate:"required" json:"data"`
-	Notes  string    `validate:"required" json:"notes"`
-	Date   string    `validate:"required" json:"date"`
+	Notes  string    `validate:"required,min=2,max=200" json:"notes"`
+	Date   string    `validate:"required,len=10" json:"date"`
+	gorm.Model
+}
+
+type Leukocytes struct {
+	ID     uuid.UUID `gorm:"type:uuid;primaryKey;"`
+	UserID uuid.UUID `gorm:"type:uuid;foreignKey;"`
+	Data   float32   `validate:"required" json:"data"`
+	Notes  string    `validate:"required,min=2,max=200" json:"notes"`
+	Date   string    `validate:"required,len=10" json:"date"`
+	gorm.Model
+}
+
+type PotentialHydrogen struct {
+	ID     uuid.UUID `gorm:"type:uuid;primaryKey;"`
+	UserID uuid.UUID `gorm:"type:uuid;foreignKey;"`
+	Data   float32   `validate:"required" json:"data"`
+	Notes  string    `validate:"required,min=2,max=200" json:"notes"`
+	Date   string    `validate:"required,len=10" json:"date"`
+	gorm.Model
+}
+
+type Hemoglobin struct {
+	ID     uuid.UUID `gorm:"type:uuid;primaryKey;"`
+	UserID uuid.UUID `gorm:"type:uuid;foreignKey;"`
+	Data   float32   `validate:"required" json:"data"`
+	Notes  string    `validate:"required,min=2,max=200" json:"notes"`
+	Date   string    `validate:"required,len=10" json:"date"`
+	gorm.Model
+}
+
+type HeartRate struct {
+	ID     uuid.UUID `gorm:"type:uuid;primaryKey;"`
+	UserID uuid.UUID `gorm:"type:uuid;foreignKey;"`
+	Data   float32   `validate:"required" json:"data"`
+	Notes  string    `validate:"required,min=2,max=200" json:"notes"`
+	Date   string    `validate:"required,len=10" json:"date"`
+	gorm.Model
+}
+
+type BloodPressure struct {
+	ID      uuid.UUID `gorm:"type:uuid;primaryKey;"`
+	UserID  uuid.UUID `gorm:"type:uuid;foreignKey;"`
+	DataSys float32   `validate:"required" json:"datasys"`
+	DataDia float32   `validate:"required" json:"datadia"`
+	Notes   string    `validate:"required,min=2,max=200" json:"notes"`
+	Date    string    `validate:"required,len=10" json:"date"`
 	gorm.Model
 }
 
@@ -49,15 +95,6 @@ type BcrAblSuccess struct {
 	Link    []LinkItem  `json:"link"`
 }
 
-type Leukocytes struct {
-	ID     uuid.UUID `gorm:"type:uuid;primaryKey;"`
-	UserID uuid.UUID `gorm:"type:uuid;foreignKey;"`
-	Data   float32   `validate:"required" json:"data"`
-	Notes  string    `validate:"required" json:"notes"`
-	Date   string    `validate:"required" json:"date"`
-	gorm.Model
-}
-
 type LeukocytesFailed struct {
 	ErrorMessage string      `json:"errormessage"`
 	Data         interface{} `json:"data"`
@@ -68,15 +105,6 @@ type LeukocytesSuccess struct {
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
 	Link    []LinkItem  `json:"link"`
-}
-
-type PotentialHydrogen struct {
-	ID     uuid.UUID `gorm:"type:uuid;primaryKey;"`
-	UserID uuid.UUID `gorm:"type:uuid;foreignKey;"`
-	Data   float32   `validate:"required" json:"data"`
-	Notes  string    `validate:"required" json:"notes"`
-	Date   string    `validate:"required" json:"date"`
-	gorm.Model
 }
 
 type PotentialHydrogenFailed struct {
@@ -91,15 +119,6 @@ type PotentialHydrogenSuccess struct {
 	Link    []LinkItem  `json:"link"`
 }
 
-type Hemoglobin struct {
-	ID     uuid.UUID `gorm:"type:uuid;primaryKey;"`
-	UserID uuid.UUID `gorm:"type:uuid;foreignKey;"`
-	Data   float32   `validate:"required" json:"data"`
-	Notes  string    `validate:"required" json:"notes"`
-	Date   string    `validate:"required" json:"date"`
-	gorm.Model
-}
-
 type HemoglobinFailed struct {
 	ErrorMessage string      `json:"errormessage"`
 	Data         interface{} `json:"data"`
@@ -112,15 +131,6 @@ type HemoglobinSuccess struct {
 	Link    []LinkItem  `json:"link"`
 }
 
-type HeartRate struct {
-	ID     uuid.UUID `gorm:"type:uuid;primaryKey;"`
-	UserID uuid.UUID `gorm:"type:uuid;foreignKey;"`
-	Data   float32   `validate:"required" json:"data"`
-	Notes  string    `validate:"required" json:"notes"`
-	Date   string    `validate:"required" json:"date"`
-	gorm.Model
-}
-
 type HeartRateFailed struct {
 	ErrorMessage string      `json:"errormessage"`
 	Data         interface{} `json:"data"`
@@ -131,16 +141,6 @@ type HeartRateSuccess struct {
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
 	Link    []LinkItem  `json:"link"`
-}
-
-type BloodPressure struct {
-	ID      uuid.UUID `gorm:"type:uuid;primaryKey;"`
-	UserID  uuid.UUID `gorm:"type:uuid;foreignKey;"`
-	DataSys float32   `validate:"required" json:"datasys"`
-	DataDia float32   `validate:"required" json:"datadia"`
-	Notes   string    `validate:"required" json:"notes"`
-	Date    string    `validate:"required" json:"date"`
-	gorm.Model
 }
 
 type BloodPressureFailed struct {

@@ -23,23 +23,6 @@ func RegisterController(r *gin.Engine) {
 	r.POST("api/doctor/register", DoctorRegister)
 }
 
-func getValidationErrorTagMessage(tag string) string {
-	switch tag {
-	case "required":
-		return "Cant Be Empty"
-	case "email":
-		return "Must Be a Valid Email Address"
-	case "min":
-		return "Must Be At Least 8 Letters"
-	case "max":
-		return "Must Be At Most 14 Letters"
-	case "eqfield":
-		return "Must Match Password"
-	default:
-		return fmt.Sprintf("validation Failed for Tag: %s", tag)
-	}
-}
-
 func isEmailUnique(email string) bool {
 	var userCount, doctorCount int64
 
@@ -84,6 +67,25 @@ func isValidDateFormat(date string) bool {
 	return err == nil
 }
 
+func getValidationErrorTagMessage(fieldError validator.FieldError) string {
+	switch fieldError.Tag() {
+	case "required":
+		return fmt.Sprintf("Field '%s' is required.", fieldError.Field())
+	case "min":
+		return fmt.Sprintf("Field '%s' must be at least %s characters long.", fieldError.Field(), fieldError.Param())
+	case "max":
+		return fmt.Sprintf("Field '%s' must be at most %s characters long.", fieldError.Field(), fieldError.Param())
+	case "len":
+		return fmt.Sprintf("Field '%s' must be exactly %s characters long.", fieldError.Field(), fieldError.Param())
+	case "email":
+		return "Field 'Email' must be a valid email address."
+	case "eqfield":
+		return fmt.Sprintf("Field '%s' must be equal to field '%s'.", fieldError.Field(), fieldError.Param())
+	default:
+		return fmt.Sprintf("Field '%s' is not valid.", fieldError.Field())
+	}
+}
+
 func UserRegister(c *gin.Context) {
 	var body models.User
 
@@ -111,14 +113,13 @@ func UserRegister(c *gin.Context) {
 
 	validate := validator.New()
 	if err := validate.Struct(body); err != nil {
-		var validationErrors []string
-		for _, err := range err.(validator.ValidationErrors) {
-			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
 		}
-		errorMessage := strings.Join(validationErrors, ", ")
-		data := body
 		activationLink := "http://localhost:3000/api/user/register"
-		userresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
+		userresponse.RegisterFailedResponse(c, strings.Join(errorMessages, ", "), body, activationLink, http.StatusBadRequest)
 		return
 	}
 
@@ -227,14 +228,13 @@ func DoctorRegister(c *gin.Context) {
 
 	validate := validator.New()
 	if err := validate.Struct(body); err != nil {
-		var validationErrors []string
-		for _, err := range err.(validator.ValidationErrors) {
-			validationErrors = append(validationErrors, fmt.Sprintf("%s %s", err.Field(), getValidationErrorTagMessage(err.Tag())))
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
 		}
-		errorMessage := strings.Join(validationErrors, ", ")
-		data := body
 		activationLink := "http://localhost:3000/api/doctor/register"
-		doctorresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
+		doctorresponse.RegisterFailedResponse(c, strings.Join(errorMessages, ", "), body, activationLink, http.StatusBadRequest)
 		return
 	}
 

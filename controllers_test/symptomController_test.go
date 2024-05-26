@@ -14,8 +14,8 @@ import (
 )
 
 type successSubmitSymptomResponse struct {
-	Message string `json:"Message"`
-	Data    string `json:"Data"`
+	Message string               `json:"Message"`
+	Data    models.SymptomAnswer `json:"Data"`
 	Link    []struct {
 		Name string `json:"Name"`
 		Link string `json:"Link"`
@@ -37,9 +37,10 @@ func TestSubmitSymptom_Success(t *testing.T) {
 	router.POST("/api/user/symptom/answer", middleware.RequireAuth, controllers.SubmitSymptom)
 
 	reqBody := models.SymptomAnswer{
-		Type:   "Oral",
-		Answer: "'Parah','Parah','Parah','Sedikit','Parah','Tidak','Parah','Sangat Parah''",
-		Date:   "2024-03-11",
+		Type:       "Oral",
+		Answer:     "1,2,4,5,2,4,4,3",
+		WordAnswer: "'Parah','Parah','Parah','Sedikit','Parah','Tidak','Parah','Sangat Parah''",
+		Date:       "2024-03-11",
 	}
 
 	reqJSON, _ := json.Marshal(reqBody)

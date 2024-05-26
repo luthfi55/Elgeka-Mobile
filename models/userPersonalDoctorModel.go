@@ -9,9 +9,9 @@ type UserPersonalDoctor struct {
 	ID        uuid.UUID `gorm:"type:uuid;primaryKey;"`
 	UserID    uuid.UUID `gorm:"type:uuid;foreignKey;"`
 	DoctorID  uuid.UUID `gorm:"type:uuid;foreignKey;"`
-	StartDate string    `validate:"required"`
-	EndDate   string    `validate:"required"`
-	Request   string    `validate:"required"`
+	StartDate string    `validate:"required,len=10"`
+	EndDate   string    `validate:"required,len=10"`
+	Request   string    `validate:"required,min=2,max=8"`
 	gorm.Model
 }
 

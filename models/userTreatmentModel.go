@@ -8,8 +8,8 @@ import (
 type UserTreatment struct {
 	ID              uuid.UUID `gorm:"type:uuid;primaryKey;"`
 	UserID          uuid.UUID `gorm:"type:uuid;foreignKey;"`
-	FirstTreatment  string    `validate:"required"`
-	SecondTreatment string    `validate:"required"`
+	FirstTreatment  string    `validate:"required,min=2,max=100"`
+	SecondTreatment string    `validate:"required,min=2,max=100"`
 	gorm.Model
 }
 
