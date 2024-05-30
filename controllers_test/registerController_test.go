@@ -49,8 +49,9 @@ func TestUserRegister_Success(t *testing.T) {
 		"Gender": "male",
 		"BirthDate": "1990-01-01",
 		"BloodGroup": "A",
-		"PhoneNumber": "1234567890",
-		"Email": "johnnn1@example.com",
+		"diagnosisdate": "2023-12-02",
+		"PhoneNumber": "6289533991178",
+		"Email": "johnn12@example.com",
 		"Password": "Password123*",
 		"PasswordConfirmation": "Password123*"
 	}`)
@@ -89,12 +90,17 @@ func TestUserRegister_Failed(t *testing.T) {
 
 	reqBody := []byte(`{
 		"Name": "John Doe",
-		"Address": "123 Main St",
+		"province": "Jawa Barat",
+		"district": "Kota Bandung",
+		"SubDistrict": "Buahbatu",
+		"village": "Margasari",
+		"address": "Ciwastra No.81",
 		"Gender": "male",
 		"BirthDate": "1990-01-01",
 		"BloodGroup": "A",
-		"PhoneNumber": "1234567890",
-		"Email": "john@example.com",
+		"diagnosisdate": "2023-12-02",
+		"PhoneNumber": "6289533991178",
+		"Email": "johnn12@example.com",
 		"Password": "Password123*",
 		"PasswordConfirmation": "Password123*"
 	}`)

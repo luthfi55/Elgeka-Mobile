@@ -31,6 +31,7 @@ func DoctorProfileController(r *gin.Engine) {
 
 	r.GET("api/doctor/list/website", ListDoctorWebsite)
 	r.GET("api/doctor/list_patient/website", ListPatientDoctorWebsite)
+	r.GET("api/doctor/list/null_patient/website", ListDoctorWithoutPatient)
 	r.DELETE("api/doctor/delete/account/website/:doctor_id", DeleteDoctorAccountWebsite)
 }
 
@@ -722,6 +723,39 @@ func DoctorPatientMedicine(c *gin.Context) {
 	medicine.Medicine = medicine_list
 
 	doctorresponse.DoctorPatientHealthStatusSuccessResponse(c, "Success to Get Medicine Data", medicine, http.StatusOK)
+}
+
+func ListDoctorWithoutPatient(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	var doctors []models.Doctor
+
+	result := initializers.DB.Table("doctors").Select("doctors.*").
+		Joins("LEFT JOIN user_personal_doctors ON doctors.id = user_personal_doctors.doctor_id").
+		Where("user_personal_doctors.doctor_id IS NULL AND doctors.is_active = ?", true).
+		Find(&doctors)
+
+	if result.Error != nil {
+		doctorresponse.ListPatientDoctorWebsiteFailedResponse(c, "Failed to Get Doctor List", "", http.StatusInternalServerError)
+		return
+	}
+
+	var doctor_list []models.DoctorProfile
+	for _, item := range doctors {
+		doctor_list = append(doctor_list, models.DoctorProfile{
+			ID:           item.ID,
+			Name:         item.Name,
+			PhoneNumber:  item.PhoneNumber,
+			Email:        item.Email,
+			Gender:       item.Gender,
+			PolyName:     item.PolyName,
+			HospitalName: item.HospitalName,
+		})
+	}
+
+	doctorresponse.ListPatientDoctorWebsiteSuccessResponse(c, "Success to Get Doctor List", doctor_list, http.StatusOK)
 }
 
 func DeleteDoctorAccountWebsite(c *gin.Context) {

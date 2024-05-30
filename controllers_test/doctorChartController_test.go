@@ -12,7 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func TestGenderChart_Success(t *testing.T) {
+func TestGetGenderChart_Success(t *testing.T) {
 	router := gin.Default()
 
 	router.GET("/api/doctor/patient/data/gender", middleware.RequireAuth, controllers.DataByGender)
@@ -45,7 +45,7 @@ func TestGenderChart_Success(t *testing.T) {
 	}
 }
 
-func TestGenderChart_Failed(t *testing.T) {
+func TestGetGenderChart_Failed(t *testing.T) {
 	router := gin.Default()
 
 	router.GET("/api/doctor/patient/data/gender", middleware.RequireAuth, controllers.DataByGender)
@@ -76,7 +76,7 @@ func TestGenderChart_Failed(t *testing.T) {
 	}
 }
 
-func TestAgeChart_Success(t *testing.T) {
+func TestGetAgeChart_Success(t *testing.T) {
 	router := gin.Default()
 
 	router.GET("/api/doctor/patient/data/age", middleware.RequireAuth, controllers.DataByAge)
@@ -109,7 +109,7 @@ func TestAgeChart_Success(t *testing.T) {
 	}
 }
 
-func TestAgeChart_Failed(t *testing.T) {
+func TestGetAgeChart_Failed(t *testing.T) {
 	router := gin.Default()
 
 	router.GET("/api/doctor/patient/data/age", middleware.RequireAuth, controllers.DataByAge)
@@ -140,7 +140,7 @@ func TestAgeChart_Failed(t *testing.T) {
 	}
 }
 
-func TestDiagnosisDateChart_Success(t *testing.T) {
+func TestGetDiagnosisDateChart_Success(t *testing.T) {
 	router := gin.Default()
 
 	router.GET("/api/doctor/patient/data/diagnosis_date", middleware.RequireAuth, controllers.DataByDiagnosisDate)
@@ -173,7 +173,7 @@ func TestDiagnosisDateChart_Success(t *testing.T) {
 	}
 }
 
-func TestDiagnosisDateChart_Failed(t *testing.T) {
+func TestGetDiagnosisDateChart_Failed(t *testing.T) {
 	router := gin.Default()
 
 	router.GET("/api/doctor/patient/data/diagnosis_date", middleware.RequireAuth, controllers.DataByDiagnosisDate)
@@ -204,7 +204,7 @@ func TestDiagnosisDateChart_Failed(t *testing.T) {
 	}
 }
 
-func TestTreatmentChart_Success(t *testing.T) {
+func TestGetTreatmentChart_Success(t *testing.T) {
 	router := gin.Default()
 
 	router.GET("/api/doctor/patient/data/treatment", middleware.RequireAuth, controllers.DataByTreatment)
@@ -237,7 +237,7 @@ func TestTreatmentChart_Success(t *testing.T) {
 	}
 }
 
-func TestTreatmentChart_Failed(t *testing.T) {
+func TestGetTreatmentChart_Failed(t *testing.T) {
 	router := gin.Default()
 
 	router.GET("/api/doctor/patient/data/treatment", middleware.RequireAuth, controllers.DataByTreatment)

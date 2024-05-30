@@ -6,7 +6,6 @@ import (
 	doctorresponse "elgeka-mobile/response/DoctorResponse"
 	userresponse "elgeka-mobile/response/UserResponse"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"regexp"
 	"strings"
@@ -286,19 +285,19 @@ func DoctorRegister(c *gin.Context) {
 		doctorresponse.RegisterFailedResponse(c, err.Error(), doctor, activationLink, http.StatusConflict)
 		return
 	}
-	rand.Seed(time.Now().UnixNano())
-	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
-	doctor.OtpCode = otpCode
-	doctor.OtpCreatedAt = time.Now().Add(3 * time.Minute)
-	doctor.OtpType = "Activation"
+	// rand.Seed(time.Now().UnixNano())
+	// otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
+	// doctor.OtpCode = otpCode
+	// doctor.OtpCreatedAt = time.Now().Add(3 * time.Minute)
+	// doctor.OtpType = "Activation"
 
-	if err := initializers.DB.Save(&doctor).Error; err != nil {
-		activationLink := "http://localhost:3000/api/doctor/refresh_code/" + newUUID.String()
-		doctorresponse.RegisterFailedResponse(c, "Failed To Update Otp Code", doctor, activationLink, http.StatusInternalServerError)
-		return
-	}
+	// if err := initializers.DB.Save(&doctor).Error; err != nil {
+	// 	activationLink := "http://localhost:3000/api/doctor/refresh_code/" + newUUID.String()
+	// 	doctorresponse.RegisterFailedResponse(c, "Failed To Update Otp Code", doctor, activationLink, http.StatusInternalServerError)
+	// 	return
+	// }
 
-	SendEmailWithGmail(doctor.Email, otpCode)
+	// SendEmailWithGmail(doctor.Email, otpCode)
 
 	//respond
 	activationLink := "http://localhost:3000/api/doctor/activate/" + newUUID.String()

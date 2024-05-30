@@ -26,8 +26,14 @@ func ActivateAccountController(r *gin.Engine) {
 	r.POST("api/user/email_refresh_code/:user_id", RefreshOtpCode)
 	r.POST("api/user/whatsapp_refresh_code/:user_id", RefreshWhatsappOtpCode)
 
-	//doctor
-	r.POST("api/doctor/activate_email/:doctor_id", ActivateEmailDoctor)
+	//doctor activate otp
+	r.POST("api/doctor/email_otp/:doctor_id", SendDoctorEmailOtp)
+	r.POST("api/doctor/whatsapp_otp/:doctor_id", SendDoctorWhatsappOtp)
+	r.POST("api/doctor/activate_otp/:doctor_id", ActivateOtpDoctor)
+	r.POST("api/doctor/email_refresh_code/:doctor_id", RefreshDoctorEmailOtpCode)
+	r.POST("api/doctor/whatsapp_refresh_code/:doctor_id", RefreshDoctorWhatsappOtpCode)
+
+	//doctor activate account admin website
 	r.POST("api/doctor/activate_account/:doctor_id", ActivateDoctor)
 	r.POST("api/doctor/reject_activation/:doctor_id", RejectDoctor)
 	r.POST("api/doctor/refresh_code/:doctor_id", RefreshDoctorOtpCode)
@@ -108,12 +114,10 @@ func SendWhatsappOtp(c *gin.Context) {
 		return
 	}
 
-	// Send Whatsapp Otp
 	initializers.SendMessageToUser(user.PhoneNumber, otpCode)
 
 	activationLink := "http://localhost:3000/api/user/activate/" + userID
 	otpresponse.SuccessResponse(c, "Send Whatsapp OTP Successfully", user.Email, activationLink, http.StatusOK)
-
 }
 
 func RefreshWhatsappOtpCode(c *gin.Context) {
@@ -199,8 +203,8 @@ func Activate(c *gin.Context) {
 		otpresponse.FailedResponse(c, "Incorrect OTP code", user.Email, activationLink, http.StatusUnauthorized)
 		return
 	} else {
-		if time.Since(user.OtpCreatedAt) > time.Minute {
-			activationLink := "http://localhost:3000/api/user/register"
+		if time.Now().After(user.OtpCreatedAt) || time.Now().Equal(user.OtpCreatedAt) {
+			activationLink := "http://localhost:3000/api/doctor/register"
 			otpresponse.FailedResponse(c, "OTP Code Expired", user.Email, activationLink, http.StatusUnauthorized)
 			return
 		}
@@ -320,7 +324,87 @@ func ParseWebToken(c *gin.Context) bool {
 	}
 }
 
-func ActivateEmailDoctor(c *gin.Context) {
+func SendDoctorEmailOtp(c *gin.Context) {
+	doctorID := c.Param("doctor_id")
+	data := doctorID
+
+	var doctor models.Doctor
+	initializers.DB.First(&doctor, "id = ?", doctorID)
+	result := initializers.DB.First(&doctor, "id = ?", doctorID)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			activationLink := "http://localhost:3000/api/doctor/register"
+			otpresponse.FailedResponse(c, "Doctor Not Found", data, activationLink, http.StatusNotFound)
+
+			return
+		} else {
+			activationLink := "http://localhost:3000/api/doctor/register"
+			otpresponse.FailedResponse(c, "Database Error", data, activationLink, http.StatusInternalServerError)
+
+			return
+		}
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
+
+	doctor.OtpCode = otpCode
+	doctor.OtpCreatedAt = time.Now().Add(3 * time.Minute)
+	doctor.OtpType = "Activation"
+
+	if err := initializers.DB.Save(&doctor).Error; err != nil {
+		activationLink := "http://localhost:3000/api/doctor/register"
+		otpresponse.FailedResponse(c, "Failed to Update Otp Code", data, activationLink, http.StatusInternalServerError)
+		return
+	}
+
+	SendEmailWithGmail(doctor.Email, otpCode)
+
+	activationLink := "http://localhost:3000/api/doctor/activate/" + doctorID
+	otpresponse.SuccessResponse(c, "Send Email OTP Successfully", doctor.Email, activationLink, http.StatusOK)
+}
+
+func SendDoctorWhatsappOtp(c *gin.Context) {
+	doctorID := c.Param("doctor_id")
+	data := doctorID
+
+	var doctor models.Doctor
+	initializers.DB.First(&doctor, "id = ?", doctorID)
+	result := initializers.DB.First(&doctor, "id = ?", doctorID)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			activationLink := "http://localhost:3000/api/doctor/register"
+			otpresponse.FailedResponse(c, "Doctor Not Found", data, activationLink, http.StatusNotFound)
+
+			return
+		} else {
+			activationLink := "http://localhost:3000/api/doctor/register"
+			otpresponse.FailedResponse(c, "Database Error", data, activationLink, http.StatusInternalServerError)
+
+			return
+		}
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
+
+	doctor.OtpCode = otpCode
+	doctor.OtpCreatedAt = time.Now().Add(3 * time.Minute)
+	doctor.OtpType = "Activation"
+
+	if err := initializers.DB.Save(&doctor).Error; err != nil {
+		activationLink := "http://localhost:3000/api/doctor/register"
+		otpresponse.FailedResponse(c, "Failed to Update Otp Code", data, activationLink, http.StatusInternalServerError)
+		return
+	}
+
+	initializers.SendMessageToUser(doctor.PhoneNumber, otpCode)
+
+	activationLink := "http://localhost:3000/api/doctor/activate/" + doctorID
+	otpresponse.SuccessResponse(c, "Send Whatsapp OTP Successfully", doctor.Email, activationLink, http.StatusOK)
+}
+
+func ActivateOtpDoctor(c *gin.Context) {
 	doctorID := c.Param("doctor_id")
 
 	var body struct {
@@ -365,7 +449,7 @@ func ActivateEmailDoctor(c *gin.Context) {
 		return
 	} else {
 		// 1 minute expired
-		if time.Since(doctor.OtpCreatedAt) > time.Minute {
+		if time.Now().After(doctor.OtpCreatedAt) || time.Now().Equal(doctor.OtpCreatedAt) {
 			activationLink := "http://localhost:3000/api/doctor/register"
 			otpresponse.FailedResponse(c, "OTP Code Expired", doctor.Email, activationLink, http.StatusUnauthorized)
 			return
@@ -378,7 +462,7 @@ func ActivateEmailDoctor(c *gin.Context) {
 		}
 
 		doctor.EmailActive = true
-		// Save the updated doctor
+
 		if err := initializers.DB.Save(&doctor).Error; err != nil {
 			activationLink := "http://localhost:3000/api/doctor/register"
 			otpresponse.FailedResponse(c, "Failed to Activate", doctor.Email, activationLink, http.StatusInternalServerError)
@@ -386,9 +470,89 @@ func ActivateEmailDoctor(c *gin.Context) {
 		}
 
 		activationLink := "http://localhost:3000/api/doctor/login"
-		otpresponse.SuccessResponse(c, "Doctor Email Activated Successfully", doctor.Email, activationLink, http.StatusOK)
+		otpresponse.SuccessResponse(c, "Doctor Otp Activated Successfully", doctor.Email, activationLink, http.StatusOK)
 		return
 	}
+}
+
+func RefreshDoctorEmailOtpCode(c *gin.Context) {
+	doctorID := c.Param("doctor_id")
+	data := doctorID
+
+	var doctor models.Doctor
+	initializers.DB.First(&doctor, "id = ?", doctorID)
+	result := initializers.DB.First(&doctor, "id = ?", doctorID)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			activationLink := "http://localhost:3000/api/doctor/register"
+			otpresponse.FailedResponse(c, "Doctor Not Found", data, activationLink, http.StatusNotFound)
+
+			return
+		} else {
+			activationLink := "http://localhost:3000/api/doctor/register"
+			otpresponse.FailedResponse(c, "Database Error", data, activationLink, http.StatusInternalServerError)
+
+			return
+		}
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
+
+	doctor.OtpCode = otpCode
+	doctor.OtpCreatedAt = time.Now().Add(3 * time.Minute)
+	doctor.OtpType = "Activation"
+
+	if err := initializers.DB.Save(&doctor).Error; err != nil {
+		activationLink := "http://localhost:3000/api/doctor/register"
+		otpresponse.FailedResponse(c, "Failed to Update Otp Code", data, activationLink, http.StatusInternalServerError)
+		return
+	}
+
+	SendEmailWithGmail(doctor.Email, otpCode)
+
+	activationLink := "http://localhost:3000/api/doctor/activate/" + doctorID
+	otpresponse.SuccessResponse(c, "Refresh Email OTP Successfully", doctor.Email, activationLink, http.StatusOK)
+}
+
+func RefreshDoctorWhatsappOtpCode(c *gin.Context) {
+	doctorID := c.Param("doctor_id")
+	data := doctorID
+
+	var doctor models.Doctor
+	initializers.DB.First(&doctor, "id = ?", doctorID)
+	result := initializers.DB.First(&doctor, "id = ?", doctorID)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			activationLink := "http://localhost:3000/api/doctor/register"
+			otpresponse.FailedResponse(c, "Doctor Not Found", data, activationLink, http.StatusNotFound)
+
+			return
+		} else {
+			activationLink := "http://localhost:3000/api/doctor/register"
+			otpresponse.FailedResponse(c, "Database Error", data, activationLink, http.StatusInternalServerError)
+
+			return
+		}
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	otpCode := fmt.Sprintf("%04d", rand.Intn(10000))
+
+	doctor.OtpCode = otpCode
+	doctor.OtpCreatedAt = time.Now().Add(3 * time.Minute)
+	doctor.OtpType = "Activation"
+
+	if err := initializers.DB.Save(&doctor).Error; err != nil {
+		activationLink := "http://localhost:3000/api/doctor/register"
+		otpresponse.FailedResponse(c, "Failed to Update Otp Code", data, activationLink, http.StatusInternalServerError)
+		return
+	}
+
+	initializers.SendMessageToUser(doctor.PhoneNumber, otpCode)
+
+	activationLink := "http://localhost:3000/api/doctor/activate/" + doctorID
+	otpresponse.SuccessResponse(c, "Refresh Whatsapp OTP Successfully", doctor.Email, activationLink, http.StatusOK)
 }
 
 func RefreshOtpCode(c *gin.Context) {

@@ -44,7 +44,7 @@ func TestSendEmailOtp_Success(t *testing.T) {
 
 	router.POST("/api/user/email_otp/:user_id", controllers.SendEmailOtp)
 
-	user_id := "03877fb9-518a-439f-9fde-1d3f64e02531"
+	user_id := "8d6f5d0e-ba9a-4c66-8633-62c861fb9c0e"
 
 	req, err := http.NewRequest("POST", "/api/user/email_otp/"+user_id, bytes.NewBuffer(nil))
 	if err != nil {
@@ -128,7 +128,7 @@ func TestSendWhatsappOtp_Success(t *testing.T) {
 		os.Exit(0)
 	}()
 
-	user_id := "03877fb9-518a-439f-9fde-1d3f64e02531"
+	user_id := "8d6f5d0e-ba9a-4c66-8633-62c861fb9c0e"
 
 	req, err := http.NewRequest("POST", "/api/user/whatsapp_otp/"+user_id, bytes.NewBuffer(nil))
 	if err != nil {
@@ -177,7 +177,7 @@ func TestSendWhatsappOtp_Failed(t *testing.T) {
 		os.Exit(0)
 	}()
 
-	user_id := "89dff9eb-fe50-40a6-8775-27d7b5997325"
+	user_id := "8d2baaf9-ba97-4237-a9ab-1095fe2f4745"
 
 	req, err := http.NewRequest("POST", "/api/user/whatsapp_otp/"+user_id, bytes.NewBuffer(nil))
 	if err != nil {
@@ -212,7 +212,7 @@ func TestEmailRefreshOtpCode_Success(t *testing.T) {
 
 	router.POST("/api/user/email_refresh_code/:user_id", controllers.RefreshOtpCode)
 
-	user_id := "89dff9eb-fe50-40a6-8775-27d7b5997326"
+	user_id := "8d6f5d0e-ba9a-4c66-8633-62c861fb9c0e"
 
 	req, err := http.NewRequest("POST", "/api/user/email_refresh_code/"+user_id, bytes.NewBuffer(nil))
 	if err != nil {
@@ -235,7 +235,7 @@ func TestEmailRefreshOtpCode_Success(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if expectedBody.Message != "Doctor Email Activated Successfully" {
+	if expectedBody.Message != "Refresh OTP Successfully" {
 		t.Errorf("expected message body %s but got %s", "Refresh OTP Successfully", expectedBody.Message)
 	}
 }
@@ -294,7 +294,7 @@ func TestWhatsappRefreshOtpCode_Success(t *testing.T) {
 		os.Exit(0)
 	}()
 
-	user_id := "89dff9eb-fe50-40a6-8775-27d7b5997326"
+	user_id := "8d6f5d0e-ba9a-4c66-8633-62c861fb9c0e"
 
 	req, err := http.NewRequest("POST", "/api/user/whatsapp_refresh_code/"+user_id, bytes.NewBuffer(nil))
 	if err != nil {
@@ -378,10 +378,10 @@ func TestActivateUser_Success(t *testing.T) {
 	router.POST("/api/user/activate/:user_id", controllers.Activate)
 
 	reqBody := []byte(`{
-			"OtpCode": "3384"
+			"OtpCode": "6344"
 		}`)
 
-	userID := "89dff9eb-fe50-40a6-8775-27d7b5997326"
+	userID := "8d6f5d0e-ba9a-4c66-8633-62c861fb9c0e"
 
 	req, err := http.NewRequest("POST", "/api/user/activate/"+userID, bytes.NewBuffer(reqBody))
 
@@ -419,7 +419,7 @@ func TestActivateUser_Failed(t *testing.T) {
 			"OtpCode": "3380"
 		}`)
 
-	userID := "89dff9eb-fe50-40a6-8775-27d7b5997326"
+	userID := "8d6f5d0e-ba9a-4c66-8633-62c861fb9c0e"
 
 	req, err := http.NewRequest("POST", "/api/user/activate/"+userID, bytes.NewBuffer(reqBody))
 
@@ -555,7 +555,7 @@ func TestActivateEmailDoctor_Success(t *testing.T) {
 
 	router := gin.Default()
 
-	router.POST("/api/doctor/activate/:doctor_id", controllers.ActivateEmailDoctor)
+	router.POST("/api/doctor/activate/:doctor_id", controllers.ActivateOtpDoctor)
 
 	reqBody := []byte(`{
 		"OtpCode": "6701"
@@ -593,7 +593,7 @@ func TestActivateEmailDoctor_Failed(t *testing.T) {
 
 	router := gin.Default()
 
-	router.POST("/api/doctor/activate/:doctor_id", controllers.ActivateEmailDoctor)
+	router.POST("/api/doctor/activate/:doctor_id", controllers.ActivateOtpDoctor)
 
 	reqBody := []byte(`{
 			"OtpCode": "8136"
