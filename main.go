@@ -62,17 +62,16 @@ func main() {
 	controllers.DoctorChartController(r)
 	controllers.UserTreatmentController(r)
 
-	// port := os.Getenv("PORT")
-	// if port == "" {
-	// 	port = "8080"
-	// }
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
 	go func() {
 		<-shutdownSignal
 		os.Exit(0)
 	}()
 
-	// r.Run("0.0.0.0:" + port)
-	r.Run(os.Getenv("PORT"))
+	r.Run("0.0.0.0:" + port)
 
 }
