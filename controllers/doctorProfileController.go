@@ -383,6 +383,7 @@ func DoctorPatientProfile(c *gin.Context) {
 		TreatmentFreeDate: patient_information.TreatmentFreeDate,
 		MonitoringPlace:   patient_information.MonitoringPlace,
 		PcrFrequent:       patient_information.PcrFrequent,
+		DiagnosisDate:     patient_data.DiagnosisDate,
 	}
 
 	doctorresponse.DoctorPatientProfileSuccessResponse(c, "Success to Get Patient Data", data, http.StatusOK)
