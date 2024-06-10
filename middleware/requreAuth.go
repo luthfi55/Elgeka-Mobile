@@ -22,8 +22,6 @@ func RequireAuth(c *gin.Context) {
 		userresponse.CheckAccountFailedResponse(c)
 	}
 
-	//decode/validate it
-
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -31,6 +29,9 @@ func RequireAuth(c *gin.Context) {
 		return []byte(os.Getenv("SECRET")), nil
 	})
 
+	if err != nil {
+		userresponse.CheckAccountFailedResponse(c)
+	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		//check te exp
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {

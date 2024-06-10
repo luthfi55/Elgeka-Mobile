@@ -23,6 +23,7 @@ func UserProfileController(r *gin.Engine) {
 	r.PUT("api/user/profile/information/edit", middleware.RequireAuth, EditUserInformation)
 	r.PUT("api/user/profile/password/edit", middleware.RequireAuth, EditUserPassword)
 	r.POST("api/user/add/personal_doctor", middleware.RequireAuth, AddPersonalDoctor)
+	r.GET("api/user/get/personal_doctor/:doctor_id", middleware.RequireAuth, GetDoctorData)
 	r.GET("api/user/list/personal_doctor", middleware.RequireAuth, GetPersonalDoctor)
 	r.GET("api/user/list/activate_doctor", middleware.RequireAuth, ListActivateDoctor)
 	r.GET("api/user/list/website", ListUserWebsite)
@@ -313,6 +314,28 @@ func AddPersonalDoctor(c *gin.Context) {
 	userresponse.AddPersonalDoctorFailedResponse(c, "Can't Add the Doctor. Please Wait Until The Doctor Accepts the Request First.", body.DoctorID, "Add Personal Doctor", "http://localhost:3000/api/user/add/doctor", http.StatusBadRequest)
 }
 
+func GetDoctorData(c *gin.Context) {
+	doctor_id := c.Param("doctor_id")
+
+	var doctor models.Doctor
+	if err := initializers.DB.First(&doctor, "id = ?", doctor_id).Error; err != nil {
+		userresponse.AddPersonalDoctorFailedResponse(c, "Doctor Not Found", "", "Add Personal Doctor", "http://localhost:3000/api/user/add/doctor", http.StatusBadRequest)
+		return
+	}
+
+	var doctor_data models.DoctorProfile
+
+	doctor_data.ID = doctor.ID
+	doctor_data.Name = doctor.Name
+	doctor_data.PhoneNumber = doctor.PhoneNumber
+	doctor_data.Email = doctor.Email
+	doctor_data.Gender = doctor.Gender
+	doctor_data.PolyName = doctor.PolyName
+	doctor_data.HospitalName = doctor.HospitalName
+
+	userresponse.GetPersonalDoctorSuccessResponse(c, "Success Get Doctor Data", doctor_data, "http://localhost:3000/api/user/list/activate_doctor", http.StatusOK)
+}
+
 func ListActivateDoctor(c *gin.Context) {
 	var activate_doctor []struct {
 		DoctorID   uuid.UUID
@@ -320,7 +343,7 @@ func ListActivateDoctor(c *gin.Context) {
 	}
 
 	var activate_doctor_data []models.Doctor
-	if err := initializers.DB.Where("is_active = ? ", true).Order("name asc").Find(&activate_doctor_data).Error; err != nil {
+	if err := initializers.DB.Where("is_active = ? AND deactive_account = ?", true, false).Order("name asc").Find(&activate_doctor_data).Error; err != nil {
 		userresponse.GetPersonalDoctorFailedResponse(c, "Failed To Get Active Doctor", "", "Get Activate Doctor", "http://localhost:3000/api/user/list/activate_doctor", http.StatusBadRequest)
 		return
 	}
@@ -344,6 +367,7 @@ func GetPersonalDoctor(c *gin.Context) {
 	user, _ := c.Get("user")
 
 	var personal_doctor []struct {
+		DoctorID     uuid.UUID
 		DoctorName   string
 		PhoneNumber  string
 		StartDate    string
@@ -366,12 +390,14 @@ func GetPersonalDoctor(c *gin.Context) {
 			doctor_status = "Now"
 		}
 		personal_doctor = append(personal_doctor, struct {
+			DoctorID     uuid.UUID
 			DoctorName   string
 			PhoneNumber  string
 			StartDate    string
 			EndDate      string
 			DoctorStatus string
 		}{
+			DoctorID:     doctor.ID,
 			DoctorName:   doctor.Name,
 			PhoneNumber:  doctor.PhoneNumber,
 			StartDate:    item.StartDate,

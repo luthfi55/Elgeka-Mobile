@@ -32,7 +32,9 @@ func DoctorProfileController(r *gin.Engine) {
 	r.GET("api/doctor/list/website", ListDoctorWebsite)
 	r.GET("api/doctor/list_patient/website", ListPatientDoctorWebsite)
 	r.GET("api/doctor/list/null_patient/website", ListDoctorWithoutPatient)
-	r.DELETE("api/doctor/delete/account/website/:doctor_id", DeleteDoctorAccountWebsite)
+	r.POST("api/doctor/deactivate/account/website/:doctor_id", DeactivateDoctorAccountWebsite)
+	r.GET("api/doctor/list/deactive/website", ListDeactiveDoctorWebsite)
+	r.POST("api/doctor/activate/account/website/:doctor_id", ActivateDoctorAccountWebsite)
 }
 
 func DoctorCheck(c *gin.Context, doctor any) bool {
@@ -612,7 +614,7 @@ func ListDoctorWebsite(c *gin.Context) {
 
 	var doctor []models.Doctor
 
-	result := initializers.DB.Where("is_active = ?", true).Find(&doctor)
+	result := initializers.DB.Where("is_active = ? AND deactive_account = ?", true, false).Find(&doctor)
 	if result.Error != nil {
 		doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Get Doctor List", "", http.StatusInternalServerError)
 		return
@@ -642,7 +644,7 @@ func ListPatientDoctorWebsite(c *gin.Context) {
 
 	var doctor []models.Doctor
 
-	result := initializers.DB.Where("is_active = ?", true).Find(&doctor)
+	result := initializers.DB.Where("is_active = ? AND deactive_account = ?", true, false).Find(&doctor)
 	if result.Error != nil {
 		doctorresponse.ListPatientDoctorWebsiteFailedResponse(c, "Failed to Get Patient Doctor List", "", http.StatusInternalServerError)
 		return
@@ -735,7 +737,7 @@ func ListDoctorWithoutPatient(c *gin.Context) {
 
 	result := initializers.DB.Table("doctors").Select("doctors.*").
 		Joins("LEFT JOIN user_personal_doctors ON doctors.id = user_personal_doctors.doctor_id").
-		Where("user_personal_doctors.doctor_id IS NULL AND doctors.is_active = ?", true).
+		Where("user_personal_doctors.doctor_id IS NULL AND doctors.is_active = ?", true).Where("deactive_account = ?", false).
 		Find(&doctors)
 
 	if result.Error != nil {
@@ -759,7 +761,7 @@ func ListDoctorWithoutPatient(c *gin.Context) {
 	doctorresponse.ListPatientDoctorWebsiteSuccessResponse(c, "Success to Get Doctor List", doctor_list, http.StatusOK)
 }
 
-func DeleteDoctorAccountWebsite(c *gin.Context) {
+func DeactivateDoctorAccountWebsite(c *gin.Context) {
 	if !ParseWebToken(c) {
 		return
 	}
@@ -773,27 +775,86 @@ func DeleteDoctorAccountWebsite(c *gin.Context) {
 		return
 	}
 
-	var doctor_relation []models.UserPersonalDoctor
+	// var doctor_relation []models.UserPersonalDoctor
 
-	resultDoctorRelation := initializers.DB.Where("doctor_id = ?", doctorID).Find(&doctor_relation)
-	if resultDoctorRelation.Error != nil {
-		doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Get Doctor Relation", "", http.StatusInternalServerError)
+	// resultDoctorRelation := initializers.DB.Where("doctor_id = ?", doctorID).Find(&doctor_relation)
+	// if resultDoctorRelation.Error != nil {
+	// 	doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Get Doctor Relation", "", http.StatusInternalServerError)
+	// 	return
+	// }
+
+	// if resultDoctorRelation.RowsAffected > 0 {
+	// 	deleteResult := initializers.DB.Unscoped().Delete(&doctor_relation)
+	// 	if deleteResult.Error != nil {
+	// 		doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Delete Doctor Relation", "", http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// }
+
+	// deleteResult := initializers.DB.Unscoped().Delete(&doctor_account)
+	// if deleteResult.Error != nil {
+	// 	doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Delete Doctor Account", "", http.StatusInternalServerError)
+	// 	return
+	// }
+
+	doctor_account.DeactiveAccount = true
+	if err := initializers.DB.Save(&doctor_account).Error; err != nil {
+		doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Deactivate Patient", "", http.StatusInternalServerError)
 		return
 	}
 
-	if resultDoctorRelation.RowsAffected > 0 {
-		deleteResult := initializers.DB.Unscoped().Delete(&doctor_relation)
-		if deleteResult.Error != nil {
-			doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Delete Doctor Relation", "", http.StatusInternalServerError)
-			return
-		}
-	}
+	doctorresponse.ListDoctorWebsiteSuccessResponse(c, "Success to Deactivate Doctor Account", doctorID, http.StatusOK)
+}
 
-	deleteResult := initializers.DB.Unscoped().Delete(&doctor_account)
-	if deleteResult.Error != nil {
-		doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Delete Doctor Account", "", http.StatusInternalServerError)
+func ActivateDoctorAccountWebsite(c *gin.Context) {
+	if !ParseWebToken(c) {
 		return
 	}
 
-	doctorresponse.ListDoctorWebsiteSuccessResponse(c, "Success to Delete Doctor Account", doctorID, http.StatusOK)
+	doctorID := c.Param("doctor_id")
+
+	var doctor_account models.Doctor
+	resultDoctorAccount := initializers.DB.Find(&doctor_account, "id = ?", doctorID)
+	if resultDoctorAccount.Error != nil {
+		doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Get Doctor Account", "", http.StatusNotFound)
+		return
+	}
+
+	doctor_account.DeactiveAccount = false
+	if err := initializers.DB.Save(&doctor_account).Error; err != nil {
+		doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Activate Patient", "", http.StatusInternalServerError)
+		return
+	}
+
+	doctorresponse.ListDoctorWebsiteSuccessResponse(c, "Success to Activate Doctor Account", doctorID, http.StatusOK)
+}
+
+func ListDeactiveDoctorWebsite(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	var doctor []models.Doctor
+
+	result := initializers.DB.Where("is_active = ? AND deactive_account = ?", true, true).Find(&doctor)
+	if result.Error != nil {
+		doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Get Doctor List", "", http.StatusInternalServerError)
+		return
+	}
+
+	var doctor_data []models.DoctorProfile
+
+	for _, item := range doctor {
+		doctor_data = append(doctor_data, models.DoctorProfile{
+			ID:           item.ID,
+			Name:         item.Name,
+			PhoneNumber:  item.PhoneNumber,
+			Email:        item.Email,
+			Gender:       item.Gender,
+			PolyName:     item.PolyName,
+			HospitalName: item.HospitalName,
+		})
+	}
+
+	doctorresponse.ListDoctorWebsiteSuccessResponse(c, "Success to Get Deactive Doctor", doctor_data, http.StatusOK)
 }

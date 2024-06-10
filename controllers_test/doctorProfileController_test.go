@@ -525,10 +525,10 @@ func TestListPatientDoctorWebsite_Failed(t *testing.T) {
 func TestDeleteDoctorAccountWebsite_Success(t *testing.T) {
 	router := gin.Default()
 
-	router.DELETE("/api/doctor/delete/account/website/:doctor_id", middleware.RequireAuth, controllers.DeleteDoctorAccountWebsite)
+	router.DELETE("/api/doctor/delete/account/website/:doctor_id", middleware.RequireAuth, controllers.DeactivateDoctorAccountWebsite)
 
 	doctor_id := "b79a2300-f9bd-4c57-bed5-f18c5fd47ff6"
-	req, err := http.NewRequest("DELETE", "/api/doctor/delete/account/website/"+doctor_id, nil)
+	req, err := http.NewRequest("POST", "/api/doctor/delete/account/website/"+doctor_id, nil)
 
 	if err != nil {
 		t.Fatal(err)
@@ -561,10 +561,10 @@ func TestDeleteDoctorAccountWebsite_Success(t *testing.T) {
 func TestDeleteDoctorAccountWebsite_Failed(t *testing.T) {
 	router := gin.Default()
 
-	router.DELETE("/api/doctor/delete/account/website/:doctor_id", middleware.RequireAuth, controllers.DeleteDoctorAccountWebsite)
+	router.DELETE("/api/doctor/delete/account/website/:doctor_id", middleware.RequireAuth, controllers.DeactivateDoctorAccountWebsite)
 
 	doctor_id := "b79a2300-f9bd-4c57-bed5-f18c5fd47fzl"
-	req, err := http.NewRequest("DELETE", "/api/doctor/delete/account/website/"+doctor_id, nil)
+	req, err := http.NewRequest("POST", "/api/doctor/delete/account/website/"+doctor_id, nil)
 
 	if err != nil {
 		t.Fatal(err)

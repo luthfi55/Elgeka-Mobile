@@ -36,7 +36,7 @@ func ActivateAccountController(r *gin.Engine) {
 	//doctor activate account admin website
 	r.POST("api/doctor/activate_account/:doctor_id", ActivateDoctor)
 	r.POST("api/doctor/reject_activation/:doctor_id", RejectDoctor)
-	r.POST("api/doctor/refresh_code/:doctor_id", RefreshDoctorOtpCode)
+	// r.POST("api/doctor/refresh_code/:doctor_id", RefreshDoctorOtpCode)
 	r.GET("api/doctor/list_inactive", ListInactiveDoctor)
 }
 
@@ -642,7 +642,7 @@ func ListInactiveDoctor(c *gin.Context) {
 
 	var doctors []models.Doctor
 	var response []models.DoctorProfile
-	result := initializers.DB.Where("is_active = ?", false).Where("email_active = ?", true).Find(&doctors)
+	result := initializers.DB.Where("email_active = ? AND is_active = ? AND deactive_account = ?", true, false, false).Find(&doctors)
 
 	if result.Error != nil {
 		activationLink := "http://localhost:3000/api/user/activate/:user_id"

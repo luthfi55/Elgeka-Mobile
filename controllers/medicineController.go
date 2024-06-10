@@ -13,6 +13,7 @@ import (
 
 func MedicineController(r *gin.Engine) {
 	r.GET("api/user/medicine", middleware.RequireAuth, ListMedicine)
+	r.GET("api/user/medicine/:medicine_id", middleware.RequireAuth, GetMedicine)
 	r.POST("api/user/medicine", middleware.RequireAuth, AddMedicine)
 	r.PUT("api/user/medicine/:medicine_id", middleware.RequireAuth, UpdateMedicine)
 	r.DELETE("api/user/medicine/:medicine_id", middleware.RequireAuth, DeleteMedicine)
@@ -98,6 +99,26 @@ func AddMedicine(c *gin.Context) {
 
 	medicineresponse.AddMedicineSuccessResponse(c, "Success to Add Medicine Data", body, "http://localhost:3000/api/medicine/add", http.StatusCreated)
 
+}
+
+func GetMedicine(c *gin.Context) {
+	user, _ := c.Get("user")
+
+	medicine_id := c.Param("medicine_id")
+
+	var medicine models.Medicine
+	if err := initializers.DB.First(&medicine, "id = ? AND user_id = ?", medicine_id, user).Error; err != nil {
+		medicineresponse.UpdateMedicineFailedResponse(c, "Medicine Not Found", medicine, "Update Medicine", "http://localhost:3000/api/medicine/update/"+medicine_id, http.StatusNotFound)
+		return
+	}
+
+	var medicine_data models.MedicineData
+	medicine_data.ID = medicine.ID
+	medicine_data.Name = medicine.Name
+	medicine_data.Dosage = medicine.Dosage
+	medicine_data.Stock = medicine.Stock
+
+	medicineresponse.GetMedicineSuccessResponse(c, "Success to Get Medicine Data", medicine_data, "http://localhost:3000/api/medicine", http.StatusOK)
 }
 
 func UpdateMedicine(c *gin.Context) {

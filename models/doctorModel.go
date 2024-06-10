@@ -19,6 +19,7 @@ type Doctor struct {
 	PasswordConfirmation string    `validate:"required,eqfield=Password"`
 	EmailActive          bool
 	IsActive             bool
+	DeactiveAccount      bool
 	OtpCode              string
 	OtpCreatedAt         time.Time
 	OtpType              string
