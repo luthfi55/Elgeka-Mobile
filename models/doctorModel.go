@@ -12,7 +12,7 @@ type Doctor struct {
 	Name                 string    `validate:"required,min=2,max=100"`
 	PhoneNumber          string    `validate:"required,min=10,max=14"`
 	Gender               string    `validate:"required,min=1,max=10"`
-	PolyName             string    `validate:"required,min=2,max=100"`
+	Specialist           string    `validate:"required,min=2,max=100"`
 	HospitalName         string    `validate:"required,min=2,max=100"`
 	Email                string    `gorm:"unique" validate:"required,email,max=100"`
 	Password             string    `validate:"required,min=8,max=50"`
@@ -34,7 +34,7 @@ type DoctorProfile struct {
 	PhoneNumber  string    `json:"PhoneNumber"`
 	Email        string    `json:"Email"`
 	Gender       string    `json:"Gender"`
-	PolyName     string    `json:"PolyName"`
+	Specialist   string    `json:"Specialist"`
 	HospitalName string    `json:"HospitalName"`
 }
 

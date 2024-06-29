@@ -330,7 +330,7 @@ func GetDoctorData(c *gin.Context) {
 	doctor_data.PhoneNumber = doctor.PhoneNumber
 	doctor_data.Email = doctor.Email
 	doctor_data.Gender = doctor.Gender
-	doctor_data.PolyName = doctor.PolyName
+	doctor_data.Specialist = doctor.Specialist
 	doctor_data.HospitalName = doctor.HospitalName
 
 	userresponse.GetPersonalDoctorSuccessResponse(c, "Success Get Doctor Data", doctor_data, "http://localhost:3000/api/user/list/activate_doctor", http.StatusOK)

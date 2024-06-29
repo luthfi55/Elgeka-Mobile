@@ -71,8 +71,8 @@ func TestGetGenderChart_Failed(t *testing.T) {
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("expected status code %d but got %d", http.StatusUnauthorized, rec.Code)
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 }
 
@@ -135,8 +135,8 @@ func TestGetAgeChart_Failed(t *testing.T) {
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("expected status code %d but got %d", http.StatusUnauthorized, rec.Code)
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 }
 
@@ -199,8 +199,8 @@ func TestGetDiagnosisDateChart_Failed(t *testing.T) {
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("expected status code %d but got %d", http.StatusUnauthorized, rec.Code)
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 }
 
@@ -263,8 +263,8 @@ func TestGetTreatmentChart_Failed(t *testing.T) {
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("expected status code %d but got %d", http.StatusUnauthorized, rec.Code)
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 }
 

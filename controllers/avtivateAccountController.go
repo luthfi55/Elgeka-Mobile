@@ -657,7 +657,7 @@ func ListInactiveDoctor(c *gin.Context) {
 			PhoneNumber:  doctor.PhoneNumber,
 			Email:        doctor.Email,
 			Gender:       doctor.Gender,
-			PolyName:     doctor.PolyName,
+			Specialist:   doctor.Specialist,
 			HospitalName: doctor.HospitalName,
 		})
 	}

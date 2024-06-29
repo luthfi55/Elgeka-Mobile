@@ -66,7 +66,7 @@ func DoctorProfile(c *gin.Context) {
 	doctor_data.Email = doctor_account.Email
 	doctor_data.Gender = doctor_account.Gender
 	doctor_data.HospitalName = doctor_account.HospitalName
-	doctor_data.PolyName = doctor_account.PolyName
+	doctor_data.Specialist = doctor_account.Specialist
 
 	doctorresponse.GetDoctorProfileSuccessResponse(c, "Success to Get Doctor Profile Data", doctor_data, http.StatusOK)
 }
@@ -102,15 +102,15 @@ func EditDoctorProfile(c *gin.Context) {
 		doctor_account.Gender = body.Gender
 	}
 
-	if body.PolyName != "" {
-		doctor_account.PolyName = body.PolyName
+	if body.Specialist != "" {
+		doctor_account.Specialist = body.Specialist
 	}
 
 	if body.HospitalName != "" {
 		doctor_account.HospitalName = body.HospitalName
 	}
 
-	if body.Name == "" && body.PhoneNumber == "" && body.Gender == "" && body.PolyName == "" && body.HospitalName == "" {
+	if body.Name == "" && body.PhoneNumber == "" && body.Gender == "" && body.Specialist == "" && body.HospitalName == "" {
 		doctorresponse.UpdateDoctorProfileFailedResponse(c, "Body Can't Null", "", http.StatusBadRequest)
 		return
 	}
@@ -128,7 +128,7 @@ func EditDoctorProfile(c *gin.Context) {
 	doctor_data.Email = doctor_account.Email
 	doctor_data.Gender = doctor_account.Gender
 	doctor_data.HospitalName = doctor_account.HospitalName
-	doctor_data.PolyName = doctor_account.PolyName
+	doctor_data.Specialist = doctor_account.Specialist
 
 	doctorresponse.UpdateDoctorProfileSuccessResponse(c, "Success to Update Doctor Profile Data", doctor_data, http.StatusOK)
 }
@@ -629,7 +629,7 @@ func ListDoctorWebsite(c *gin.Context) {
 			PhoneNumber:  item.PhoneNumber,
 			Email:        item.Email,
 			Gender:       item.Gender,
-			PolyName:     item.PolyName,
+			Specialist:   item.Specialist,
 			HospitalName: item.HospitalName,
 		})
 	}
@@ -753,7 +753,7 @@ func ListDoctorWithoutPatient(c *gin.Context) {
 			PhoneNumber:  item.PhoneNumber,
 			Email:        item.Email,
 			Gender:       item.Gender,
-			PolyName:     item.PolyName,
+			Specialist:   item.Specialist,
 			HospitalName: item.HospitalName,
 		})
 	}
@@ -851,7 +851,7 @@ func ListDeactiveDoctorWebsite(c *gin.Context) {
 			PhoneNumber:  item.PhoneNumber,
 			Email:        item.Email,
 			Gender:       item.Gender,
-			PolyName:     item.PolyName,
+			Specialist:   item.Specialist,
 			HospitalName: item.HospitalName,
 		})
 	}

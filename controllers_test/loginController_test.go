@@ -3,6 +3,7 @@ package controllers_test
 import (
 	"bytes"
 	"elgeka-mobile/controllers"
+	"elgeka-mobile/middleware"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -42,9 +43,10 @@ func TestLogin_Success(t *testing.T) {
 	router.POST("/api/user/login", controllers.UserLogin)
 
 	reqBody := []byte(`{
-		"Email": "angga515151@gmail.com",
-		"Password": "L12345678*"
+		"EmailOrPhoneNumber": "498u41hhcfjdkh@gmail.com",
+		"Password": "Arinnnn1*"
 	}`)
+
 	req, err := http.NewRequest("POST", "/api/user/login", bytes.NewBuffer(reqBody))
 	if err != nil {
 		t.Fatal(err)
@@ -90,7 +92,7 @@ func TestLogin_Failed(t *testing.T) {
 	router.POST("/api/user/login", controllers.UserLogin)
 
 	reqBody := []byte(`{
-		"Email": "test@gmail.com",
+		"EmailOrPhoneNumber": "test@gmail.com",
 		"Password": "tess"
 	}`)
 	req, err := http.NewRequest("POST", "/api/user/login", bytes.NewBuffer(reqBody))
@@ -125,10 +127,161 @@ func TestLogin_Failed(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if expectedBody.ErrorMessage != "Invalid email or password" {
-		t.Errorf("expected message %s but got %s", "Invalid email or password", expectedBody.ErrorMessage)
+	if expectedBody.ErrorMessage != "Invalid email or phone number" {
+		t.Errorf("expected message %s but got %s", "Invalid email or phone number", expectedBody.ErrorMessage)
 	}
 }
+
+func TestLoginWebsite_Success(t *testing.T) {
+
+	router := gin.Default()
+
+	router.POST("/api/user/login_website", controllers.UserLoginWebsite)
+
+	reqBody := []byte(`{
+		"EmailOrPhoneNumber": "498u41hhcfjdkh@gmail.com",
+		"Password": "Arinnnn1*"
+	}`)
+
+	req, err := http.NewRequest("POST", "/api/user/login_website", bytes.NewBuffer(reqBody))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	type ExpectedResponse struct {
+		Message string `json:"Message"`
+		Data    []struct {
+			Name  string `json:"Name"`
+			Email string `json:"Email"`
+		} `json:"Data"`
+		Link []struct {
+			Name string `json:"Name"`
+			Link string `json:"Link"`
+		} `json:"Link"`
+	}
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody ExpectedResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Login Success" {
+		t.Errorf("expected message %s but got %s", "Login Success", expectedBody.Message)
+	}
+}
+
+func TestLoginWebsite_Failed(t *testing.T) {
+
+	router := gin.Default()
+
+	router.POST("/api/user/login_website", controllers.UserLoginWebsite)
+
+	reqBody := []byte(`{
+		"EmailOrPhoneNumber": "test@gmail.com",
+		"Password": "tess"
+	}`)
+	req, err := http.NewRequest("POST", "/api/user/login_website", bytes.NewBuffer(reqBody))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	type ExpectedResponse struct {
+		ErrorMessage string `json:"ErrorMessage"`
+		Data         []struct {
+			Email string `json:"Name"`
+		} `json:"Data"`
+		Link []struct {
+			Name string `json:"Name"`
+			Link string `json:"Link"`
+		} `json:"Link"`
+	}
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+
+	var expectedBody ExpectedResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Invalid email or phone number" {
+		t.Errorf("expected message %s but got %s", "Invalid email or phone number", expectedBody.ErrorMessage)
+	}
+}
+
+func TestLogout_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.POST("/api/user/logout", middleware.RequireAuth, controllers.UserLogoutWebsite)
+
+	req, err := http.NewRequest("POST", "/api/user/logout", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody successExpectedOtpResponse
+
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Logout Successful" {
+		t.Errorf("expected message body %s but got %s", "Logout Successful", expectedBody.Message)
+	}
+}
+
+func TestLogout_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.POST("/api/user/logout", middleware.RequireAuth, controllers.UserLogoutWebsite)
+
+	req, err := http.NewRequest("POST", "/api/user/logout", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+}
+
 func TestValidateController(t *testing.T) {
 
 	r := gin.New()
@@ -234,7 +387,7 @@ func TestForgotPassword_Failed(t *testing.T) {
 
 func TestRefreshForgotPassword_Success(t *testing.T) {
 	router := gin.Default()
-	user_id := "89dff9eb-fe50-40a6-8775-27d7b5997326"
+	user_id := "84a83f85-3258-42ef-ac2c-8d9c52c720cf"
 	router.POST("/api/user/refresh_code/forgot_password/:user_id", controllers.RefreshForgotPasswordOtp)
 
 	req, err := http.NewRequest("POST", "/api/user/refresh_code/forgot_password/"+user_id, nil)
@@ -298,9 +451,9 @@ func TestCheckOtp_Success(t *testing.T) {
 	router := gin.Default()
 	router.POST("/api/user/check_otp/:user_id", controllers.CheckOtp)
 
-	user_id := "89dff9eb-fe50-40a6-8775-27d7b5997326"
+	user_id := "84a83f85-3258-42ef-ac2c-8d9c52c720cf"
 	reqBody := []byte(`{
-		"OtpCode": "3242"
+		"OtpCode": "1334"
 	}`)
 	req, err := http.NewRequest("POST", "/api/user/check_otp/"+user_id, bytes.NewBuffer(reqBody))
 	if err != nil {
@@ -332,7 +485,7 @@ func TestCheckOtp_Failed(t *testing.T) {
 	router := gin.Default()
 	router.POST("/api/user/check_otp/:user_id", controllers.CheckOtp)
 
-	user_id := "89dff9eb-fe50-40a6-8775-27d7b5997326"
+	user_id := "84a83f85-3258-42ef-ac2c-8d9c52c720cf"
 	reqBody := []byte(`{
 		"OtpCode": "3241"
 	}`)
@@ -366,11 +519,11 @@ func TestChangePassword_Success(t *testing.T) {
 	router := gin.Default()
 	router.POST("/api/user/change_password/:user_id/:otp_code", controllers.ChangePassword)
 
-	user_id := "89dff9eb-fe50-40a6-8775-27d7b5997326"
-	otp_code := "JDJhJDEwJG5lWnI4bnBiZ2JjaE1IRXNDUUc5UnVrL0J3MDBrczU5enphNDRKaFU2WE9odGI0bGthZ1ND"
+	user_id := "84a83f85-3258-42ef-ac2c-8d9c52c720cf"
+	otp_code := "JDJhJDEwJHJZQXhrMGFsUDkxYkMvd2F6ckZlZC5mcG5mOE4xTEh4M0kvV2xEQmIzb3ZUYzYzVlc3N3lp"
 	reqBody := []byte(`{
-		"Password": "AL12345678*",
-		"PasswordConfirmation": "AL12345678*"
+		"Password": "Angga123*",
+		"PasswordConfirmation": "Angga123*"
 	}`)
 	req, err := http.NewRequest("POST", "/api/user/change_password/"+user_id+"/"+otp_code, bytes.NewBuffer(reqBody))
 	if err != nil {
@@ -402,11 +555,11 @@ func TestChangePassword_Failed(t *testing.T) {
 	router := gin.Default()
 	router.POST("/api/user/change_password/:user_id/:otp_code", controllers.ChangePassword)
 
-	user_id := "89dff9eb-fe50-40a6-8775-27d7b5997326"
+	user_id := "84a83f85-3258-42ef-ac2c-8d9c52c720cf"
 	otp_code := "JDJhJDEwJG5lWnI4bnBiZ2JjaE1IRXNDUUc5UnVrL0J3MDBrczU5enphNDRKaFU2WE9odGI0bGthZ1Nz"
 	reqBody := []byte(`{
-		"Password": "AL12345678*",
-		"PasswordConfirmation": "AL12345678*"
+		"Password": "Angga123*",
+		"PasswordConfirmation": "Angga123*"
 	}`)
 	req, err := http.NewRequest("POST", "/api/user/change_password/"+user_id+"/"+otp_code, bytes.NewBuffer(reqBody))
 	if err != nil {

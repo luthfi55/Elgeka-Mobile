@@ -84,12 +84,8 @@ func TestProfileData_Failed(t *testing.T) {
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("expected status code %d but got %d", http.StatusUnauthorized, rec.Code)
-	}
-
-	if rec.Body.String() != "" {
-		t.Errorf("expected message %s but got %s", "", rec.Body.String())
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 }
 
@@ -303,12 +299,12 @@ func TestAddPersonalDoctor_Failed(t *testing.T) {
 	}
 }
 
-func TestGetPersonalDoctor_Success(t *testing.T) {
+func TestGetListPersonalDoctor_Success(t *testing.T) {
 	router := gin.Default()
 
-	router.GET("/api/user/personal_doctor", middleware.RequireAuth, controllers.GetPersonalDoctor)
+	router.GET("/api/user/list/personal_doctor", middleware.RequireAuth, controllers.GetPersonalDoctor)
 
-	req, err := http.NewRequest("GET", "/api/user/personal_doctor", nil)
+	req, err := http.NewRequest("GET", "/api/user/list/personal_doctor", nil)
 	req.AddCookie(CookieConfiguration())
 
 	if err != nil {
@@ -348,12 +344,12 @@ func TestGetPersonalDoctor_Success(t *testing.T) {
 	}
 }
 
-func TestGetPersonalDoctor_Failed(t *testing.T) {
+func TestGetListPersonalDoctor_Failed(t *testing.T) {
 	router := gin.Default()
 
-	router.GET("/api/user/personal_doctor", middleware.RequireAuth, controllers.GetPersonalDoctor)
+	router.GET("/api/user/list/personal_doctor", middleware.RequireAuth, controllers.GetPersonalDoctor)
 
-	req, err := http.NewRequest("GET", "/api/user/personal_doctor", nil)
+	req, err := http.NewRequest("GET", "/api/user/list/personal_doctor", nil)
 
 	if err != nil {
 		t.Fatal(err)
@@ -373,30 +369,22 @@ func TestGetPersonalDoctor_Failed(t *testing.T) {
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("expected status code %d but got %d", http.StatusUnauthorized, rec.Code)
-	}
-
-	if rec.Body.String() != "" {
-		t.Errorf("expected message %s but got %s", "", rec.Body.String())
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 }
 
-func TestListUserWebsite_Success(t *testing.T) {
+func TestGetListActivateDoctor_Success(t *testing.T) {
 	router := gin.Default()
 
-	router.GET("/api/user/list/website", middleware.RequireAuth, controllers.ListUserWebsite)
+	router.GET("/api/user/list/activate_doctor", middleware.RequireAuth, controllers.ListActivateDoctor)
 
-	req, err := http.NewRequest("GET", "/api/user/list/website", nil)
+	req, err := http.NewRequest("GET", "/api/user/list/activate_doctor", nil)
+	req.AddCookie(CookieConfiguration())
 
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	req.AddCookie(WebsiteBearierTokenConfiguration())
-
-	bearerToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNGUyZDY4NDgtM2FlMy00NjdjLTk5NzQtZTVkMTdhYWJhMGU3IiwidXNlcm5hbWUiOiJwZW5ndXJ1c2VsZ2VrYSIsImZ1bGxfbmFtZSI6IlBlbmd1cnVzIFV0YW1hIEVMR0VLQSBKQUJBUiIsImlzX2FjdGl2ZSI6dHJ1ZSwic3VwZXJVc2VyIjp0cnVlfSwiaWF0IjoxNzE2Mzg3ODYyLCJleHAiOjE3MTY0MDk0NjJ9.Vi9bw3Qf4SZELmZ04fIbNL9WTqcRE5zxKNjYmKyTmDg"
-	req.Header.Set("Authorization", "Bearer "+bearerToken)
 
 	rec := httptest.NewRecorder()
 
@@ -406,7 +394,85 @@ func TestListUserWebsite_Success(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
 	}
 
-	t.Logf("Response Body: %s", rec.Body.String())
+	type ExpectedResponse struct {
+		Message string `json:"Message"`
+		Data    []struct {
+			DoctorName  string `json:"DoctorName"`
+			PhoneNumber string `json:"PhoneNumber"`
+			StartDate   string `json:"StartDate"`
+			EndDate     string `json:"Email"`
+		} `json:"Data"`
+		Link []struct {
+			Name string `json:"Name"`
+			Link string `json:"Link"`
+		} `json:"Link"`
+	}
+
+	var expectedBody ExpectedResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success Get Active Doctor" {
+		t.Errorf("expected message body %s but got %s", "Success Get Active Doctor", expectedBody.Message)
+	}
+}
+
+func TestGetListActivateDoctor_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/user/list/activate_doctor", middleware.RequireAuth, controllers.ListActivateDoctor)
+
+	req, err := http.NewRequest("GET", "/api/user/list/activate_doctor", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	expiresTime, _ := time.Parse(time.RFC1123, "Mon, 15 Apr 2023 17:00:20 GMT")
+	req.AddCookie(
+		&http.Cookie{
+			Name:     "Authorization",
+			Value:    "ayJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ1.asJleHAiOjE3MTMyMDA0MjAsInN1YiI6IjE0YzlhNDQzLTAzZTUtNGJhNi05NjY0LTBmODIwYjE5ZDhhYiJ0.L9z84gPX0l_O3GeyRi0ZAhMGxoWzXVV7k9fXw6KpEo4",
+			Path:     "/",
+			HttpOnly: true,
+			Expires:  expiresTime,
+		},
+	)
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+}
+
+func TestListUserWebsite_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/user/list/website", controllers.ListUserWebsite)
+
+	req, err := http.NewRequest("GET", "/api/user/list/website", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(WebsiteBearierTokenConfiguration())
+	bearerToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNGUyZDY4NDgtM2FlMy00NjdjLTk5NzQtZTVkMTdhYWJhMGU3IiwidXNlcm5hbWUiOiJwZW5ndXJ1c2VsZ2VrYSIsImZ1bGxfbmFtZSI6IlBlbmd1cnVzIFV0YW1hIEVMR0VLQSBKQUJBUiIsImlzX2FjdGl2ZSI6dHJ1ZSwic3VwZXJVc2VyIjp0cnVlfSwiaWF0IjoxNzE4MDkwOTE5LCJleHAiOjE3MTgxMTI1MTl9.uZKwT15qe6Q6xytlbLtFQNysSoKd4VR0MI5diYqqge8"
+	req.Header.Set("Authorization", "Bearer "+bearerToken)
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
 
 	var expectedBody ExpectedSuccessResponse
 	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
@@ -422,7 +488,7 @@ func TestListUserWebsite_Success(t *testing.T) {
 func TestListUserWebsite_Failed(t *testing.T) {
 	router := gin.Default()
 
-	router.GET("/api/user/list/website", middleware.RequireAuth, controllers.ListUserWebsite)
+	router.GET("/api/user/list/website", controllers.ListUserWebsite)
 
 	req, err := http.NewRequest("GET", "/api/user/list/website", nil)
 

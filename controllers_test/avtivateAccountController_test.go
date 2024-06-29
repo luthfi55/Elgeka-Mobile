@@ -3,7 +3,6 @@ package controllers_test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -448,6 +447,272 @@ func TestActivateUser_Failed(t *testing.T) {
 	}
 }
 
+func TestSendWhatsappOtpDoctor_Success(t *testing.T) {
+	shutdownSignal := make(chan os.Signal, 1)
+	signal.Notify(shutdownSignal, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		initializers.ConnectToWhatsapp()
+	}()
+
+	router := gin.Default()
+
+	router.POST("/api/doctor/whatsapp_otp/:doctor_id", controllers.SendDoctorWhatsappOtp)
+
+	go func() {
+		<-shutdownSignal
+
+		initializers.DisconnectWhatsapp()
+
+		os.Exit(0)
+	}()
+
+	doctor_id := "e7d8712b-a456-4014-ad14-2b93c7bc1a6f"
+
+	req, err := http.NewRequest("POST", "/api/doctor/whatsapp_otp/"+doctor_id, bytes.NewBuffer(nil))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody successExpectedOtpResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Send Whatsapp OTP Successfully" {
+		t.Errorf("expected message body %s but got %s", "Send Whatsapp OTP Successfully", expectedBody.Message)
+	}
+
+}
+
+func TestSendWhatsappOtpDoctor_Failed(t *testing.T) {
+	shutdownSignal := make(chan os.Signal, 1)
+	signal.Notify(shutdownSignal, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		initializers.ConnectToWhatsapp()
+	}()
+
+	router := gin.Default()
+
+	router.POST("/api/doctor/whatsapp_otp/:doctor_id", controllers.SendDoctorWhatsappOtp)
+
+	go func() {
+		<-shutdownSignal
+
+		initializers.DisconnectWhatsapp()
+
+		os.Exit(0)
+	}()
+
+	doctor_id := "8d2baaf9-ba97-4237-a9ab-1095fe2f4745"
+
+	req, err := http.NewRequest("POST", "/api/doctor/whatsapp_otp/"+doctor_id, bytes.NewBuffer(nil))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusNotFound {
+		t.Errorf("expected status code %d but got %d", http.StatusNotFound, rec.Code)
+	}
+
+	var expectedBody failedExpectedOtpResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Doctor Not Found" {
+		t.Errorf("expected message body %s but got %s", "Doctor Not Found", expectedBody.ErrorMessage)
+	}
+
+}
+
+func TestSendEmailOtpDoctor_Success(t *testing.T) {
+
+	router := gin.Default()
+
+	router.POST("/api/doctor/email_otp/:doctor_id", controllers.SendDoctorEmailOtp)
+
+	doctor_id := "e7d8712b-a456-4014-ad14-2b93c7bc1a6f"
+
+	req, err := http.NewRequest("POST", "/api/doctor/email_otp/"+doctor_id, bytes.NewBuffer(nil))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody successExpectedOtpResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Send Email OTP Successfully" {
+		t.Errorf("expected message body %s but got %s", "Send Email OTP Successfully", expectedBody.Message)
+	}
+
+}
+
+func TestSendEmailOtpDoctor_Failed(t *testing.T) {
+
+	router := gin.Default()
+
+	router.POST("/api/doctor/email_otp/:doctor_id", controllers.SendDoctorEmailOtp)
+
+	doctor_id := "89dff9eb-fe50-40a6-8775-27d7b5997325"
+
+	req, err := http.NewRequest("POST", "/api/doctor/email_otp/"+doctor_id, bytes.NewBuffer(nil))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusNotFound {
+		t.Errorf("expected status code %d but got %d", http.StatusNotFound, rec.Code)
+	}
+
+	var expectedBody failedExpectedOtpResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Doctor Not Found" {
+		t.Errorf("expected message body %s but got %s", "Doctor Not Found", expectedBody.ErrorMessage)
+	}
+
+}
+
+func TestWhatsappRefreshOtpCodeDoctor_Success(t *testing.T) {
+	shutdownSignal := make(chan os.Signal, 1)
+	signal.Notify(shutdownSignal, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		initializers.ConnectToWhatsapp()
+	}()
+
+	router := gin.Default()
+
+	router.POST("/api/doctor/whatsapp_refresh_code/:doctor_id", controllers.RefreshDoctorWhatsappOtpCode)
+
+	go func() {
+		<-shutdownSignal
+
+		initializers.DisconnectWhatsapp()
+
+		os.Exit(0)
+	}()
+
+	doctor_id := "e7d8712b-a456-4014-ad14-2b93c7bc1a6f"
+
+	req, err := http.NewRequest("POST", "/api/doctor/whatsapp_refresh_code/"+doctor_id, bytes.NewBuffer(nil))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody successExpectedOtpResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Refresh Whatsapp OTP Successfully" {
+		t.Errorf("expected message body %s but got %s", "Refresh Whatsapp OTP Successfully", expectedBody.Message)
+	}
+
+}
+
+func TestWhatsappRefreshOtpCodeDoctor_Failed(t *testing.T) {
+	shutdownSignal := make(chan os.Signal, 1)
+	signal.Notify(shutdownSignal, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		initializers.ConnectToWhatsapp()
+	}()
+
+	router := gin.Default()
+
+	router.POST("/api/doctor/whatsapp_refresh_code/:doctor_id", controllers.RefreshDoctorWhatsappOtpCode)
+
+	go func() {
+		<-shutdownSignal
+
+		initializers.DisconnectWhatsapp()
+
+		os.Exit(0)
+	}()
+
+	doctor_id := "89dff9eb-fe50-40a6-8775-27d7b5997325"
+
+	req, err := http.NewRequest("POST", "/api/doctor/whatsapp_refresh_code/"+doctor_id, bytes.NewBuffer(nil))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusNotFound {
+		t.Errorf("expected status code %d but got %d", http.StatusNotFound, rec.Code)
+	}
+
+	var expectedBody failedExpectedOtpResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Doctor Not Found" {
+		t.Errorf("expected message body %s but got %s", "Doctor Not Found", expectedBody.ErrorMessage)
+	}
+
+}
+
 func TestListInactiveDoctor_Success(t *testing.T) {
 	router := gin.Default()
 
@@ -457,6 +722,10 @@ func TestListInactiveDoctor_Success(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	req.AddCookie(WebsiteBearierTokenConfiguration())
+	bearerToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNGUyZDY4NDgtM2FlMy00NjdjLTk5NzQtZTVkMTdhYWJhMGU3IiwidXNlcm5hbWUiOiJwZW5ndXJ1c2VsZ2VrYSIsImZ1bGxfbmFtZSI6IlBlbmd1cnVzIFV0YW1hIEVMR0VLQSBKQUJBUiIsImlzX2FjdGl2ZSI6dHJ1ZSwic3VwZXJVc2VyIjp0cnVlfSwiaWF0IjoxNzE4MDg1MjY0LCJleHAiOjE3MTgxMDY4NjR9.bC2sYI3q5mBYUuqpd87TSC0t3nnVp8AuVuvnrssFosc"
+	req.Header.Set("Authorization", "Bearer "+bearerToken)
 
 	rec := httptest.NewRecorder()
 
@@ -489,12 +758,41 @@ func TestListInactiveDoctor_Success(t *testing.T) {
 	}
 }
 
-func TestDoctorRefreshCode_Success(t *testing.T) {
+func TestListInactiveDoctor_Failed(t *testing.T) {
 	router := gin.Default()
-	router.POST("/api/doctor/refresh_code/:doctor_id", controllers.RefreshDoctorOtpCode)
 
-	DoctorID := "08e28077-3927-4c70-9d30-2c8ce71b40c6"
-	req, err := http.NewRequest("POST", "/api/doctor/refresh_code/"+DoctorID, nil)
+	router.GET("/api/doctor/list_inactive", controllers.ListInactiveDoctor)
+
+	req, err := http.NewRequest("GET", "/api/doctor/list_inactive", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+
+	var expectedBody failedExpectedOtpResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Token is required" {
+		t.Errorf("expected message body %s but got %s", "Token is required", expectedBody.ErrorMessage)
+	}
+}
+
+func TestEmailRefreshCodeDoctor_Success(t *testing.T) {
+	router := gin.Default()
+	router.POST("/api/doctor/email_refresh_code/:doctor_id", controllers.RefreshDoctorEmailOtpCode)
+
+	DoctorID := "9b33a7c3-1d73-498d-ba96-53733ff7cbf4"
+	req, err := http.NewRequest("POST", "/api/doctor/email_refresh_code/"+DoctorID, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -515,17 +813,17 @@ func TestDoctorRefreshCode_Success(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if expectedBody.Message != "Refresh OTP Successfully" {
-		t.Errorf("expected message body %s but got %s", "Refresh OTP Successfully", expectedBody.Message)
+	if expectedBody.Message != "Refresh Email OTP Successfully" {
+		t.Errorf("expected message body %s but got %s", "Refresh Email OTP Successfully", expectedBody.Message)
 	}
 }
 
-func TestDoctorRefreshCode_Failed(t *testing.T) {
+func TestEmailRefreshCodeDoctor_Failed(t *testing.T) {
 	router := gin.Default()
-	router.POST("/api/doctor/refresh_code/:doctor_id", controllers.RefreshDoctorOtpCode)
+	router.POST("/api/doctor/email_refresh_code/:doctor_id", controllers.RefreshDoctorEmailOtpCode)
 
 	DoctorID := "08e28077-3927-4c70-9d30-2c8ce71b40c1"
-	req, err := http.NewRequest("POST", "/api/doctor/refresh_code/"+DoctorID, nil)
+	req, err := http.NewRequest("POST", "/api/doctor/email_refresh_code/"+DoctorID, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -555,14 +853,14 @@ func TestActivateEmailDoctor_Success(t *testing.T) {
 
 	router := gin.Default()
 
-	router.POST("/api/doctor/activate/:doctor_id", controllers.ActivateOtpDoctor)
+	router.POST("/api/doctor/activate_otp/:doctor_id", controllers.ActivateOtpDoctor)
 
 	reqBody := []byte(`{
-		"OtpCode": "6701"
+		"OtpCode": "0923"
 	}`)
 
-	DoctorID := "08e28077-3927-4c70-9d30-2c8ce71b40c6"
-	req, err := http.NewRequest("POST", "/api/doctor/activate/"+DoctorID, bytes.NewBuffer(reqBody))
+	DoctorID := "9b33a7c3-1d73-498d-ba96-53733ff7cbf4"
+	req, err := http.NewRequest("POST", "/api/doctor/activate_otp/"+DoctorID, bytes.NewBuffer(reqBody))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -583,8 +881,8 @@ func TestActivateEmailDoctor_Success(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if expectedBody.Message != "Doctor Email Activated Successfully" {
-		t.Errorf("expected message body %s but got %s", "Doctor Email Activated Successfully", expectedBody.Message)
+	if expectedBody.Message != "Doctor Otp Activated Successfully" {
+		t.Errorf("expected message body %s but got %s", "Doctor Otp Activated Successfully", expectedBody.Message)
 	}
 
 }
@@ -593,13 +891,14 @@ func TestActivateEmailDoctor_Failed(t *testing.T) {
 
 	router := gin.Default()
 
-	router.POST("/api/doctor/activate/:doctor_id", controllers.ActivateOtpDoctor)
+	router.POST("/api/doctor/activate_otp/:doctor_id", controllers.ActivateOtpDoctor)
 
 	reqBody := []byte(`{
 			"OtpCode": "8136"
-		}`)
-	DoctorID := "08e28077-3927-4c70-9d30-2c8ce71b40c6"
-	req, err := http.NewRequest("POST", "/api/doctor/activate/"+DoctorID, bytes.NewBuffer(reqBody))
+	}`)
+
+	DoctorID := "9b33a7c3-1d73-498d-ba96-53733ff7cbf4"
+	req, err := http.NewRequest("POST", "/api/doctor/activate_otp/"+DoctorID, bytes.NewBuffer(reqBody))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -631,7 +930,7 @@ func TestActivateDoctorAccount_Success(t *testing.T) {
 
 	router.POST("/api/doctor/activate_account/:doctor_id", controllers.ActivateDoctor)
 
-	DoctorID := "08e28077-3927-4c70-9d30-2c8ce71b40c6"
+	DoctorID := "e6438b13-4ff2-4f25-9d97-5ba9379002c7"
 	req, err := http.NewRequest("POST", "/api/doctor/activate_account/"+DoctorID, nil)
 
 	if err != nil {
@@ -639,6 +938,10 @@ func TestActivateDoctorAccount_Success(t *testing.T) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(WebsiteBearierTokenConfiguration())
+	bearerToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNGUyZDY4NDgtM2FlMy00NjdjLTk5NzQtZTVkMTdhYWJhMGU3IiwidXNlcm5hbWUiOiJwZW5ndXJ1c2VsZ2VrYSIsImZ1bGxfbmFtZSI6IlBlbmd1cnVzIFV0YW1hIEVMR0VLQSBKQUJBUiIsImlzX2FjdGl2ZSI6dHJ1ZSwic3VwZXJVc2VyIjp0cnVlfSwiaWF0IjoxNzE4MDg1MjY0LCJleHAiOjE3MTgxMDY4NjR9.bC2sYI3q5mBYUuqpd87TSC0t3nnVp8AuVuvnrssFosc"
+	req.Header.Set("Authorization", "Bearer "+bearerToken)
 
 	rec := httptest.NewRecorder()
 
@@ -674,6 +977,10 @@ func TestActivateDoctorAccount_Failed(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	req.AddCookie(WebsiteBearierTokenConfiguration())
+	bearerToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNGUyZDY4NDgtM2FlMy00NjdjLTk5NzQtZTVkMTdhYWJhMGU3IiwidXNlcm5hbWUiOiJwZW5ndXJ1c2VsZ2VrYSIsImZ1bGxfbmFtZSI6IlBlbmd1cnVzIFV0YW1hIEVMR0VLQSBKQUJBUiIsImlzX2FjdGl2ZSI6dHJ1ZSwic3VwZXJVc2VyIjp0cnVlfSwiaWF0IjoxNzE4MDg1MjY0LCJleHAiOjE3MTgxMDY4NjR9.bC2sYI3q5mBYUuqpd87TSC0t3nnVp8AuVuvnrssFosc"
+	req.Header.Set("Authorization", "Bearer "+bearerToken)
+
 	req.Header.Set("Content-Type", "application/json")
 
 	rec := httptest.NewRecorder()
@@ -703,7 +1010,7 @@ func TestRejectDoctorAccount_Success(t *testing.T) {
 
 	router.POST("/api/doctor/reject_activation/:doctor_id", controllers.RejectDoctor)
 
-	DoctorID := "1347dc5f-1f92-4b47-b347-fd67103a99d9"
+	DoctorID := "99a49bf8-11e1-4ffc-a374-3fb943e9637a"
 	req, err := http.NewRequest("POST", "/api/doctor/reject_activation/"+DoctorID, nil)
 
 	if err != nil {
@@ -711,6 +1018,10 @@ func TestRejectDoctorAccount_Success(t *testing.T) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(WebsiteBearierTokenConfiguration())
+	bearerToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNGUyZDY4NDgtM2FlMy00NjdjLTk5NzQtZTVkMTdhYWJhMGU3IiwidXNlcm5hbWUiOiJwZW5ndXJ1c2VsZ2VrYSIsImZ1bGxfbmFtZSI6IlBlbmd1cnVzIFV0YW1hIEVMR0VLQSBKQUJBUiIsImlzX2FjdGl2ZSI6dHJ1ZSwic3VwZXJVc2VyIjp0cnVlfSwiaWF0IjoxNzE4MDg1MjY0LCJleHAiOjE3MTgxMDY4NjR9.bC2sYI3q5mBYUuqpd87TSC0t3nnVp8AuVuvnrssFosc"
+	req.Header.Set("Authorization", "Bearer "+bearerToken)
 
 	rec := httptest.NewRecorder()
 
@@ -731,8 +1042,6 @@ func TestRejectDoctorAccount_Success(t *testing.T) {
 	if expectedBody.Message != "Reject Doctor Successfully" {
 		t.Errorf("expected message body %s but got %s", "Reject Doctor Successfully", expectedBody.Message)
 	}
-
-	fmt.Println(rec.Body.String())
 }
 
 func TestRejectDoctorAccount_Failed(t *testing.T) {
@@ -748,6 +1057,10 @@ func TestRejectDoctorAccount_Failed(t *testing.T) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(WebsiteBearierTokenConfiguration())
+	bearerToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNGUyZDY4NDgtM2FlMy00NjdjLTk5NzQtZTVkMTdhYWJhMGU3IiwidXNlcm5hbWUiOiJwZW5ndXJ1c2VsZ2VrYSIsImZ1bGxfbmFtZSI6IlBlbmd1cnVzIFV0YW1hIEVMR0VLQSBKQUJBUiIsImlzX2FjdGl2ZSI6dHJ1ZSwic3VwZXJVc2VyIjp0cnVlfSwiaWF0IjoxNzE4MDg1MjY0LCJleHAiOjE3MTgxMDY4NjR9.bC2sYI3q5mBYUuqpd87TSC0t3nnVp8AuVuvnrssFosc"
+	req.Header.Set("Authorization", "Bearer "+bearerToken)
 
 	rec := httptest.NewRecorder()
 

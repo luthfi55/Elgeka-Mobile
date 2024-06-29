@@ -278,7 +278,7 @@ func DoctorRegister(c *gin.Context) {
 
 	//create the doctor
 	newUUID := uuid.New()
-	doctor := models.Doctor{ID: newUUID, Name: body.Name, PhoneNumber: body.PhoneNumber, Gender: body.Gender, PolyName: body.PolyName, HospitalName: body.HospitalName, Email: body.Email, Password: string(hash)}
+	doctor := models.Doctor{ID: newUUID, Name: body.Name, PhoneNumber: body.PhoneNumber, Gender: body.Gender, Specialist: body.Specialist, HospitalName: body.HospitalName, Email: body.Email, Password: string(hash)}
 
 	if err := initializers.DB.Create(&doctor).Error; err != nil {
 		activationLink := "http://localhost:3000/api/doctor/register"

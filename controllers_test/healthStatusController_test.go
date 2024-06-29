@@ -103,8 +103,8 @@ func TestCreateBcrAbl_Failed(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if expectedBody.ErrorMessage != "Notes Cant Be Empty" {
-		t.Errorf("expected message body %s but got %s", "Success Create Data", expectedBody.ErrorMessage)
+	if expectedBody.ErrorMessage != "Field 'Notes' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'Notes' is required.", expectedBody.ErrorMessage)
 	}
 }
 
@@ -167,8 +167,8 @@ func TestGetBcrAbl_Failed(t *testing.T) {
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("expected status code %d but got %d", http.StatusUnauthorized, rec.Code)
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 }
 
@@ -253,8 +253,8 @@ func TestUpdateBcrAbl_Failed(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if expectedBody.ErrorMessage != "Notes Cant Be Empty" {
-		t.Errorf("expected message body %s but got %s", "Notes Cant Be Empty", expectedBody.ErrorMessage)
+	if expectedBody.ErrorMessage != "Field 'Notes' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'Notes' is required.", expectedBody.ErrorMessage)
 	}
 }
 
@@ -264,7 +264,7 @@ func TestDeleteBcrAbl_Success(t *testing.T) {
 
 	router.DELETE("/api/user/health_status/bcr_abl/:bcr_abl_id", middleware.RequireAuth, controllers.DeleteBcrAbl)
 
-	bcr_abl_id := "92e66f76-332e-45a8-a9d3-a919f01abdd3"
+	bcr_abl_id := "4bab13c5-5c5f-4d3c-b274-edf19a19310d"
 
 	req, err := http.NewRequest("DELETE", "/api/user/health_status/bcr_abl/"+bcr_abl_id, nil)
 
@@ -415,8 +415,8 @@ func TestCreateLeukocytes_Failed(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if expectedBody.ErrorMessage != "Notes Cant Be Empty" {
-		t.Errorf("expected message body %s but got %s", "Success Create Data", expectedBody.ErrorMessage)
+	if expectedBody.ErrorMessage != "Field 'Notes' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'Notes' is required.", expectedBody.ErrorMessage)
 	}
 }
 
@@ -479,8 +479,8 @@ func TestGetLeukocytes_Failed(t *testing.T) {
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("expected status code %d but got %d", http.StatusUnauthorized, rec.Code)
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 }
 
@@ -565,8 +565,8 @@ func TestUpdateLeukocytes_Failed(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if expectedBody.ErrorMessage != "Notes Cant Be Empty" {
-		t.Errorf("expected message body %s but got %s", "Notes Cant Be Empty", expectedBody.ErrorMessage)
+	if expectedBody.ErrorMessage != "Field 'Notes' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'Notes' is required.", expectedBody.ErrorMessage)
 	}
 }
 
@@ -727,8 +727,8 @@ func TestCreatePotentialHydrogen_Failed(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if expectedBody.ErrorMessage != "Notes Cant Be Empty" {
-		t.Errorf("expected message body %s but got %s", "Success Create Data", expectedBody.ErrorMessage)
+	if expectedBody.ErrorMessage != "Field 'Notes' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'Notes' is required.", expectedBody.ErrorMessage)
 	}
 }
 
@@ -791,8 +791,8 @@ func TestGetPotentialHydrogen_Failed(t *testing.T) {
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("expected status code %d but got %d", http.StatusUnauthorized, rec.Code)
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 }
 
@@ -877,8 +877,8 @@ func TestUpdatePotentialHydrogen_Failed(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if expectedBody.ErrorMessage != "Notes Cant Be Empty" {
-		t.Errorf("expected message body %s but got %s", "Notes Cant Be Empty", expectedBody.ErrorMessage)
+	if expectedBody.ErrorMessage != "Field 'Notes' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'Notes' is required.", expectedBody.ErrorMessage)
 	}
 }
 
@@ -1039,8 +1039,8 @@ func TestCreateHemoglobin_Failed(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if expectedBody.ErrorMessage != "Notes Cant Be Empty" {
-		t.Errorf("expected message body %s but got %s", "Success Create Data", expectedBody.ErrorMessage)
+	if expectedBody.ErrorMessage != "Field 'Notes' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'Notes' is required.", expectedBody.ErrorMessage)
 	}
 }
 
@@ -1103,8 +1103,8 @@ func TestGetHemoglobin_Failed(t *testing.T) {
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("expected status code %d but got %d", http.StatusUnauthorized, rec.Code)
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 }
 
@@ -1189,8 +1189,8 @@ func TestUpdateHemoglobin_Failed(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if expectedBody.ErrorMessage != "Notes Cant Be Empty" {
-		t.Errorf("expected message body %s but got %s", "Notes Cant Be Empty", expectedBody.ErrorMessage)
+	if expectedBody.ErrorMessage != "Field 'Notes' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'Notes' is required.", expectedBody.ErrorMessage)
 	}
 }
 
@@ -1351,8 +1351,8 @@ func TestCreateHeartRate_Failed(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if expectedBody.ErrorMessage != "Notes Cant Be Empty" {
-		t.Errorf("expected message body %s but got %s", "Success Create Data", expectedBody.ErrorMessage)
+	if expectedBody.ErrorMessage != "Field 'Notes' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'Notes' is required.", expectedBody.ErrorMessage)
 	}
 }
 
@@ -1415,8 +1415,8 @@ func TestGetHeartRate_Failed(t *testing.T) {
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("expected status code %d but got %d", http.StatusUnauthorized, rec.Code)
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 }
 
@@ -1501,8 +1501,8 @@ func TestUpdateHeartRate_Failed(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if expectedBody.ErrorMessage != "Notes Cant Be Empty" {
-		t.Errorf("expected message body %s but got %s", "Notes Cant Be Empty", expectedBody.ErrorMessage)
+	if expectedBody.ErrorMessage != "Field 'Notes' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'Notes' is required.", expectedBody.ErrorMessage)
 	}
 }
 
@@ -1665,8 +1665,8 @@ func TestCreateBloodPressure_Failed(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if expectedBody.ErrorMessage != "Notes Cant Be Empty" {
-		t.Errorf("expected message body %s but got %s", "Success Create Data", expectedBody.ErrorMessage)
+	if expectedBody.ErrorMessage != "Field 'Notes' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'Notes' is required.", expectedBody.ErrorMessage)
 	}
 }
 
@@ -1729,8 +1729,8 @@ func TestGetBloodPressure_Failed(t *testing.T) {
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("expected status code %d but got %d", http.StatusUnauthorized, rec.Code)
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 }
 
@@ -1817,8 +1817,8 @@ func TestUpdateBloodPressure_Failed(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if expectedBody.ErrorMessage != "Notes Cant Be Empty" {
-		t.Errorf("expected message body %s but got %s", "Notes Cant Be Empty", expectedBody.ErrorMessage)
+	if expectedBody.ErrorMessage != "Field 'Notes' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'Notes' is required.", expectedBody.ErrorMessage)
 	}
 }
 

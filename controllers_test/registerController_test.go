@@ -143,8 +143,8 @@ func TestDoctorRegister_Success(t *testing.T) {
 		"Gender": "male",		
 		"polyname": "kandungan",
     	"hospitalname": "mayapada",
-		"PhoneNumber": "1234567890",
-		"Email": "drjohnn@example.com",
+		"PhoneNumber": "0895339988332",
+		"Email": "drjonnn@example.com",
 		"Password": "Password123*",
 		"PasswordConfirmation": "Password123*"
 	}`)
