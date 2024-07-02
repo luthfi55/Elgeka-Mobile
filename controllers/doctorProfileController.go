@@ -576,6 +576,60 @@ func DoctorPatientHealthStatus(c *gin.Context) {
 		})
 	}
 
+	var hemotokrit []models.HeartRate
+	if err := initializers.DB.Where("user_id = ?", patient_profile.UserID).Order("date asc").Find(&hemotokrit).Error; err != nil {
+		doctorresponse.DoctorPatientHealthStatusFailedResponse(c, "Failed to Get Hemotokrit Data", "", http.StatusNotFound)
+		return
+	}
+
+	var hemotokrit_data []struct {
+		Id    uuid.UUID
+		Data  float32
+		Notes string
+		Date  string
+	}
+
+	for _, item := range hemotokrit {
+		hemotokrit_data = append(hemotokrit_data, struct {
+			Id    uuid.UUID
+			Data  float32
+			Notes string
+			Date  string
+		}{
+			Id:    item.ID,
+			Data:  item.Data,
+			Notes: item.Notes,
+			Date:  item.Date,
+		})
+	}
+
+	var trombosit []models.HeartRate
+	if err := initializers.DB.Where("user_id = ?", patient_profile.UserID).Order("date asc").Find(&trombosit).Error; err != nil {
+		doctorresponse.DoctorPatientHealthStatusFailedResponse(c, "Failed to Get Trombosit Data", "", http.StatusNotFound)
+		return
+	}
+
+	var trombosit_data []struct {
+		Id    uuid.UUID
+		Data  float32
+		Notes string
+		Date  string
+	}
+
+	for _, item := range trombosit {
+		trombosit_data = append(trombosit_data, struct {
+			Id    uuid.UUID
+			Data  float32
+			Notes string
+			Date  string
+		}{
+			Id:    item.ID,
+			Data:  item.Data,
+			Notes: item.Notes,
+			Date:  item.Date,
+		})
+	}
+
 	var health_status []struct {
 		Name              string
 		BCR_ABL           interface{}
@@ -584,6 +638,8 @@ func DoctorPatientHealthStatus(c *gin.Context) {
 		Hemoglobin        interface{}
 		BloodPressure     interface{}
 		HeartRate         interface{}
+		Hemotokrit        interface{}
+		Trombosit         interface{}
 	}
 
 	health_status = append(health_status, struct {
@@ -594,6 +650,8 @@ func DoctorPatientHealthStatus(c *gin.Context) {
 		Hemoglobin        interface{}
 		BloodPressure     interface{}
 		HeartRate         interface{}
+		Hemotokrit        interface{}
+		Trombosit         interface{}
 	}{
 		Name:              patient_data.Name,
 		BCR_ABL:           bcr_abl_data,
@@ -602,6 +660,8 @@ func DoctorPatientHealthStatus(c *gin.Context) {
 		Hemoglobin:        hemoglobin_data,
 		BloodPressure:     blood_pressure_data,
 		HeartRate:         heart_rate_data,
+		Hemotokrit:        hemotokrit_data,
+		Trombosit:         trombosit_data,
 	})
 
 	doctorresponse.DoctorPatientHealthStatusSuccessResponse(c, "Success to Get Health Status Data", health_status, http.StatusOK)

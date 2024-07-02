@@ -154,8 +154,11 @@ func UserRegister(c *gin.Context) {
 		return
 	}
 
-	if body.BloodGroup != "A" && body.BloodGroup != "B" && body.BloodGroup != "AB" && body.BloodGroup != "O" {
-		errorMessage := "Blood Group must A, B, AB, or O."
+	if body.BloodGroup != "-A" && body.BloodGroup != "+A" &&
+		body.BloodGroup != "-B" && body.BloodGroup != "+B" &&
+		body.BloodGroup != "-AB" && body.BloodGroup != "+AB" &&
+		body.BloodGroup != "-O" && body.BloodGroup != "+O" {
+		errorMessage := "Blood Group must -A, +A, -B, +B, -AB, +AB, -0, +O."
 		data := body
 		activationLink := "http://localhost:3000/api/user/register"
 		userresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)

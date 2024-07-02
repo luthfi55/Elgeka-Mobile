@@ -50,12 +50,26 @@ func HealthStatusController(r *gin.Engine) {
 	r.PUT("api/user/health_status/blood_pressure/:blood_pressure_id", middleware.RequireAuth, UpdateBloodPressure)
 	r.DELETE("api/user/health_status/blood_pressure/:blood_pressure_id", middleware.RequireAuth, DeleteBloodPressure)
 
+	//hematokrit
+	r.POST("api/user/health_status/hematokrit", middleware.RequireAuth, CreateHematokrit)
+	r.GET("api/user/health_status/hematokrit", middleware.RequireAuth, GetHematokrit)
+	r.PUT("api/user/health_status/hematokrit/:hematokrit_id", middleware.RequireAuth, UpdateHematokrit)
+	r.DELETE("api/user/health_status/hematokrit/:hematokrit_id", middleware.RequireAuth, DeleteHematokrit)
+
+	//trombosit
+	r.POST("api/user/health_status/trombosit", middleware.RequireAuth, CreateTrombosit)
+	r.GET("api/user/health_status/trombosit", middleware.RequireAuth, GetTrombosit)
+	r.PUT("api/user/health_status/trombosit/:trombosit_id", middleware.RequireAuth, UpdateTrombosit)
+	r.DELETE("api/user/health_status/trombosit/:trombosit_id", middleware.RequireAuth, DeleteTrombosit)
+
 	r.GET("api/user/health_status/list_website/bcr_abl", GetBcrAblPatient)
 	r.GET("api/user/health_status/list_website/leukocytes", GetLeukocytesPatient)
 	r.GET("api/user/health_status/list_website/potential_hydrogen", GetPotentialHydrogenPatient)
 	r.GET("api/user/health_status/list_website/hemoglobin", GetHemoglobinPatient)
 	r.GET("api/user/health_status/list_website/heart_rate", GetHeartRatePatient)
 	r.GET("api/user/health_status/list_website/blood_pressure", GetBloodPressurePatient)
+	r.GET("api/user/health_status/list_website/hematokrit", GetHematokritPatient)
+	r.GET("api/user/health_status/list_website/trombosit", GetTrombositPatient)
 }
 
 func CreateBcrAbl(c *gin.Context) {
@@ -1072,6 +1086,345 @@ func DeleteBloodPressure(c *gin.Context) {
 	healthstatusresponse.BloodPressureSuccessResponse(c, "Success Delete Data", bloodPressureData, "http://localhost:3000/api/user/health_status/blood_pressure", http.StatusOK)
 }
 
+func CreateHematokrit(c *gin.Context) {
+	var body models.Hematokrit
+	user, _ := c.Get("user")
+
+	var hematokrit_data struct {
+		Data  float32
+		Notes string
+		Date  string
+	}
+
+	if c.Bind(&body) != nil {
+		healthstatusresponse.HematokritFailedResponse(c, "Failed to read body", hematokrit_data, "Create Hematokrit", "http://localhost:3000/api/user/health_status/hematokrit", http.StatusBadRequest)
+		return
+	}
+
+	hematokrit_data.Data = body.Data
+	hematokrit_data.Notes = body.Notes
+	hematokrit_data.Date = body.Date
+
+	validate := validator.New()
+	if err := validate.Struct(body); err != nil {
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
+		}
+
+		healthstatusresponse.HematokritFailedResponse(c, strings.Join(errorMessages, ", "), hematokrit_data, "Create Hematokrit", "http://localhost:3000/api/user/health_status/hematokrit", http.StatusBadRequest)
+		return
+	}
+
+	newUUID := uuid.New()
+	hematokrit := models.Hematokrit{
+		ID:     newUUID,
+		UserID: user.(uuid.UUID),
+		Data:   body.Data,
+		Notes:  body.Notes,
+		Date:   body.Date,
+	}
+
+	if err := initializers.DB.Create(&hematokrit).Error; err != nil {
+		healthstatusresponse.HematokritFailedResponse(c, strings.Title(err.Error()), hematokrit_data, "Create Hematokrit", "http://localhost:3000/api/user/health_status/hematokrit", http.StatusBadRequest)
+	}
+
+	healthstatusresponse.HematokritSuccessResponse(c, "Success Create Data", hematokrit_data, "http://localhost:3000/api/user/health_status/hematokrit", http.StatusCreated)
+}
+
+func GetHematokrit(c *gin.Context) {
+	var hematokrit []models.Hematokrit
+	user, _ := c.Get("user")
+
+	var hematokrit_data []struct {
+		Id    uuid.UUID
+		Data  float32
+		Notes string
+		Date  string
+	}
+
+	initializers.DB.Where("user_id = ?", user).Order("date asc").Find(&hematokrit)
+
+	if initializers.DB.Error != nil {
+		healthstatusresponse.HematokritFailedResponse(c, "User Not Found", hematokrit_data, "Create Hematokrit", "http://localhost:3000/api/user/health_status/hematokrit", http.StatusBadRequest)
+		return
+	}
+
+	for _, item := range hematokrit {
+		hematokrit_data = append(hematokrit_data, struct {
+			Id    uuid.UUID
+			Data  float32
+			Notes string
+			Date  string
+		}{
+			Id:    item.ID,
+			Data:  item.Data,
+			Notes: item.Notes,
+			Date:  item.Date,
+		})
+	}
+
+	if hematokrit_data == nil {
+		healthstatusresponse.HematokritFailedResponse(c, "Data Not Found", hematokrit_data, "Create Hematokrit", "http://localhost:3000/api/user/health_status/hematokrit", http.StatusNotFound)
+		return
+
+	}
+
+	healthstatusresponse.HematokritSuccessResponse(c, "Success Get Data", hematokrit_data, "http://localhost:3000/api/user/health_status/hematokrit", http.StatusOK)
+}
+
+func UpdateHematokrit(c *gin.Context) {
+	var body models.Hematokrit
+	hematokrit_id := c.Param("hematokrit_id")
+
+	var hematokrit_data struct {
+		Id    uuid.UUID
+		Data  float32
+		Notes string
+		Date  string
+	}
+
+	user, _ := c.Get("user")
+
+	if c.Bind(&body) != nil {
+		healthstatusresponse.HematokritFailedResponse(c, "Failed to read body", hematokrit_data, "Create Hematokrit", "http://localhost:3000/api/user/health_status/hematokrit", http.StatusBadRequest)
+		return
+	}
+
+	body.ID = uuid.MustParse(hematokrit_id)
+	body.UserID = user.(uuid.UUID)
+
+	hematokrit_data.Id = user.(uuid.UUID)
+	hematokrit_data.Data = body.Data
+	hematokrit_data.Notes = body.Notes
+	hematokrit_data.Date = body.Date
+
+	validate := validator.New()
+	if err := validate.Struct(body); err != nil {
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
+		}
+
+		healthstatusresponse.HematokritFailedResponse(c, strings.Join(errorMessages, ", "), hematokrit_data, "Create Hematokrit", "http://localhost:3000/api/user/health_status/hematokrit", http.StatusBadRequest)
+		return
+	}
+
+	var hematokrit models.Hematokrit
+	if err := initializers.DB.First(&hematokrit, "user_id = ? AND ID = ?", user, hematokrit_id).Error; err != nil {
+		healthstatusresponse.HematokritFailedResponse(c, strings.Title(err.Error()), hematokrit_data, "Create Hematokrit", "http://localhost:3000/api/user/health_status/hematokrit", http.StatusBadRequest)
+		return
+	}
+
+	if err := initializers.DB.Save(&body).Error; err != nil {
+		healthstatusresponse.HematokritFailedResponse(c, strings.Title(err.Error()), hematokrit_data, "Create Hematokrit", "http://localhost:3000/api/user/health_status/hematokrit", http.StatusBadRequest)
+		return
+	}
+
+	healthstatusresponse.HematokritSuccessResponse(c, "Success Update Data", hematokrit_data, "http://localhost:3000/api/user/health_status/hematokrit", http.StatusOK)
+}
+
+func DeleteHematokrit(c *gin.Context) {
+	hematokrit_id := c.Param("hematokrit_id")
+	user, _ := c.Get("user")
+
+	var hematokrit_data struct {
+		Id    uuid.UUID
+		Data  float32
+		Notes string
+		Date  string
+	}
+
+	var hematokrit models.Hematokrit
+	if err := initializers.DB.First(&hematokrit, "user_id = ? AND ID = ?", user, hematokrit_id).Error; err != nil {
+		healthstatusresponse.HematokritFailedResponse(c, strings.Title(err.Error()), hematokrit_data, "Create Hematokrit", "http://localhost:3000/api/user/health_status/hematokrit", http.StatusBadRequest)
+		return
+	}
+
+	if err := initializers.DB.Unscoped().Delete(&hematokrit).Error; err != nil {
+		healthstatusresponse.HematokritFailedResponse(c, strings.Title(err.Error()), hematokrit_data, "Create Hematokrit", "http://localhost:3000/api/user/health_status/hematokrit", http.StatusBadRequest)
+	}
+
+	hematokrit_data.Id = user.(uuid.UUID)
+	hematokrit_data.Data = hematokrit.Data
+	hematokrit_data.Notes = hematokrit.Notes
+	hematokrit_data.Date = hematokrit.Date
+
+	healthstatusresponse.HematokritSuccessResponse(c, "Success Delete Data", hematokrit_data, "http://localhost:3000/api/user/health_status/hematokrit", http.StatusOK)
+}
+
+func CreateTrombosit(c *gin.Context) {
+	var body models.Trombosit
+	user, _ := c.Get("user")
+
+	var trombosit_data struct {
+		Data  float32
+		Notes string
+		Date  string
+	}
+
+	if c.Bind(&body) != nil {
+		healthstatusresponse.TrombositFailedResponse(c, "Failed to read body", trombosit_data, "Create Trombosit", "http://localhost:3000/api/user/health_status/trombosit", http.StatusBadRequest)
+		return
+	}
+
+	trombosit_data.Data = body.Data
+	trombosit_data.Notes = body.Notes
+	trombosit_data.Date = body.Date
+
+	validate := validator.New()
+	if err := validate.Struct(body); err != nil {
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
+		}
+
+		healthstatusresponse.TrombositFailedResponse(c, strings.Join(errorMessages, ", "), trombosit_data, "Create Trombosit", "http://localhost:3000/api/user/health_status/trombosit", http.StatusBadRequest)
+		return
+	}
+
+	newUUID := uuid.New()
+	trombosit := models.Trombosit{
+		ID:     newUUID,
+		UserID: user.(uuid.UUID),
+		Data:   body.Data,
+		Notes:  body.Notes,
+		Date:   body.Date,
+	}
+
+	if err := initializers.DB.Create(&trombosit).Error; err != nil {
+		healthstatusresponse.TrombositFailedResponse(c, strings.Title(err.Error()), trombosit_data, "Create Trombosit", "http://localhost:3000/api/user/health_status/trombosit", http.StatusBadRequest)
+	}
+
+	healthstatusresponse.TrombositSuccessResponse(c, "Success Create Data", trombosit_data, "http://localhost:3000/api/user/health_status/trombosit", http.StatusCreated)
+}
+
+func GetTrombosit(c *gin.Context) {
+	var trombosit []models.Trombosit
+	user, _ := c.Get("user")
+
+	var trombosit_data []struct {
+		Id    uuid.UUID
+		Data  float32
+		Notes string
+		Date  string
+	}
+
+	initializers.DB.Where("user_id = ?", user).Order("date asc").Find(&trombosit)
+
+	if initializers.DB.Error != nil {
+		healthstatusresponse.TrombositFailedResponse(c, "User Not Found", trombosit_data, "Create Trombosit", "http://localhost:3000/api/user/health_status/trombosit", http.StatusBadRequest)
+		return
+	}
+
+	for _, item := range trombosit {
+		trombosit_data = append(trombosit_data, struct {
+			Id    uuid.UUID
+			Data  float32
+			Notes string
+			Date  string
+		}{
+			Id:    item.ID,
+			Data:  item.Data,
+			Notes: item.Notes,
+			Date:  item.Date,
+		})
+	}
+
+	if trombosit_data == nil {
+		healthstatusresponse.TrombositFailedResponse(c, "Data Not Found", trombosit_data, "Create Trombosit", "http://localhost:3000/api/user/health_status/trombosit", http.StatusNotFound)
+		return
+
+	}
+
+	healthstatusresponse.TrombositSuccessResponse(c, "Success Get Data", trombosit_data, "http://localhost:3000/api/user/health_status/trombosit", http.StatusOK)
+}
+
+func UpdateTrombosit(c *gin.Context) {
+	var body models.Trombosit
+	trombosit_id := c.Param("trombosit_id")
+
+	var trombosit_data struct {
+		Id    uuid.UUID
+		Data  float32
+		Notes string
+		Date  string
+	}
+
+	user, _ := c.Get("user")
+
+	if c.Bind(&body) != nil {
+		healthstatusresponse.TrombositFailedResponse(c, "Failed to read body", trombosit_data, "Create Trombosit", "http://localhost:3000/api/user/health_status/trombosit", http.StatusBadRequest)
+		return
+	}
+
+	body.ID = uuid.MustParse(trombosit_id)
+	body.UserID = user.(uuid.UUID)
+
+	trombosit_data.Id = user.(uuid.UUID)
+	trombosit_data.Data = body.Data
+	trombosit_data.Notes = body.Notes
+	trombosit_data.Date = body.Date
+
+	validate := validator.New()
+	if err := validate.Struct(body); err != nil {
+		validationErrors := err.(validator.ValidationErrors)
+		errorMessages := make([]string, len(validationErrors))
+		for i, fieldError := range validationErrors {
+			errorMessages[i] = getValidationErrorTagMessage(fieldError)
+		}
+
+		healthstatusresponse.TrombositFailedResponse(c, strings.Join(errorMessages, ", "), trombosit_data, "Create Trombosit", "http://localhost:3000/api/user/health_status/trombosit", http.StatusBadRequest)
+		return
+	}
+
+	var trombosit models.Trombosit
+	if err := initializers.DB.First(&trombosit, "user_id = ? AND ID = ?", user, trombosit_id).Error; err != nil {
+		healthstatusresponse.TrombositFailedResponse(c, strings.Title(err.Error()), trombosit_data, "Create Trombosit", "http://localhost:3000/api/user/health_status/trombosit", http.StatusBadRequest)
+		return
+	}
+
+	if err := initializers.DB.Save(&body).Error; err != nil {
+		healthstatusresponse.TrombositFailedResponse(c, strings.Title(err.Error()), trombosit_data, "Create Trombosit", "http://localhost:3000/api/user/health_status/trombosit", http.StatusBadRequest)
+		return
+	}
+
+	healthstatusresponse.TrombositSuccessResponse(c, "Success Update Data", trombosit_data, "http://localhost:3000/api/user/health_status/trombosit", http.StatusOK)
+}
+
+func DeleteTrombosit(c *gin.Context) {
+	trombosit_id := c.Param("trombosit_id")
+	user, _ := c.Get("user")
+
+	var trombosit_data struct {
+		Id    uuid.UUID
+		Data  float32
+		Notes string
+		Date  string
+	}
+
+	var trombosit models.Trombosit
+	if err := initializers.DB.First(&trombosit, "user_id = ? AND ID = ?", user, trombosit_id).Error; err != nil {
+		healthstatusresponse.TrombositFailedResponse(c, strings.Title(err.Error()), trombosit_data, "Create Trombosit", "http://localhost:3000/api/user/health_status/trombosit", http.StatusBadRequest)
+		return
+	}
+
+	if err := initializers.DB.Unscoped().Delete(&trombosit).Error; err != nil {
+		healthstatusresponse.TrombositFailedResponse(c, strings.Title(err.Error()), trombosit_data, "Create Trombosit", "http://localhost:3000/api/user/health_status/trombosit", http.StatusBadRequest)
+		return
+	}
+
+	trombosit_data.Id = user.(uuid.UUID)
+	trombosit_data.Data = trombosit.Data
+	trombosit_data.Notes = trombosit.Notes
+	trombosit_data.Date = trombosit.Date
+
+	healthstatusresponse.TrombositSuccessResponse(c, "Success Delete Data", trombosit_data, "http://localhost:3000/api/user/health_status/trombosit", http.StatusOK)
+}
+
 func GetBcrAblPatient(c *gin.Context) {
 	if !ParseWebToken(c) {
 		return
@@ -1094,6 +1447,7 @@ func GetBcrAblPatient(c *gin.Context) {
 	result := initializers.DB.Raw(query).Scan(&bcr_abl_data)
 	if result.Error != nil {
 		healthstatusresponse.HealthStatusWebsiteFailedResponse(c, "Failed to Get BCR ABL Data", "", http.StatusInternalServerError)
+		return
 	}
 
 	for _, item := range bcr_abl_data {
@@ -1136,6 +1490,7 @@ func GetLeukocytesPatient(c *gin.Context) {
 	result := initializers.DB.Raw(query).Scan(&leukocytes_data)
 	if result.Error != nil {
 		healthstatusresponse.HealthStatusWebsiteFailedResponse(c, "Failed to Get Leukocytes Data", "", http.StatusInternalServerError)
+		return
 	}
 
 	for _, item := range leukocytes_data {
@@ -1178,6 +1533,7 @@ func GetPotentialHydrogenPatient(c *gin.Context) {
 	result := initializers.DB.Raw(query).Scan(&potential_hydrogen_data)
 	if result.Error != nil {
 		healthstatusresponse.HealthStatusWebsiteFailedResponse(c, "Failed to Get Potential Hydrogen Data", "", http.StatusInternalServerError)
+		return
 	}
 
 	for _, item := range potential_hydrogen_data {
@@ -1220,6 +1576,7 @@ func GetHemoglobinPatient(c *gin.Context) {
 	result := initializers.DB.Raw(query).Scan(&hemoglobin_data)
 	if result.Error != nil {
 		healthstatusresponse.HealthStatusWebsiteFailedResponse(c, "Failed to Get Hemoglobin Data", "", http.StatusInternalServerError)
+		return
 	}
 
 	for _, item := range hemoglobin_data {
@@ -1262,6 +1619,7 @@ func GetHeartRatePatient(c *gin.Context) {
 	result := initializers.DB.Raw(query).Scan(&heart_rate_data)
 	if result.Error != nil {
 		healthstatusresponse.HealthStatusWebsiteFailedResponse(c, "Failed to Get Heart Rate Data", "", http.StatusInternalServerError)
+		return
 	}
 
 	for _, item := range heart_rate_data {
@@ -1304,6 +1662,7 @@ func GetBloodPressurePatient(c *gin.Context) {
 	result := initializers.DB.Raw(query).Scan(&blood_pressure_data)
 	if result.Error != nil {
 		healthstatusresponse.HealthStatusWebsiteFailedResponse(c, "Failed to Get Blood Pressure Data", "", http.StatusInternalServerError)
+		return
 	}
 
 	for _, item := range blood_pressure_data {
@@ -1323,4 +1682,90 @@ func GetBloodPressurePatient(c *gin.Context) {
 	}
 
 	healthstatusresponse.HealthStatusWebsiteSuccessResponse(c, "Success to Get Blood Pressure Data", response, http.StatusOK)
+}
+
+func GetHematokritPatient(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	var hematokrit_data []models.Hematokrit
+	var response []models.HealthStatusData
+
+	query := `
+        SELECT ba.*
+        FROM hematokrits ba
+        INNER JOIN (
+            SELECT user_id, MAX(created_at) AS max_created_at
+            FROM hematokrits
+            GROUP BY user_id
+        ) subquery ON ba.user_id = subquery.user_id AND ba.created_at = subquery.max_created_at
+        ORDER BY ba.created_at DESC
+    `
+
+	result := initializers.DB.Raw(query).Scan(&hematokrit_data)
+	if result.Error != nil {
+		healthstatusresponse.HealthStatusWebsiteFailedResponse(c, "Failed to Get Hematokrit Data", "", http.StatusInternalServerError)
+		return
+	}
+
+	for _, item := range hematokrit_data {
+		var user models.User
+		initializers.DB.First(&user, "ID = ?", item.UserID)
+		response = append(response, models.HealthStatusData{
+			ID:          item.ID,
+			UserID:      item.UserID,
+			Name:        user.Name,
+			Email:       user.Email,
+			PhoneNumber: user.PhoneNumber,
+			Data:        item.Data,
+			Notes:       item.Notes,
+			Date:        item.Date,
+		})
+	}
+
+	healthstatusresponse.HealthStatusWebsiteSuccessResponse(c, "Success to Get Hematokrit Data", response, http.StatusOK)
+}
+
+func GetTrombositPatient(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	var trombosit_data []models.Trombosit
+	var response []models.HealthStatusData
+
+	query := `
+        SELECT ba.*
+        FROM trombosits ba
+        INNER JOIN (
+            SELECT user_id, MAX(created_at) AS max_created_at
+            FROM trombosits
+            GROUP BY user_id
+        ) subquery ON ba.user_id = subquery.user_id AND ba.created_at = subquery.max_created_at
+        ORDER BY ba.created_at DESC
+    `
+
+	result := initializers.DB.Raw(query).Scan(&trombosit_data)
+	if result.Error != nil {
+		healthstatusresponse.HealthStatusWebsiteFailedResponse(c, "Failed to Get Trombosit Data", "", http.StatusInternalServerError)
+		return
+	}
+
+	for _, item := range trombosit_data {
+		var user models.User
+		initializers.DB.First(&user, "ID = ?", item.UserID)
+		response = append(response, models.HealthStatusData{
+			ID:          item.ID,
+			UserID:      item.UserID,
+			Name:        user.Name,
+			Email:       user.Email,
+			PhoneNumber: user.PhoneNumber,
+			Data:        item.Data,
+			Notes:       item.Notes,
+			Date:        item.Date,
+		})
+	}
+
+	healthstatusresponse.HealthStatusWebsiteSuccessResponse(c, "Success to Get Trombosit Data", response, http.StatusOK)
 }

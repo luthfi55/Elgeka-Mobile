@@ -83,6 +83,24 @@ type BloodPressure struct {
 	gorm.Model
 }
 
+type Hematokrit struct {
+	ID     uuid.UUID `gorm:"type:uuid;primaryKey;"`
+	UserID uuid.UUID `gorm:"type:uuid;foreignKey;"`
+	Data   float32   `validate:"required" json:"data"`
+	Notes  string    `validate:"required,min=2,max=200" json:"notes"`
+	Date   string    `validate:"required,len=10" json:"date"`
+	gorm.Model
+}
+
+type Trombosit struct {
+	ID     uuid.UUID `gorm:"type:uuid;primaryKey;"`
+	UserID uuid.UUID `gorm:"type:uuid;foreignKey;"`
+	Data   float32   `validate:"required" json:"data"`
+	Notes  string    `validate:"required,min=2,max=200" json:"notes"`
+	Date   string    `validate:"required,len=10" json:"date"`
+	gorm.Model
+}
+
 type BcrAblFailed struct {
 	ErrorMessage string      `json:"errormessage"`
 	Data         interface{} `json:"data"`
@@ -150,6 +168,30 @@ type BloodPressureFailed struct {
 }
 
 type BloodPressureSuccess struct {
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+	Link    []LinkItem  `json:"link"`
+}
+
+type HematokritFailed struct {
+	ErrorMessage string      `json:"errormessage"`
+	Data         interface{} `json:"data"`
+	Link         []LinkItem  `json:"link"`
+}
+
+type HematokritSuccess struct {
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+	Link    []LinkItem  `json:"link"`
+}
+
+type TrombositFailed struct {
+	ErrorMessage string      `json:"errormessage"`
+	Data         interface{} `json:"data"`
+	Link         []LinkItem  `json:"link"`
+}
+
+type TrombositSuccess struct {
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
 	Link    []LinkItem  `json:"link"`
