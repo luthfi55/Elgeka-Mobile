@@ -124,10 +124,10 @@ func EditProfile(c *gin.Context) {
 	}
 
 	if body.BloodGroup != "" {
-		if body.BloodGroup == "-A" || body.BloodGroup == "+A" ||
-			body.BloodGroup == "-B" || body.BloodGroup == "+B" ||
-			body.BloodGroup == "-AB" || body.BloodGroup == "+AB" ||
-			body.BloodGroup == "-O" || body.BloodGroup == "+O" {
+		if body.BloodGroup == "A-" || body.BloodGroup == "A+" ||
+			body.BloodGroup == "B-" || body.BloodGroup == "B+" ||
+			body.BloodGroup == "AB-" || body.BloodGroup == "AB+" ||
+			body.BloodGroup == "O-" || body.BloodGroup == "O+" {
 			user_data.BloodGroup = body.BloodGroup
 		}
 	}
