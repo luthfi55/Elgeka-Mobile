@@ -72,18 +72,17 @@ func TestAddMedicine_Success(t *testing.T) {
 	router.POST("/api/user/medicine", middleware.RequireAuth, controllers.AddMedicine)
 
 	reqBody := models.Medicine{
-		Name:   "Sanmol",
+		Name:   "Generic Imatinib",
 		Dosage: "200mg",
 		Stock:  10,
 	}
 	reqJSON, _ := json.Marshal(reqBody)
 
 	req, err := http.NewRequest("POST", "/api/user/medicine", bytes.NewBuffer(reqJSON))
-	req.AddCookie(CookieConfiguration())
-
 	if err != nil {
 		t.Fatal(err)
 	}
+	req.AddCookie(CookieConfiguration())
 
 	req.Header.Set("Content-Type", "application/json")
 
@@ -180,7 +179,7 @@ func TestListMedicine_Failed(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expiresTime, _ := time.Parse(time.RFC1123, "Mon, 15 Apr 2024 17:00:20 GMT")
+	expiresTime, _ := time.Parse(time.RFC1123, "Tue, 13 Aug 2024 04:56:45 GMT")
 	req.AddCookie(
 		&http.Cookie{
 			Name:     "Authorization",
@@ -194,19 +193,19 @@ func TestListMedicine_Failed(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	router.ServeHTTP(rec, req)
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("expected status code %d but got %d", http.StatusUnauthorized, rec.Code)
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 }
 
 func TestUpdateMedicine_Success(t *testing.T) {
 	router := gin.Default()
-	medicine_id := "d325b785-a18e-4e0f-a264-20135c2a1b63"
+	medicine_id := "9f3332d6-a09d-4da8-a414-33f4a264cda2"
 
 	router.PUT("api/user/medicine/:medicine_id", middleware.RequireAuth, controllers.UpdateMedicine)
 
 	reqBody := models.Medicine{
-		Name:   "Paracetamol",
+		Name:   "Generic Imatinib",
 		Dosage: "300mg",
 		Stock:  100,
 	}
@@ -283,7 +282,7 @@ func TestUpdateMedicine_Failed(t *testing.T) {
 
 func TestDeleteMedicine_Success(t *testing.T) {
 	router := gin.Default()
-	medicine_id := "d325b785-a18e-4e0f-a264-20135c2a1b63"
+	medicine_id := "a35ac9a3-a3f2-4e29-a696-7a87ad419faf"
 
 	router.DELETE("api/user/medicine/:medicine_id", middleware.RequireAuth, controllers.DeleteMedicine)
 
@@ -352,12 +351,12 @@ func TestDeleteMedicine_Failed(t *testing.T) {
 func TestAddMedicineSchedule_Success(t *testing.T) {
 	router := gin.Default()
 
-	medicine_id := "a35ac9a3-a3f2-4e29-a696-7a87ad419faf"
+	medicine_id := "1bb31639-b6c4-4f29-9b96-f773d4c99340"
 
 	router.POST("/api/user/medicine/schedule/:medicine_id", middleware.RequireAuth, controllers.AddMedicineSchedule)
 
 	reqBody := models.MedicineSchedule{
-		Date: "2002",
+		Date: "2024-07-25",
 	}
 	reqJSON, _ := json.Marshal(reqBody)
 
@@ -489,8 +488,8 @@ func TestListMedicineSchedule_Failed(t *testing.T) {
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("expected status code %d but got %d", http.StatusUnauthorized, rec.Code)
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 
 }
@@ -500,7 +499,7 @@ func TestUpdateMedicineSchedule_Success(t *testing.T) {
 
 	router.PUT("/api/user/medicine/schedule/:schedule_id", middleware.RequireAuth, controllers.UpdateMedicineSchedule)
 
-	schedule_id := "df636bd0-cb0e-4964-9b0a-285fcfd36d29"
+	schedule_id := "7f902be6-3590-474f-9d66-777af8a973f9"
 
 	req, err := http.NewRequest("PUT", "/api/user/medicine/schedule/"+schedule_id, bytes.NewBuffer(nil))
 	req.AddCookie(CookieConfiguration())
@@ -570,7 +569,7 @@ func TestDeleteMedicineSchedule_Success(t *testing.T) {
 
 	router.DELETE("/api/user/medicine/schedule/:schedule_id", middleware.RequireAuth, controllers.DeleteMedicineSchedule)
 
-	schedule_id := "b87be0d0-0d9b-4733-8768-fda47ba5362d"
+	schedule_id := "25006641-4f28-4248-8b58-8de54666e210"
 
 	req, err := http.NewRequest("DELETE", "/api/user/medicine/schedule/"+schedule_id, bytes.NewBuffer(nil))
 	req.AddCookie(CookieConfiguration())
@@ -596,7 +595,7 @@ func TestDeleteMedicineSchedule_Success(t *testing.T) {
 	}
 
 	if expectedBody.Message != "Success to Delete Medicine Schedule" {
-		t.Errorf("expected message %s but got %s", "Success to Update Medicine Schedule", expectedBody.Message)
+		t.Errorf("expected message %s but got %s", "Success to Delete Medicine Schedule", expectedBody.Message)
 	}
 }
 
@@ -632,5 +631,117 @@ func TestDeleteMedicineSchedule_Failed(t *testing.T) {
 
 	if expectedBody.ErrorMessage != "Failed to Find Medicine Schedule" {
 		t.Errorf("expected message %s but got %s", "Failed to Find Medicine Schedule", expectedBody.ErrorMessage)
+	}
+}
+
+func TestListMedicineWebsite_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/user/medicine/list/website", controllers.ListMedicineWebsite)
+
+	req, err := http.NewRequest("GET", "/api/user/medicine/list/website", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(WebsiteBearierTokenConfiguration())
+	bearerToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNGUyZDY4NDgtM2FlMy00NjdjLTk5NzQtZTVkMTdhYWJhMGU3IiwidXNlcm5hbWUiOiJwZW5ndXJ1c2VsZ2VrYSIsImZ1bGxfbmFtZSI6IlBlbmd1cnVzIFV0YW1hIEVMR0VLQSBKYXdhIEJhcmF0IiwiaXNfYWN0aXZlIjp0cnVlLCJzdXBlclVzZXIiOnRydWV9LCJpYXQiOjE3MjA5MzQ3NTYsImV4cCI6MTcyMDk1NjM1Nn0.LAOceBARcHrhL3JXtts4WF7TOX7uGJBnYOh_t8GQAiM"
+	req.Header.Set("Authorization", "Bearer "+bearerToken)
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success to Get Medicine List Website" {
+		t.Errorf("expected message body %s but got %s", "Success to Get Medicine List Website", expectedBody.Message)
+	}
+}
+
+func TestListMedicineWebsite_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/user/medicine/list/website", controllers.ListMedicineWebsite)
+
+	req, err := http.NewRequest("GET", "/api/user/medicine/list/website", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+}
+
+func TestListMedicinePatientWebsite_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/user/medicine/list_patient/website", controllers.ListPatientMedicineWebsite)
+
+	req, err := http.NewRequest("GET", "/api/user/medicine/list_patient/website", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(WebsiteBearierTokenConfiguration())
+	bearerToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNGUyZDY4NDgtM2FlMy00NjdjLTk5NzQtZTVkMTdhYWJhMGU3IiwidXNlcm5hbWUiOiJwZW5ndXJ1c2VsZ2VrYSIsImZ1bGxfbmFtZSI6IlBlbmd1cnVzIFV0YW1hIEVMR0VLQSBKYXdhIEJhcmF0IiwiaXNfYWN0aXZlIjp0cnVlLCJzdXBlclVzZXIiOnRydWV9LCJpYXQiOjE3MjA5MzQ3NTYsImV4cCI6MTcyMDk1NjM1Nn0.LAOceBARcHrhL3JXtts4WF7TOX7uGJBnYOh_t8GQAiM"
+	req.Header.Set("Authorization", "Bearer "+bearerToken)
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success to Get Patient Medicine List Website" {
+		t.Errorf("expected message body %s but got %s", "Success to Get Patient Medicine List Website", expectedBody.Message)
+	}
+}
+
+func TestListMedicinePatientWebsite_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/user/medicine/list_patient/website", controllers.ListPatientMedicineWebsite)
+
+	req, err := http.NewRequest("GET", "/api/user/medicine/list_patient/website", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 }

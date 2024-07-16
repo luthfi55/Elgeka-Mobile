@@ -489,11 +489,11 @@ func TestUpdateLeukocytes_Success(t *testing.T) {
 
 	router.PUT("/api/user/health_status/leukocytes/:leukocytes_id", middleware.RequireAuth, controllers.UpdateLeukocytes)
 
-	leukocytes_id := "8ca4dd68-a02e-424d-858d-540b3b808573"
+	leukocytes_id := "968af2b8-f428-486b-a065-157877eee8b5"
 
 	reqBody := models.Leukocytes{
-		Data:  1.2,
-		Notes: "Halo",
+		Data:  20.1,
+		Notes: "Leukocytes 3",
 		Date:  "2024-02-22",
 	}
 
@@ -532,7 +532,7 @@ func TestUpdateLeukocytes_Failed(t *testing.T) {
 
 	router.PUT("/api/user/health_status/leukocytes/:leukocytes_id", middleware.RequireAuth, controllers.UpdateLeukocytes)
 
-	leukocytes_id := "be622800-dbe1-42ec-a53e-c0179175aa7c"
+	leukocytes_id := "968af2b8-f428-486b-a065-157877eee8b5"
 
 	reqBody := models.Leukocytes{
 		Data:  1.2,
@@ -576,7 +576,7 @@ func TestDeleteLeukocytes_Success(t *testing.T) {
 
 	router.DELETE("/api/user/health_status/leukocytes/:leukocytes_id", middleware.RequireAuth, controllers.DeleteLeukocytes)
 
-	leukocytes_id := "be622800-dbe1-42ec-a53e-c0179175aa7c"
+	leukocytes_id := "d57e5814-f9b9-4f5b-9992-fd10b57c6e64"
 
 	req, err := http.NewRequest("DELETE", "/api/user/health_status/leukocytes/"+leukocytes_id, nil)
 
@@ -652,11 +652,11 @@ func TestCreatePotentialHydrogen_Success(t *testing.T) {
 
 	router := gin.Default()
 
-	router.POST("/api/user/health_status/blood_pressure", middleware.RequireAuth, controllers.CreatePotentialHydrogen)
+	router.POST("/api/user/health_status/potential_hydrogen", middleware.RequireAuth, controllers.CreatePotentialHydrogen)
 
 	reqBody := models.PotentialHydrogen{
-		Data:  7.2,
-		Notes: "tes",
+		Data:  5.2,
+		Notes: "PH+",
 		Date:  "2024-02-23",
 	}
 

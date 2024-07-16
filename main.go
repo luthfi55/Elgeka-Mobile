@@ -36,7 +36,7 @@ func main() {
 
 	r.Use(func(c *gin.Context) {
 		origin := c.Request.Header.Get("Origin")
-		if origin == "https://stirring-pixie-ed5c9b.netlify.app" || origin == "https://elgeka-community-hub.netlify.app" {
+		if origin == "https://elgekajabar.netlify.app" || origin == "https://elgekajabar-pengurus.netlify.app" || origin == "https://elgekajabar-admin.netlify.app" {
 			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
 		}
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
