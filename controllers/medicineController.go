@@ -5,7 +5,9 @@ import (
 	"elgeka-mobile/middleware"
 	"elgeka-mobile/models"
 	medicineresponse "elgeka-mobile/response/MedicineResponse"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -190,8 +192,23 @@ func AddMedicineSchedule(c *gin.Context) {
 		return
 	}
 
-	if body.Date == "" {
-		medicineresponse.AddMedicineScheduleFailedResponse(c, "Date Can't be Empty", body, "Add Medicine", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
+	if body.MedicineName == "" {
+		medicineresponse.AddMedicineScheduleFailedResponse(c, "Medicine Name Can't be Empty", body, "Add Medicine", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
+		return
+	}
+
+	if body.Dosage == "" {
+		medicineresponse.AddMedicineScheduleFailedResponse(c, "Dosage Can't be Empty", body, "Add Medicine", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
+		return
+	}
+
+	if body.Day == "" {
+		medicineresponse.AddMedicineScheduleFailedResponse(c, "Day Can't be Empty", body, "Add Medicine", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
+		return
+	}
+
+	if body.Hour == "" {
+		medicineresponse.AddMedicineScheduleFailedResponse(c, "Hour Can't be Empty", body, "Add Medicine", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
 		return
 	}
 
@@ -220,28 +237,37 @@ func ListMedicineSchedule(c *gin.Context) {
 
 	var medicine_schedule []models.MedicineSchedule
 	var medicine_schedule_data []struct {
-		ID         uuid.UUID
-		MedicineID uuid.UUID
-		Date       string
-		Status     bool
+		ID            uuid.UUID
+		MedicineID    uuid.UUID
+		Medicine_Name string
+		Dosage        string
+		Day           string
+		Hour          string
+		Status        bool
 	}
 
-	if err := initializers.DB.Where("user_id = ? AND status = ?", user, false).Find(&medicine_schedule).Error; err != nil {
+	if err := initializers.DB.Where("user_id = ?", user).Find(&medicine_schedule).Error; err != nil {
 		medicineresponse.GetMedicineScheduleFailedResponse(c, "Failed to Get Medicine Schedule List", []models.MedicineScheduleData{}, "List Medicine Schedule", "http://localhost:3000/api/medicine/schedule", http.StatusBadRequest)
 		return
 	}
 
 	for _, item := range medicine_schedule {
 		medicine_schedule_data = append(medicine_schedule_data, struct {
-			ID         uuid.UUID
-			MedicineID uuid.UUID
-			Date       string
-			Status     bool
+			ID            uuid.UUID
+			MedicineID    uuid.UUID
+			Medicine_Name string
+			Dosage        string
+			Day           string
+			Hour          string
+			Status        bool
 		}{
-			ID:         item.ID,
-			MedicineID: item.MedicineID,
-			Date:       item.Date,
-			Status:     item.Status,
+			ID:            item.ID,
+			MedicineID:    item.MedicineID,
+			Medicine_Name: item.MedicineName,
+			Dosage:        item.Dosage,
+			Day:           item.Day,
+			Hour:          item.Hour,
+			Status:        item.Status,
 		})
 	}
 
@@ -249,15 +275,45 @@ func ListMedicineSchedule(c *gin.Context) {
 }
 
 func UpdateMedicineSchedule(c *gin.Context) {
+	var body models.MedicineSchedule
 	var medicine_schedule models.MedicineSchedule
 	schedule_id := c.Param("schedule_id")
+
+	if c.Bind(&body) != nil {
+		medicineresponse.AddMedicineScheduleFailedResponse(c, "Failed to read body", body, "Add Medicine Schedule", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
+		return
+	}
 
 	if err := initializers.DB.First(&medicine_schedule, "id = ?", schedule_id).Error; err != nil {
 		medicineresponse.UpdateMedicineScheduleFailedResponse(c, "Failed to Find Medicine Schedule", []models.MedicineScheduleData{}, "Get Medicine Schedule", "http://localhost:3000/api/medicine/schedule", http.StatusBadRequest)
 		return
 	}
 
-	medicine_schedule.Status = true
+	if body.MedicineName == "" {
+		medicineresponse.AddMedicineScheduleFailedResponse(c, "Medicine Name Can't be Empty", body, "Add Medicine", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
+		return
+	}
+
+	if body.Dosage == "" {
+		medicineresponse.AddMedicineScheduleFailedResponse(c, "Dosage Can't be Empty", body, "Add Medicine", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
+		return
+	}
+
+	if body.Day == "" {
+		medicineresponse.AddMedicineScheduleFailedResponse(c, "Day Can't be Empty", body, "Add Medicine", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
+		return
+	}
+
+	if body.Hour == "" {
+		medicineresponse.AddMedicineScheduleFailedResponse(c, "Hour Can't be Empty", body, "Add Medicine", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
+		return
+	}
+
+	medicine_schedule.MedicineName = body.MedicineName
+	medicine_schedule.Dosage = body.Dosage
+	medicine_schedule.Day = body.Day
+	medicine_schedule.Hour = body.Hour
+	medicine_schedule.Status = body.Status
 
 	if err := initializers.DB.Save(&medicine_schedule).Error; err != nil {
 		medicineresponse.UpdateMedicineScheduleFailedResponse(c, "Failed to Update Medicine Schedule", []models.MedicineScheduleData{}, "Update Medicine Schedule", "http://localhost:3000/api/user/medicine/schedule/:schedule_id", http.StatusBadRequest)
@@ -266,8 +322,11 @@ func UpdateMedicineSchedule(c *gin.Context) {
 
 	var medicine_schedule_data models.MedicineScheduleData
 	medicine_schedule_data.ID = medicine_schedule.ID
-	medicine_schedule_data.Date = medicine_schedule.Date
-	medicine_schedule_data.Status = medicine_schedule.Status
+	medicine_schedule_data.MedicineName = body.MedicineName
+	medicine_schedule_data.Dosage = body.Dosage
+	medicine_schedule_data.Day = body.Day
+	medicine_schedule_data.Hour = body.Hour
+	medicine_schedule_data.Status = body.Status
 
 	medicineresponse.UpdateMedicineScheduleSuccessResponse(c, "Success to Update Medicine Schedule", medicine_schedule_data, "http://localhost:3000/api/user/medicine/schedule/:schedule_id", http.StatusOK)
 }
@@ -283,7 +342,7 @@ func DeleteMedicineSchedule(c *gin.Context) {
 
 	var medicine_schedule_data models.MedicineScheduleData
 	medicine_schedule_data.ID = medicine_schedule.ID
-	medicine_schedule_data.Date = medicine_schedule.Date
+	medicine_schedule_data.MedicineName = medicine_schedule.MedicineName
 	medicine_schedule_data.Status = medicine_schedule.Status
 
 	if err := initializers.DB.Delete(&medicine_schedule).Error; err != nil {
@@ -358,13 +417,30 @@ func ListPatientMedicineWebsite(c *gin.Context) {
 
 	for _, item := range user {
 		var medicine []models.Medicine
-		var medicineData []models.MedicineData
+		var medicineDataDate []models.MedicineDataDate
 		initializers.DB.Where("user_id = ?", item.ID).Find(&medicine)
 		for _, item := range medicine {
-			medicineData = append(medicineData, models.MedicineData{
-				ID:    item.ID,
-				Name:  item.Name,
-				Stock: item.Stock,
+			// Contoh input datetime
+			inputDatetime := item.UpdatedAt
+
+			wib, err := time.LoadLocation("Asia/Jakarta")
+			if err != nil {
+				fmt.Println("Error loading location:", err)
+				return
+			}
+
+			// Mengonversi waktu ke zona waktu WIB
+			inputDatetime = inputDatetime.In(wib)
+
+			// Mengonversi objek time.Time menjadi string dengan format yang diinginkan
+			layoutOutput := "2006-01-02 15:04:05"
+			formattedDatetime := inputDatetime.Format(layoutOutput)
+			medicineDataDate = append(medicineDataDate, models.MedicineDataDate{
+				ID:     item.ID,
+				Name:   item.Name,
+				Dosage: item.Dosage,
+				Stock:  item.Stock,
+				Date:   formattedDatetime,
 			})
 		}
 		if len(medicine) > 0 {
@@ -373,7 +449,7 @@ func ListPatientMedicineWebsite(c *gin.Context) {
 				Name:         item.Name,
 				Email:        item.Email,
 				PhoneNumber:  item.PhoneNumber,
-				ListMedicine: medicineData,
+				ListMedicine: medicineDataDate,
 			})
 		}
 	}

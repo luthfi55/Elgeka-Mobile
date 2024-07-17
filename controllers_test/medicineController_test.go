@@ -356,7 +356,7 @@ func TestAddMedicineSchedule_Success(t *testing.T) {
 	router.POST("/api/user/medicine/schedule/:medicine_id", middleware.RequireAuth, controllers.AddMedicineSchedule)
 
 	reqBody := models.MedicineSchedule{
-		Date: "2024-07-25",
+		MedicineName: "Obat",
 	}
 	reqJSON, _ := json.Marshal(reqBody)
 
@@ -396,7 +396,7 @@ func TestAddMedicineSchedule_Failed(t *testing.T) {
 	router.POST("/api/user/medicine/schedule/:medicine_id", middleware.RequireAuth, controllers.AddMedicineSchedule)
 
 	reqBody := models.MedicineSchedule{
-		Date: "2002",
+		MedicineName: "obatt",
 	}
 	reqJSON, _ := json.Marshal(reqBody)
 

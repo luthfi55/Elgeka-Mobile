@@ -8,9 +8,12 @@ import (
 
 func AddMedicineScheduleFailedResponse(c *gin.Context, message string, data models.MedicineSchedule, link_name string, link string, status int) {
 	datas := models.MedicineScheduleData{
-		ID:     data.ID,
-		Date:   data.Date,
-		Status: data.Status,
+		ID:           data.ID,
+		MedicineName: data.MedicineName,
+		Dosage:       data.Dosage,
+		Day:          data.Day,
+		Hour:         data.Hour,
+		Status:       data.Status,
 	}
 
 	linkItem := models.LinkItem{
@@ -29,9 +32,12 @@ func AddMedicineScheduleFailedResponse(c *gin.Context, message string, data mode
 
 func AddMedicineScheduleSuccessResponse(c *gin.Context, message string, data models.MedicineSchedule, link string, status int) {
 	datas := models.MedicineScheduleData{
-		ID:     data.ID,
-		Date:   data.Date,
-		Status: data.Status,
+		ID:           data.ID,
+		MedicineName: data.MedicineName,
+		Dosage:       data.Dosage,
+		Day:          data.Day,
+		Hour:         data.Hour,
+		Status:       data.Status,
 	}
 
 	linkItem := models.LinkItem{
