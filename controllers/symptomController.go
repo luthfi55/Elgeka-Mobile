@@ -15,6 +15,7 @@ import (
 
 func SymptompController(r *gin.Engine) {
 	r.POST("api/user/symptom/answer", middleware.RequireAuth, SubmitSymptom)
+	r.GET("api/user/symptom/answer/:symptom_type", middleware.RequireAuth, GetSymptom)
 }
 
 func SubmitSymptom(c *gin.Context) {
@@ -428,4 +429,120 @@ func ReproductiveSymptom(c *gin.Context, body models.SymptomAnswer) {
 	}
 
 	symptomresponse.SubmitSymptomSuccessResponse(c, "Success to Add Reproductive Symptom", body, "http://localhost:3000/api/user/symptom/answer", http.StatusCreated)
+}
+
+func GetSymptom(c *gin.Context) {
+	user, _ := c.Get("user")
+	symptom_type := c.Param("symptom_type")
+	var data []string
+
+	var symptom_data models.SymptomAnswer
+
+	if symptom_type == "Oral" {
+		if err := initializers.DB.Order("date desc").First(&symptom_data, "user_id = ? AND type = ?", user, symptom_type).Error; err != nil {
+			symptomresponse.GetSymptomFailedResponse(c, "Symptom Answer for Oral Not Found", data, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+			return
+		}
+		symptomresponse.GetSymptomSuccessResponse(c, "Success to Get Oral Symptom", symptom_data, "http://localhost:3000/api/user/symptom/answer", http.StatusOK)
+		return
+	} else if symptom_type == "Digestive" {
+		if err := initializers.DB.Order("date desc").First(&symptom_data, "user_id = ? AND type = ?", user, symptom_type).Error; err != nil {
+			symptomresponse.GetSymptomFailedResponse(c, "Symptom Answer for Digestive Not Found", data, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+			return
+		}
+		symptomresponse.GetSymptomSuccessResponse(c, "Success to Get Digestive Symptom", symptom_data, "http://localhost:3000/api/user/symptom/answer", http.StatusOK)
+		return
+	} else if symptom_type == "Respiratory" {
+		if err := initializers.DB.Order("date desc").First(&symptom_data, "user_id = ? AND type = ?", user, symptom_type).Error; err != nil {
+			symptomresponse.GetSymptomFailedResponse(c, "Symptom Answer for Respiratory Not Found", data, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+			return
+		}
+		symptomresponse.GetSymptomSuccessResponse(c, "Success to Get Respiratory Symptom", symptom_data, "http://localhost:3000/api/user/symptom/answer", http.StatusOK)
+		return
+	} else if symptom_type == "Skin" {
+		if err := initializers.DB.Order("date desc").First(&symptom_data, "user_id = ? AND type = ?", user, symptom_type).Error; err != nil {
+			symptomresponse.GetSymptomFailedResponse(c, "Symptom Answer for Skin Not Found", data, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+			return
+		}
+		symptomresponse.GetSymptomSuccessResponse(c, "Success to Get Skin Symptom", symptom_data, "http://localhost:3000/api/user/symptom/answer", http.StatusOK)
+		return
+	} else if symptom_type == "Hair" {
+		if err := initializers.DB.Order("date desc").First(&symptom_data, "user_id = ? AND type = ?", user, symptom_type).Error; err != nil {
+			symptomresponse.GetSymptomFailedResponse(c, "Symptom Answer for Hair Not Found", data, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+			return
+		}
+		symptomresponse.GetSymptomSuccessResponse(c, "Success to Get Hair Symptom", symptom_data, "http://localhost:3000/api/user/symptom/answer", http.StatusOK)
+		return
+	} else if symptom_type == "Nails" {
+		if err := initializers.DB.Order("date desc").First(&symptom_data, "user_id = ? AND type = ?", user, symptom_type).Error; err != nil {
+			symptomresponse.GetSymptomFailedResponse(c, "Symptom Answer for Nails Not Found", data, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+			return
+		}
+		symptomresponse.GetSymptomSuccessResponse(c, "Success to Get Nails Symptom", symptom_data, "http://localhost:3000/api/user/symptom/answer", http.StatusOK)
+		return
+	} else if symptom_type == "Swelling" {
+		if err := initializers.DB.Order("date desc").First(&symptom_data, "user_id = ? AND type = ?", user, symptom_type).Error; err != nil {
+			symptomresponse.GetSymptomFailedResponse(c, "Symptom Answer for Swelling Not Found", data, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+			return
+		}
+		symptomresponse.GetSymptomSuccessResponse(c, "Success to Get Swelling Symptom", symptom_data, "http://localhost:3000/api/user/symptom/answer", http.StatusOK)
+		return
+	} else if symptom_type == "Senses" {
+		if err := initializers.DB.Order("date desc").First(&symptom_data, "user_id = ? AND type = ?", user, symptom_type).Error; err != nil {
+			symptomresponse.GetSymptomFailedResponse(c, "Symptom Answer for Senses Not Found", data, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+			return
+		}
+		symptomresponse.GetSymptomSuccessResponse(c, "Success to Get Senses Symptom", symptom_data, "http://localhost:3000/api/user/symptom/answer", http.StatusOK)
+		return
+	} else if symptom_type == "Moods" {
+		if err := initializers.DB.Order("date desc").First(&symptom_data, "user_id = ? AND type = ?", user, symptom_type).Error; err != nil {
+			symptomresponse.GetSymptomFailedResponse(c, "Symptom Answer for Moods Not Found", data, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+			return
+		}
+		symptomresponse.GetSymptomSuccessResponse(c, "Success to Get Moods Symptom", symptom_data, "http://localhost:3000/api/user/symptom/answer", http.StatusOK)
+		return
+	} else if symptom_type == "Pain" {
+		if err := initializers.DB.Order("date desc").First(&symptom_data, "user_id = ? AND type = ?", user, symptom_type).Error; err != nil {
+			symptomresponse.GetSymptomFailedResponse(c, "Symptom Answer for Pain Not Found", data, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+			return
+		}
+		symptomresponse.GetSymptomSuccessResponse(c, "Success to Get Pain Symptom", symptom_data, "http://localhost:3000/api/user/symptom/answer", http.StatusOK)
+		return
+	} else if symptom_type == "Cognitive" {
+		if err := initializers.DB.Order("date desc").First(&symptom_data, "user_id = ? AND type = ?", user, symptom_type).Error; err != nil {
+			symptomresponse.GetSymptomFailedResponse(c, "Symptom Answer for Cognitive Not Found", data, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+			return
+		}
+		symptomresponse.GetSymptomSuccessResponse(c, "Success to Get Cognitive Symptom", symptom_data, "http://localhost:3000/api/user/symptom/answer", http.StatusOK)
+		return
+	} else if symptom_type == "Urinary" {
+		if err := initializers.DB.Order("date desc").First(&symptom_data, "user_id = ? AND type = ?", user, symptom_type).Error; err != nil {
+			symptomresponse.GetSymptomFailedResponse(c, "Symptom Answer for Urinary Not Found", data, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+			return
+		}
+		symptomresponse.GetSymptomSuccessResponse(c, "Success to Get Urinary Symptom", symptom_data, "http://localhost:3000/api/user/symptom/answer", http.StatusOK)
+		return
+	} else if symptom_type == "Genitals" {
+		if err := initializers.DB.Order("date desc").First(&symptom_data, "user_id = ? AND type = ?", user, symptom_type).Error; err != nil {
+			symptomresponse.GetSymptomFailedResponse(c, "Symptom Answer for Genitals Not Found", data, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+			return
+		}
+		symptomresponse.GetSymptomSuccessResponse(c, "Success to Get Genitals Symptom", symptom_data, "http://localhost:3000/api/user/symptom/answer", http.StatusOK)
+		return
+	} else if symptom_type == "Reproductive" {
+		if err := initializers.DB.Order("date desc").First(&symptom_data, "user_id = ? AND type = ?", user, symptom_type).Error; err != nil {
+			symptomresponse.GetSymptomFailedResponse(c, "Symptom Answer for Reproductive Not Found", data, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+			return
+		}
+		symptomresponse.GetSymptomSuccessResponse(c, "Success to Get Reproductive Symptom", symptom_data, "http://localhost:3000/api/user/symptom/answer", http.StatusOK)
+		return
+	} else if symptom_type == "" {
+		var datas models.SymptomAnswerType
+		symptomresponse.SymptomTypeNotFoundResponse(c, "Type Can't be Null.", datas, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+		return
+	} else {
+		var datas models.SymptomAnswerType
+		symptomresponse.SymptomTypeNotFoundResponse(c, "Type "+symptom_type+" Not Found in Symptom.", datas, "http://localhost:3000/api/user/symptom/answer", http.StatusBadRequest)
+		return
+	}
 }

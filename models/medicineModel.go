@@ -58,6 +58,7 @@ type MedicineDataWebsite struct {
 
 type MedicineScheduleData struct {
 	ID           uuid.UUID `json:"ID"`
+	MedicineID   uuid.UUID `json:"MedicineID"`
 	MedicineName string    `json:"MedicineName"`
 	Dosage       string    `json:"Dosage"`
 	Day          string    `json:"Day"`

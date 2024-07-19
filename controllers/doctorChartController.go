@@ -5,6 +5,9 @@ import (
 	"elgeka-mobile/middleware"
 	"elgeka-mobile/models"
 	doctorresponse "elgeka-mobile/response/DoctorResponse"
+	"encoding/json"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 
@@ -16,6 +19,7 @@ func DoctorChartController(r *gin.Engine) {
 	r.GET("api/doctor/patient/data/age", middleware.RequireAuth, DataByAge)
 	r.GET("api/doctor/patient/data/diagnosis_date", middleware.RequireAuth, DataByDiagnosisDate)
 	r.GET("api/doctor/patient/data/treatment", middleware.RequireAuth, DataByTreatment)
+	r.GET("api/doctor/patient/data/medicine", middleware.RequireAuth, DataByMedicine)
 
 	r.GET("api/doctor/patient/data/symptom/:type/:user_id", middleware.RequireAuth, GetSymptomUserData)
 }
@@ -234,6 +238,90 @@ func DataByTreatment(c *gin.Context) {
 	response["TotalPatient"] = totalPatient
 
 	doctorresponse.TreatmentChartSuccessResponse(c, "Success to Get Patient Data by Treatment", response, http.StatusOK)
+}
+
+func DataByMedicine(c *gin.Context) {
+	doctor, _ := c.Get("doctor")
+	if !DoctorCheck(c, doctor) {
+		return
+	}
+
+	type ApiResponse struct {
+		Code    int    `json:"code"`
+		Status  string `json:"status"`
+		Message string `json:"message"`
+		Result  struct {
+			Data []struct {
+				ID        int    `json:"id"`
+				NamaObat  string `json:"nama_obat"`
+				ListDosis string `json:"list_dosis"`
+				Kategori  string `json:"kategori"`
+				CreatedAt string `json:"createdAt"`
+				UpdatedAt string `json:"updatedAt"`
+			} `json:"data"`
+			CurrentPage int  `json:"currentPage"`
+			NextPage    bool `json:"nextPage"`
+			TotalItems  int  `json:"totalItems"`
+			TotalPages  int  `json:"totalPages"`
+		} `json:"result"`
+	}
+
+	url := "https://elgeka-web-api-production.up.railway.app/api/v1/dataObat"
+
+	// Make the HTTP request
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Fatalf("Error fetching data from API: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalf("Error reading response body: %v", err)
+	}
+
+	// Parse the JSON response
+	var apiResponse ApiResponse
+	err = json.Unmarshal(body, &apiResponse)
+	if err != nil {
+		log.Fatalf("Error parsing JSON response: %v", err)
+	}
+
+	// Extract the nama_obat values
+	var medicine []string
+	for _, obat := range apiResponse.Result.Data {
+		medicine = append(medicine, obat.NamaObat)
+	}
+
+	data := make(map[string]int)
+	var total_patient int
+	for _, t := range medicine {
+		var userMedicine []models.Medicine
+		result := initializers.DB.Where("name = ?", t).Find(&userMedicine)
+		if result.Error != nil {
+			doctorresponse.TreatmentChartFailedResponse(c, "Database Error", "", http.StatusInternalServerError)
+			return
+		}
+		data[t] = len(userMedicine)
+		total_patient = total_patient + len(userMedicine)
+	}
+	medicineName := make(map[string]interface{})
+	medicinePresentation := make(map[string]interface{})
+	medicineResponse := make(map[string]interface{})
+
+	response := make(map[string]interface{})
+	for t, count := range data {
+		medicineName[t] = count
+		medicinePresentation[t+" Percent"] = float32(count) / float32(total_patient) * 100
+	}
+
+	medicineResponse["Medicine Name"] = medicineName
+	medicineResponse["Medicine Presentation"] = medicinePresentation
+	response["Data"] = medicineResponse
+	response["Total Patient"] = total_patient
+
+	doctorresponse.TreatmentChartSuccessResponse(c, "Success to Get Patient Data by Medicine", response, http.StatusOK)
 }
 
 func GetSymptomUserData(c *gin.Context) {

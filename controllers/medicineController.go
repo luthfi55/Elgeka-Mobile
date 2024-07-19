@@ -289,6 +289,11 @@ func UpdateMedicineSchedule(c *gin.Context) {
 		return
 	}
 
+	if body.MedicineID.String() == "" {
+		medicineresponse.AddMedicineScheduleFailedResponse(c, "Medicine ID Can't be Empty", body, "Add Medicine", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
+		return
+	}
+
 	if body.MedicineName == "" {
 		medicineresponse.AddMedicineScheduleFailedResponse(c, "Medicine Name Can't be Empty", body, "Add Medicine", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
 		return
@@ -309,6 +314,7 @@ func UpdateMedicineSchedule(c *gin.Context) {
 		return
 	}
 
+	medicine_schedule.MedicineID = body.MedicineID
 	medicine_schedule.MedicineName = body.MedicineName
 	medicine_schedule.Dosage = body.Dosage
 	medicine_schedule.Day = body.Day
@@ -322,6 +328,7 @@ func UpdateMedicineSchedule(c *gin.Context) {
 
 	var medicine_schedule_data models.MedicineScheduleData
 	medicine_schedule_data.ID = medicine_schedule.ID
+	medicine_schedule_data.MedicineID = medicine_schedule.MedicineID
 	medicine_schedule_data.MedicineName = body.MedicineName
 	medicine_schedule_data.Dosage = body.Dosage
 	medicine_schedule_data.Day = body.Day
