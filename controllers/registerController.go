@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -267,6 +268,15 @@ func DoctorRegister(c *gin.Context) {
 		data := body
 		activationLink := "http://localhost:3000/api/doctor/register"
 		doctorresponse.RegisterFailedResponse(c, errorMessage, data, activationLink, http.StatusBadRequest)
+		return
+	}
+
+	body.HospitalName = strings.Trim(body.HospitalName, "'")
+	word_answers := strings.Split(body.HospitalName, ",")
+
+	if len(word_answers) > 3 {
+		activationLink := "http://localhost:3000/api/doctor/register"
+		doctorresponse.RegisterFailedResponse(c, "Maximum Hospital is  3, current elements = '"+strconv.Itoa(len(word_answers))+"'", body, activationLink, http.StatusBadRequest)
 		return
 	}
 

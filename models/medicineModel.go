@@ -10,6 +10,7 @@ type Medicine struct {
 	UserID           uuid.UUID          `gorm:"type:uuid;foreignKey;"`
 	Name             string             `validate:"required,min=2,max=100" json:"Name"`
 	Dosage           string             `validate:"required,min=1,max=10" json:"Dosage"`
+	Category         string             `validate:"required,min=1,max=10" json:"Category"`
 	Stock            int                `json:"Stock"`
 	MedicineSchedule []MedicineSchedule `gorm:"foreignKey:MedicineID"`
 	gorm.Model
@@ -28,18 +29,20 @@ type MedicineSchedule struct {
 }
 
 type MedicineData struct {
-	ID     uuid.UUID `json:"ID"`
-	Name   string    `json:"Name"`
-	Dosage string    `json:"Dosage"`
-	Stock  int       `json:"Stock"`
+	ID       uuid.UUID `json:"ID"`
+	Name     string    `json:"Name"`
+	Dosage   string    `json:"Dosage"`
+	Category string    `json:"Category"`
+	Stock    int       `json:"Stock"`
 }
 
 type MedicineDataDate struct {
-	ID     uuid.UUID `json:"ID"`
-	Name   string    `json:"Name"`
-	Dosage string    `json:"Dosage"`
-	Stock  int       `json:"Stock"`
-	Date   string    `json:"Date"`
+	ID       uuid.UUID `json:"ID"`
+	Name     string    `json:"Name"`
+	Dosage   string    `json:"Dosage"`
+	Category string    `json:"Category"`
+	Stock    int       `json:"Stock"`
+	Date     string    `json:"Date"`
 }
 
 type MedicineDataResponse struct {

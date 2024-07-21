@@ -82,6 +82,11 @@ func AddMedicine(c *gin.Context) {
 		return
 	}
 
+	if body.Category == "" {
+		medicineresponse.AddMedicineFailedResponse(c, "Category Can't be Empty", body, "ADd Medicine", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
+		return
+	}
+
 	var medicinedata models.Medicine
 
 	result := initializers.DB.Where("user_id = ? AND Name = ?", user, body.Name).First(&medicinedata)
@@ -139,6 +144,11 @@ func UpdateMedicine(c *gin.Context) {
 		return
 	}
 
+	if body.Category == "" {
+		medicineresponse.UpdateMedicineFailedResponse(c, "Category Can't be Empty", body, "Update Medicine", "http://localhost:3000/api/medicine/update/"+medicine_id, http.StatusBadRequest)
+		return
+	}
+
 	if body.Dosage == "" {
 		medicineresponse.UpdateMedicineFailedResponse(c, "Dosage Can't be Empty", body, "Update Medicine", "http://localhost:3000/api/medicine/update/"+medicine_id, http.StatusBadRequest)
 		return
@@ -151,6 +161,7 @@ func UpdateMedicine(c *gin.Context) {
 	}
 
 	medicine.Name = body.Name
+	medicine.Category = body.Category
 	medicine.Dosage = body.Dosage
 	medicine.Stock = body.Stock
 
@@ -378,20 +389,25 @@ func ListMedicineWebsite(c *gin.Context) {
 
 	var medicineData []struct {
 		Medicine_Name string
+		Category      string
 		Total_Patient int
 	}
 	medicineCount := make(map[string]int)
+	medicineCategories := make(map[string]string)
 
 	for _, medicine := range medicines {
 		medicineCount[medicine.Name]++
+		medicineCategories[medicine.Name] = medicine.Category
 	}
 
 	for name, count := range medicineCount {
 		medicineData = append(medicineData, struct {
 			Medicine_Name string
+			Category      string
 			Total_Patient int
 		}{
 			Medicine_Name: name,
+			Category:      medicineCategories[name],
 			Total_Patient: count,
 		})
 	}
@@ -443,11 +459,12 @@ func ListPatientMedicineWebsite(c *gin.Context) {
 			layoutOutput := "2006-01-02 15:04:05"
 			formattedDatetime := inputDatetime.Format(layoutOutput)
 			medicineDataDate = append(medicineDataDate, models.MedicineDataDate{
-				ID:     item.ID,
-				Name:   item.Name,
-				Dosage: item.Dosage,
-				Stock:  item.Stock,
-				Date:   formattedDatetime,
+				ID:       item.ID,
+				Name:     item.Name,
+				Category: item.Category,
+				Dosage:   item.Dosage,
+				Stock:    item.Stock,
+				Date:     formattedDatetime,
 			})
 		}
 		if len(medicine) > 0 {

@@ -1437,11 +1437,11 @@ func GetBcrAblPatient(c *gin.Context) {
         SELECT ba.*
         FROM bcr_abls ba
         INNER JOIN (
-            SELECT user_id, MAX(created_at) AS max_created_at
+            SELECT user_id, MAX(date) AS max_date
             FROM bcr_abls
             GROUP BY user_id
-        ) subquery ON ba.user_id = subquery.user_id AND ba.created_at = subquery.max_created_at
-        ORDER BY ba.created_at DESC
+        ) subquery ON ba.user_id = subquery.user_id AND ba.date = subquery.max_date
+        ORDER BY ba.date DESC
     `
 
 	result := initializers.DB.Raw(query).Scan(&bcr_abl_data)
@@ -1480,11 +1480,11 @@ func GetLeukocytesPatient(c *gin.Context) {
         SELECT ba.*
         FROM leukocytes ba
         INNER JOIN (
-            SELECT user_id, MAX(created_at) AS max_created_at
+            SELECT user_id, MAX(date) AS max_date
             FROM leukocytes
             GROUP BY user_id
-        ) subquery ON ba.user_id = subquery.user_id AND ba.created_at = subquery.max_created_at
-        ORDER BY ba.created_at DESC
+        ) subquery ON ba.user_id = subquery.user_id AND ba.date = subquery.max_date
+        ORDER BY ba.date DESC
     `
 
 	result := initializers.DB.Raw(query).Scan(&leukocytes_data)
@@ -1523,11 +1523,11 @@ func GetPotentialHydrogenPatient(c *gin.Context) {
         SELECT ba.*
         FROM potential_hydrogens ba
         INNER JOIN (
-            SELECT user_id, MAX(created_at) AS max_created_at
+            SELECT user_id, MAX(date) AS max_date
             FROM potential_hydrogens
             GROUP BY user_id
-        ) subquery ON ba.user_id = subquery.user_id AND ba.created_at = subquery.max_created_at
-        ORDER BY ba.created_at DESC
+        ) subquery ON ba.user_id = subquery.user_id AND ba.date = subquery.max_date
+        ORDER BY ba.date DESC
     `
 
 	result := initializers.DB.Raw(query).Scan(&potential_hydrogen_data)
@@ -1566,11 +1566,11 @@ func GetHemoglobinPatient(c *gin.Context) {
         SELECT ba.*
         FROM hemoglobins ba
         INNER JOIN (
-            SELECT user_id, MAX(created_at) AS max_created_at
+            SELECT user_id, MAX(date) AS max_date
             FROM hemoglobins
             GROUP BY user_id
-        ) subquery ON ba.user_id = subquery.user_id AND ba.created_at = subquery.max_created_at
-        ORDER BY ba.created_at DESC
+        ) subquery ON ba.user_id = subquery.user_id AND ba.date = subquery.max_date
+        ORDER BY ba.date DESC
     `
 
 	result := initializers.DB.Raw(query).Scan(&hemoglobin_data)
@@ -1609,11 +1609,11 @@ func GetHeartRatePatient(c *gin.Context) {
         SELECT ba.*
         FROM heart_rates ba
         INNER JOIN (
-            SELECT user_id, MAX(created_at) AS max_created_at
+            SELECT user_id, MAX(date) AS max_date
             FROM heart_rates
             GROUP BY user_id
-        ) subquery ON ba.user_id = subquery.user_id AND ba.created_at = subquery.max_created_at
-        ORDER BY ba.created_at DESC
+        ) subquery ON ba.user_id = subquery.user_id AND ba.date = subquery.max_date
+        ORDER BY ba.date DESC
     `
 
 	result := initializers.DB.Raw(query).Scan(&heart_rate_data)
@@ -1652,11 +1652,11 @@ func GetBloodPressurePatient(c *gin.Context) {
         SELECT ba.*
         FROM blood_pressures ba
         INNER JOIN (
-            SELECT user_id, MAX(created_at) AS max_created_at
+            SELECT user_id, MAX(date) AS max_date
             FROM blood_pressures
             GROUP BY user_id
-        ) subquery ON ba.user_id = subquery.user_id AND ba.created_at = subquery.max_created_at
-        ORDER BY ba.created_at DESC
+        ) subquery ON ba.user_id = subquery.user_id AND ba.date = subquery.max_date
+        ORDER BY ba.date DESC
     `
 
 	result := initializers.DB.Raw(query).Scan(&blood_pressure_data)
@@ -1696,11 +1696,11 @@ func GetHematokritPatient(c *gin.Context) {
         SELECT ba.*
         FROM hematokrits ba
         INNER JOIN (
-            SELECT user_id, MAX(created_at) AS max_created_at
+            SELECT user_id, MAX(date) AS max_date
             FROM hematokrits
             GROUP BY user_id
-        ) subquery ON ba.user_id = subquery.user_id AND ba.created_at = subquery.max_created_at
-        ORDER BY ba.created_at DESC
+        ) subquery ON ba.user_id = subquery.user_id AND ba.date = subquery.max_date
+        ORDER BY ba.date DESC
     `
 
 	result := initializers.DB.Raw(query).Scan(&hematokrit_data)
@@ -1739,11 +1739,11 @@ func GetTrombositPatient(c *gin.Context) {
         SELECT ba.*
         FROM trombosits ba
         INNER JOIN (
-            SELECT user_id, MAX(created_at) AS max_created_at
+            SELECT user_id, MAX(date) AS max_date
             FROM trombosits
             GROUP BY user_id
-        ) subquery ON ba.user_id = subquery.user_id AND ba.created_at = subquery.max_created_at
-        ORDER BY ba.created_at DESC
+        ) subquery ON ba.user_id = subquery.user_id AND ba.date = subquery.max_date
+        ORDER BY ba.date DESC
     `
 
 	result := initializers.DB.Raw(query).Scan(&trombosit_data)
