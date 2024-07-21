@@ -7,6 +7,8 @@ import (
 	doctorresponse "elgeka-mobile/response/DoctorResponse"
 	"errors"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -107,6 +109,12 @@ func EditDoctorProfile(c *gin.Context) {
 	}
 
 	if body.HospitalName != "" {
+		body.HospitalName = strings.Trim(body.HospitalName, "'")
+		word_answers := strings.Split(body.HospitalName, ",")
+		if len(word_answers) > 3 {
+			doctorresponse.UpdateDoctorProfileFailedResponse(c, "Maximum Hospital is  3, current elements = '"+strconv.Itoa(len(word_answers))+"'", "", http.StatusBadRequest)
+			return
+		}
 		doctor_account.HospitalName = body.HospitalName
 	}
 
