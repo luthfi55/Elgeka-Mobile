@@ -1474,7 +1474,7 @@ func GetLeukocytesPatient(c *gin.Context) {
 	}
 
 	var leukocytes_data []models.Leukocytes
-	var response []models.HealthStatusData
+	var response []models.HealthStatusDataGender
 
 	query := `
         SELECT ba.*
@@ -1496,10 +1496,11 @@ func GetLeukocytesPatient(c *gin.Context) {
 	for _, item := range leukocytes_data {
 		var user models.User
 		initializers.DB.First(&user, "ID = ?", item.UserID)
-		response = append(response, models.HealthStatusData{
+		response = append(response, models.HealthStatusDataGender{
 			ID:          item.ID,
 			UserID:      item.UserID,
 			Name:        user.Name,
+			Gender:      user.Gender,
 			Email:       user.Email,
 			PhoneNumber: user.PhoneNumber,
 			Data:        item.Data,
@@ -1560,7 +1561,7 @@ func GetHemoglobinPatient(c *gin.Context) {
 	}
 
 	var hemoglobin_data []models.Hemoglobin
-	var response []models.HealthStatusData
+	var response []models.HealthStatusDataGender
 
 	query := `
         SELECT ba.*
@@ -1582,10 +1583,11 @@ func GetHemoglobinPatient(c *gin.Context) {
 	for _, item := range hemoglobin_data {
 		var user models.User
 		initializers.DB.First(&user, "ID = ?", item.UserID)
-		response = append(response, models.HealthStatusData{
+		response = append(response, models.HealthStatusDataGender{
 			ID:          item.ID,
 			UserID:      item.UserID,
 			Name:        user.Name,
+			Gender:      user.Gender,
 			Email:       user.Email,
 			PhoneNumber: user.PhoneNumber,
 			Data:        item.Data,

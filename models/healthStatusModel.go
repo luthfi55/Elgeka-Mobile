@@ -16,6 +16,18 @@ type HealthStatusData struct {
 	Date        string    `json:"Date"`
 }
 
+type HealthStatusDataGender struct {
+	ID          uuid.UUID `json:"ID"`
+	UserID      uuid.UUID `json:"UserID"`
+	Name        string    `json:"Name"`
+	Gender      string    `json:"Gender"`
+	Email       string    `json:"Email"`
+	PhoneNumber string    `json:"PhoneNumber"`
+	Data        float32   `json:"Data"`
+	Notes       string    `json:"Notes"`
+	Date        string    `json:"Date"`
+}
+
 type HealthStatusDataBloodPressure struct {
 	ID          uuid.UUID `json:"ID"`
 	UserID      uuid.UUID `json:"UserID"`
