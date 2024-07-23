@@ -34,10 +34,11 @@ func ListMedicine(c *gin.Context) {
 
 	var medicine []models.Medicine
 	var medicine_data []struct {
-		ID     uuid.UUID
-		Name   string
-		Dosage string
-		Stock  int
+		ID       uuid.UUID
+		Name     string
+		Category string
+		Dosage   string
+		Stock    int
 	}
 
 	if err := initializers.DB.Where("user_id = ?", user).Find(&medicine).Error; err != nil {
@@ -47,15 +48,17 @@ func ListMedicine(c *gin.Context) {
 
 	for _, item := range medicine {
 		medicine_data = append(medicine_data, struct {
-			ID     uuid.UUID
-			Name   string
-			Dosage string
-			Stock  int
+			ID       uuid.UUID
+			Name     string
+			Category string
+			Dosage   string
+			Stock    int
 		}{
-			ID:     item.ID,
-			Name:   item.Name,
-			Dosage: item.Dosage,
-			Stock:  item.Stock,
+			ID:       item.ID,
+			Name:     item.Name,
+			Category: item.Category,
+			Dosage:   item.Dosage,
+			Stock:    item.Stock,
 		})
 	}
 
@@ -122,6 +125,7 @@ func GetMedicine(c *gin.Context) {
 	var medicine_data models.MedicineData
 	medicine_data.ID = medicine.ID
 	medicine_data.Name = medicine.Name
+	medicine_data.Category = medicine.Category
 	medicine_data.Dosage = medicine.Dosage
 	medicine_data.Stock = medicine.Stock
 
