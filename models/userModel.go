@@ -78,20 +78,21 @@ type UserData struct {
 }
 
 type UserDataAge struct {
-	ID            uuid.UUID `json:"ID"`
-	Name          string    `json:"Name"`
-	Email         string    `json:"Email"`
-	Address       string    `json:"Address"`
-	Province      string    `json:"Province"`
-	District      string    `json:"District"`
-	SubDistrict   string    `json:"SubDistrict"`
-	Village       string    `json:"Village"`
-	Gender        string    `json:"Gender"`
-	BirthDate     string    `json:"BirthDate"`
-	Age           int       `json:"Age"`
-	BloodGroup    string    `json:"BloodGroup"`
-	DiagnosisDate string    `json:"DiagnosisDate"`
-	PhoneNumber   string    `json:"PhoneNumber"`
+	ID             uuid.UUID `json:"ID"`
+	Name           string    `json:"Name"`
+	PersonalDoctor string    `json:"PersonalDoctor"`
+	Email          string    `json:"Email"`
+	Address        string    `json:"Address"`
+	Province       string    `json:"Province"`
+	District       string    `json:"District"`
+	SubDistrict    string    `json:"SubDistrict"`
+	Village        string    `json:"Village"`
+	Gender         string    `json:"Gender"`
+	BirthDate      string    `json:"BirthDate"`
+	Age            int       `json:"Age"`
+	BloodGroup     string    `json:"BloodGroup"`
+	DiagnosisDate  string    `json:"DiagnosisDate"`
+	PhoneNumber    string    `json:"PhoneNumber"`
 }
 
 type Data struct {

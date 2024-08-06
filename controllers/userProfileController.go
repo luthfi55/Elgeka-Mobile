@@ -432,21 +432,27 @@ func ListUserWebsite(c *gin.Context) {
 		if err != nil {
 			continue
 		}
+		var personal_doctor models.UserPersonalDoctor
+		initializers.DB.First(&personal_doctor, "user_id = ? AND start_date != ? AND end_date = ?", item.ID, "", "")
+		var doctor models.Doctor
+		initializers.DB.First(&doctor, "id = ?", personal_doctor.DoctorID)
+
 		age := time.Now().Year() - birthdate.Year()
 		user_data = append(user_data, models.UserDataAge{
-			ID:          item.ID,
-			Name:        item.Name,
-			Email:       item.Email,
-			Gender:      item.Gender,
-			BirthDate:   item.BirthDate,
-			Age:         age,
-			BloodGroup:  item.BloodGroup,
-			PhoneNumber: item.PhoneNumber,
-			Province:    item.Province,
-			District:    item.District,
-			SubDistrict: item.SubDistrict,
-			Village:     item.Village,
-			Address:     item.Address,
+			ID:             item.ID,
+			Name:           item.Name,
+			PersonalDoctor: doctor.Name,
+			Email:          item.Email,
+			Gender:         item.Gender,
+			BirthDate:      item.BirthDate,
+			Age:            age,
+			BloodGroup:     item.BloodGroup,
+			PhoneNumber:    item.PhoneNumber,
+			Province:       item.Province,
+			District:       item.District,
+			SubDistrict:    item.SubDistrict,
+			Village:        item.Village,
+			Address:        item.Address,
 		})
 	}
 
