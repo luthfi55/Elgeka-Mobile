@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -12,6 +14,7 @@ type Medicine struct {
 	Dosage           string             `validate:"required,min=1,max=10" json:"Dosage"`
 	Category         string             `validate:"required,min=1,max=10" json:"Category"`
 	Stock            int                `json:"Stock"`
+	GetMedicineDate  time.Time          `json:"Time"`
 	MedicineSchedule []MedicineSchedule `gorm:"foreignKey:MedicineID"`
 	gorm.Model
 }

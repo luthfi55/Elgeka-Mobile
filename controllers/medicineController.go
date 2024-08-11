@@ -101,6 +101,7 @@ func AddMedicine(c *gin.Context) {
 
 	body.ID = uuid.New()
 	body.UserID = user.(uuid.UUID)
+	body.GetMedicineDate = time.Now()
 
 	if err := initializers.DB.Create(&body).Error; err != nil {
 		medicineresponse.AddMedicineFailedResponse(c, "Failed to Add Medicine Data", body, "Add Medicine", "http://localhost:3000/api/medicine/add", http.StatusBadRequest)
@@ -167,7 +168,19 @@ func UpdateMedicine(c *gin.Context) {
 	medicine.Name = body.Name
 	medicine.Category = body.Category
 	medicine.Dosage = body.Dosage
-	medicine.Stock = body.Stock
+
+	var dateMedicine = medicine.GetMedicineDate
+	fmt.Println("Data 1 : ", dateMedicine)
+
+	if body.Stock > medicine.Stock {
+		medicine.Stock = body.Stock
+		medicine.GetMedicineDate = time.Now()
+		println("tes 1")
+	} else {
+		medicine.Stock = body.Stock
+		medicine.GetMedicineDate = dateMedicine
+		println("tes 2")
+	}
 
 	if err := initializers.DB.Save(&medicine).Error; err != nil {
 		medicineresponse.UpdateMedicineFailedResponse(c, "Failed to Update Medicine Data", body, "Update Medicine", "http://localhost:3000/api/medicine/update/"+medicine_id, http.StatusBadRequest)
@@ -448,7 +461,7 @@ func ListPatientMedicineWebsite(c *gin.Context) {
 		initializers.DB.Where("user_id = ?", item.ID).Find(&medicine)
 		for _, item := range medicine {
 			// Contoh input datetime
-			inputDatetime := item.UpdatedAt
+			inputDatetime := item.GetMedicineDate
 
 			wib, err := time.LoadLocation("Asia/Jakarta")
 			if err != nil {
