@@ -5,6 +5,7 @@ import (
 	"elgeka-mobile/middleware"
 	"elgeka-mobile/models"
 	doctorresponse "elgeka-mobile/response/DoctorResponse"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
@@ -34,6 +35,7 @@ func DoctorProfileController(r *gin.Engine) {
 	r.GET("api/doctor/list/website", ListDoctorWebsite)
 	r.GET("api/doctor/list_patient/website", ListPatientDoctorWebsite)
 	r.GET("api/doctor/list/null_patient/website", ListDoctorWithoutPatient)
+	r.GET("api/doctor/list/hospital/website", ListDoctorHospital)
 	r.POST("api/doctor/deactivate/account/website/:doctor_id", DeactivateDoctorAccountWebsite)
 	r.GET("api/doctor/list/deactive/website", ListDeactiveDoctorWebsite)
 	r.POST("api/doctor/activate/account/website/:doctor_id", ActivateDoctorAccountWebsite)
@@ -872,6 +874,86 @@ func DeactivateDoctorAccountWebsite(c *gin.Context) {
 	}
 
 	doctorresponse.ListDoctorWebsiteSuccessResponse(c, "Success to Deactivate Doctor Account", doctorID, http.StatusOK)
+}
+
+func ListDoctorHospital(c *gin.Context) {
+	if !ParseWebToken(c) {
+		return
+	}
+
+	url := "https://elgeka-web-api-production.up.railway.app/api/v1/infoRS"
+
+	resp, err := http.Get(url)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch data"})
+		return
+	}
+	defer resp.Body.Close()
+
+	var hospitalApiResponse struct {
+		Code    int    `json:"code"`
+		Status  string `json:"status"`
+		Message string `json:"message"`
+		Result  struct {
+			Data []struct {
+				ID         int    `json:"id"`
+				NamaRS     string `json:"nama_rs"`
+				LokasiRS   string `json:"lokasi_rs"`
+				ImageUrl   string `json:"image_url"`
+				LinkMaps   string `json:"link_maps"`
+				Latlong    string `json:"latlong"`
+				InfoKontak string `json:"info_kontak"`
+				CreatedAt  string `json:"createdAt"`
+				UpdattedAt string `json:"updatedAt"`
+			} `json:"data"`
+			CurrentPage int  `json:"currentPage"`
+			NextPage    bool `json:"nextPage"`
+			TotalItems  int  `json:"totalItems"`
+			TotalPages  int  `json:"totalPages"`
+		} `json:"result"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&hospitalApiResponse); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse response"})
+		return
+	}
+
+	hospitalDoctorsMap := make(map[string][]string)
+
+	for _, hospital := range hospitalApiResponse.Result.Data {
+		hospitalDoctorsMap[hospital.NamaRS] = nil
+	}
+
+	var doctors []models.Doctor
+	result := initializers.DB.Where("is_active = ?", true).Find(&doctors)
+	if result.Error != nil {
+		doctorresponse.ListDoctorWebsiteFailedResponse(c, "Failed to Get Doctor Account", "", http.StatusNotFound)
+		return
+	}
+
+	for _, doctor := range doctors {
+		hospitalNames := strings.Split(doctor.HospitalName, ", ")
+		for _, hospitalName := range hospitalNames {
+			if _, exists := hospitalDoctorsMap[hospitalName]; exists {
+				hospitalDoctorsMap[hospitalName] = append(hospitalDoctorsMap[hospitalName], doctor.Name)
+			}
+		}
+	}
+
+	response := make([]map[string]interface{}, 0)
+	for hospital, doctors := range hospitalDoctorsMap {
+		if doctors == nil {
+			response = append(response, map[string]interface{}{
+				hospital: nil,
+			})
+		} else {
+			response = append(response, map[string]interface{}{
+				hospital: doctors,
+			})
+		}
+	}
+
+	doctorresponse.ListPatientDoctorWebsiteSuccessResponse(c, "Success to Get Doctor Hospital List", response, http.StatusOK)
 }
 
 func ActivateDoctorAccountWebsite(c *gin.Context) {
