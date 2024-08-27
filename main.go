@@ -20,10 +20,20 @@ func init() {
 }
 
 func connectToWhatsappWithRetry() {
+	backoff := time.Second
 	for {
-		initializers.ConnectToWhatsapp()
-		log.Println("Connected to WhatsApp")
-		time.Sleep(5 * time.Second)
+		err := initializers.ConnectToWhatsapp()
+		if err == nil {
+			log.Println("Connected to WhatsApp")
+			backoff = time.Second // Reset backoff on successful connection
+			return
+		}
+		log.Printf("Failed to connect to WhatsApp: %v. Retrying in %v", err, backoff)
+		time.Sleep(backoff)
+		backoff *= 2 // Exponential backoff
+		if backoff > time.Minute*5 {
+			backoff = time.Minute * 5 // Cap at 5 minutes
+		}
 	}
 }
 
@@ -32,6 +42,7 @@ func main() {
 	signal.Notify(shutdownSignal, os.Interrupt, syscall.SIGTERM)
 
 	go connectToWhatsappWithRetry()
+
 	r := gin.Default()
 
 	r.Use(func(c *gin.Context) {
@@ -69,6 +80,7 @@ func main() {
 
 	go func() {
 		<-shutdownSignal
+		initializers.DisconnectWhatsapp()
 		os.Exit(0)
 	}()
 

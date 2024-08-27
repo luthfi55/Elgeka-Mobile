@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/signal"
 	"sync"
-	"syscall"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/mdp/qrterminal/v3"
@@ -32,28 +30,29 @@ func SendMessageToUser(userNumber string, otp string) {
 	client.SendMessage(context.Background(), senderJID, message)
 }
 
-func ConnectToWhatsapp() {
+func ConnectToWhatsapp() error {
 	dbLog := waLog.Stdout("Database", "DEBUG", true)
 	container, err := sqlstore.New("sqlite3", "file:whatsapp.db?_foreign_keys=on", dbLog)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to create sqlstore: %v", err)
 	}
 
 	deviceStore, err := container.GetFirstDevice()
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to get first device: %v", err)
 	}
 
 	clientLog := waLog.Stdout("Client", "DEBUG", true)
 
-	// Use the package-level client variable instead of creating a local one
-	client = whatsmeow.NewClient(deviceStore, clientLog) // Initialize the client
+	clientMutex.Lock()
+	client = whatsmeow.NewClient(deviceStore, clientLog)
+	clientMutex.Unlock()
 
 	if client.Store.ID == nil {
 		qrChan, _ := client.GetQRChannel(context.Background())
 		err = client.Connect()
 		if err != nil {
-			panic(err)
+			return fmt.Errorf("failed to connect: %v", err)
 		}
 		for evt := range qrChan {
 			if evt.Event == "code" {
@@ -65,15 +64,12 @@ func ConnectToWhatsapp() {
 	} else {
 		err = client.Connect()
 		if err != nil {
-			panic(err)
+			return fmt.Errorf("failed to connect: %v", err)
 		}
 	}
 
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	<-c
-
-	client.Disconnect()
+	log.Println("Connected to WhatsApp")
+	return nil
 }
 
 func DisconnectWhatsapp() {
