@@ -8,12 +8,13 @@ import (
 type UserInformation struct {
 	ID                uuid.UUID `gorm:"type:uuid;primaryKey;"`
 	UserID            uuid.UUID `gorm:"type:uuid;foreignKey;"`
-	PcrLevel          string    `validate:"required,min=1,max=100"`
+	PcrLevel          string    `validate:"min=1,max=100"`
 	TherapyActive     bool
 	TreatmentFree     bool
-	TreatmentFreeDate string `validate:"required,len=10"`
-	MonitoringPlace   string `validate:"required,min=2,max=100"`
-	PcrFrequent       string `validate:"required,min=2,max=100"`
+	TreatmentFreeDate string `validate:"len=10"`
+	MonitoringPlace   string `validate:"min=2,max=100"`
+	PcrFrequent       string `validate:"min=2,max=100"`
+	PotentialHydrogen string `validate:"min=1, max=5"`
 
 	gorm.Model
 }

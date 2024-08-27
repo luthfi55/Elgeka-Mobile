@@ -394,6 +394,7 @@ func DoctorPatientProfile(c *gin.Context) {
 		TreatmentFreeDate: patient_information.TreatmentFreeDate,
 		MonitoringPlace:   patient_information.MonitoringPlace,
 		PcrFrequent:       patient_information.PcrFrequent,
+		PotentialHydrogen: patient_information.PotentialHydrogen,
 		DiagnosisDate:     patient_data.DiagnosisDate,
 	}
 

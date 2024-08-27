@@ -7,11 +7,9 @@ import (
 	userresponse "elgeka-mobile/response/UserResponse"
 	"errors"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -64,6 +62,7 @@ func ProfileData(c *gin.Context) {
 		TreatmentFreeDate: patient_information.TreatmentFreeDate,
 		MonitoringPlace:   patient_information.MonitoringPlace,
 		PcrFrequent:       patient_information.PcrFrequent,
+		PotentialHydrogen: patient_information.PotentialHydrogen,
 	}
 
 	userresponse.GetProfileSuccessResponse(c, "Success Get Profile", profile_data, "http://localhost:3000/api/user/profile", http.StatusOK)
@@ -162,40 +161,13 @@ func EditUserInformation(c *gin.Context) {
 		return
 	}
 
-	validate := validator.New()
-	if err := validate.Struct(body); err != nil {
-		validationErrors := err.(validator.ValidationErrors)
-		errorMessages := make([]string, len(validationErrors))
-		for i, fieldError := range validationErrors {
-			errorMessages[i] = getValidationErrorTagMessage(fieldError)
-		}
-		userresponse.UpdateUserInformationProfileFailedResponse(c, strings.Join(errorMessages, ", "), body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
-		return
-	}
-
-	if body.PcrLevel != "" {
-		user_data.PcrLevel = body.PcrLevel
-	}
-
+	user_data.PcrLevel = body.PcrLevel
 	user_data.TherapyActive = body.TherapyActive
 	user_data.TreatmentFree = body.TreatmentFree
-
-	if body.TreatmentFreeDate != "" {
-		user_data.TreatmentFreeDate = body.TreatmentFreeDate
-	}
-
-	if body.MonitoringPlace != "" {
-		user_data.MonitoringPlace = body.MonitoringPlace
-	}
-
-	if body.PcrFrequent != "" {
-		user_data.PcrFrequent = body.PcrFrequent
-	}
-
-	if body.PcrLevel == "" && body.TreatmentFreeDate == "" && body.MonitoringPlace == "" && body.PcrFrequent == "" {
-		userresponse.UpdateUserInformationProfileFailedResponse(c, "Body Can't Null", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)
-		return
-	}
+	user_data.TreatmentFreeDate = body.TreatmentFreeDate
+	user_data.MonitoringPlace = body.MonitoringPlace
+	user_data.PcrFrequent = body.PcrFrequent
+	user_data.PotentialHydrogen = body.PotentialHydrogen
 
 	if err := initializers.DB.Save(&user_data).Error; err != nil {
 		userresponse.UpdateUserInformationProfileFailedResponse(c, "Failed Update User", body, "Edit Profile", "http://localhost:3000/api/user/profile/edit", http.StatusBadRequest)

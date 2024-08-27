@@ -59,6 +59,7 @@ type UserInformationData struct {
 	TreatmentFreeDate string    `json:"TreatmentFreeDate"`
 	MonitoringPlace   string    `json:"MonitoringPlace"`
 	PcrFrequent       string    `json:"PcrFrequent"`
+	PotentialHydrogen string    `json:"PotentialHydrogen"`
 }
 
 type UserData struct {
