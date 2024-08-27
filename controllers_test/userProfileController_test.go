@@ -504,3 +504,263 @@ func TestListUserWebsite_Failed(t *testing.T) {
 		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 }
+
+func TestEditUserPassword_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.PUT("/api/user/profile/password/edit", middleware.RequireAuth, controllers.EditUserPassword)
+
+	var body struct {
+		OldPassword          string
+		Password             string
+		PasswordConfirmation string
+	}
+
+	body = struct {
+		OldPassword          string
+		Password             string
+		PasswordConfirmation string
+	}{
+		OldPassword:          "Arinnnn1*",
+		Password:             "Arinnnn2*",
+		PasswordConfirmation: "Arinnnn2*",
+	}
+
+	reqJSON, _ := json.Marshal(body)
+
+	req, err := http.NewRequest("PUT", "/api/user/profile/password/edit", bytes.NewBuffer(reqJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success Update User Password" {
+		t.Errorf("expected message body %s but got %s", "Success Update User Password", expectedBody.Message)
+	}
+}
+
+func TestEditUserPassword_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.PUT("/api/user/profile/password/edit", middleware.RequireAuth, controllers.EditUserPassword)
+
+	var body struct {
+		OldPassword          string
+		Password             string
+		PasswordConfirmation string
+	}
+
+	body = struct {
+		OldPassword          string
+		Password             string
+		PasswordConfirmation string
+	}{
+		OldPassword:          "Arinnnn1*",
+		Password:             "Arinnnn2*",
+		PasswordConfirmation: "Arinnnn2*",
+	}
+
+	reqJSON, _ := json.Marshal(body)
+
+	req, err := http.NewRequest("PUT", "/api/user/profile/password/edit", bytes.NewBuffer(reqJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+
+	var expectedBody ExpectedFailedResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Wrong Old Password" {
+		t.Errorf("expected message body %s but got %s", "Wrong Old Password", expectedBody.ErrorMessage)
+	}
+}
+
+func TestEditUserInformation_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.PUT("/api/user/profile/information/edit", middleware.RequireAuth, controllers.EditUserInformation)
+
+	reqBody := models.UserInformation{
+		PcrLevel:          "<10%",
+		TherapyActive:     false,
+		TreatmentFree:     true,
+		TreatmentFreeDate: "2024-04-12",
+		MonitoringPlace:   "Komunitas Rumah Sakit",
+		PcrFrequent:       "Sekali dalam 4 bulan",
+	}
+
+	reqJSON, _ := json.Marshal(reqBody)
+
+	req, err := http.NewRequest("PUT", "/api/user/profile/information/edit", bytes.NewBuffer(reqJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success Update User Information" {
+		t.Errorf("expected message body %s but got %s", "Success Update User Information", expectedBody.Message)
+	}
+}
+
+func TestEditUserInformation_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.PUT("/api/user/profile/information/edit", middleware.RequireAuth, controllers.EditUserInformation)
+
+	reqBody := models.UserInformation{
+		PcrLevel:          "",
+		TherapyActive:     false,
+		TreatmentFree:     true,
+		TreatmentFreeDate: "2024-04-12",
+		MonitoringPlace:   "Komunitas Rumah Sakit",
+		PcrFrequent:       "Sekali dalam 4 bulan",
+	}
+
+	reqJSON, _ := json.Marshal(reqBody)
+
+	req, err := http.NewRequest("PUT", "/api/user/profile/information/edit", bytes.NewBuffer(reqJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+
+	var expectedBody ExpectedFailedResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Field 'PcrLevel' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'PcrLevel' is required.", expectedBody.ErrorMessage)
+	}
+}
+
+func TestGetDoctorData_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/user/get/personal_doctor/:doctor_id", middleware.RequireAuth, controllers.GetDoctorData)
+
+	doctor_id := "5fae0b5d-01d0-48fb-9e23-ca1e9aca2f20"
+
+	req, err := http.NewRequest("GET", "/api/user/get/personal_doctor/"+doctor_id, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success Get Doctor Data" {
+		t.Errorf("expected message body %s but got %s", "Success Get Doctor Data", expectedBody.Message)
+	}
+}
+
+func TestGetDoctorData_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/user/get/personal_doctor/:doctor_id", middleware.RequireAuth, controllers.GetDoctorData)
+
+	doctor_id := "5fae0b3e-01d0-48fz-9e23-cv1e9aca2f20"
+
+	req, err := http.NewRequest("GET", "/api/user/get/personal_doctor/"+doctor_id, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+
+	var expectedBody ExpectedFailedResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Doctor Not Found" {
+		t.Errorf("expected message body %s but got %s", "Doctor Not Found", expectedBody.ErrorMessage)
+	}
+}

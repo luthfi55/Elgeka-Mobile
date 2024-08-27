@@ -801,7 +801,7 @@ func TestUpdatePotentialHydrogen_Success(t *testing.T) {
 
 	router.PUT("/api/user/health_status/potential_hydrogen/:potential_hydrogen_id", middleware.RequireAuth, controllers.UpdatePotentialHydrogen)
 
-	potential_hydrogen_id := "3fbdfc21-4548-4c33-8f9e-80736e6d18f1"
+	potential_hydrogen_id := "4d7d43b4-67d6-499f-9f90-976012e33f0d"
 
 	reqBody := models.PotentialHydrogen{
 		Data:  1.2,
@@ -844,7 +844,7 @@ func TestUpdatePotentialHydrogen_Failed(t *testing.T) {
 
 	router.PUT("/api/user/health_status/potential_hydrogen/:potential_hydrogen_id", middleware.RequireAuth, controllers.UpdatePotentialHydrogen)
 
-	potential_hydrogen_id := "be622800-dbe1-42ec-a53e-c0179175aa7c"
+	potential_hydrogen_id := "4d7d43b4-67d6-499f-9f90-976012e33f0d"
 
 	reqBody := models.PotentialHydrogen{
 		Data:  1.2,
@@ -888,7 +888,7 @@ func TestDeletePotentialHydrogen_Success(t *testing.T) {
 
 	router.DELETE("/api/user/health_status/potential_hydrogen/:potential_hydrogen_id", middleware.RequireAuth, controllers.DeletePotentialHydrogen)
 
-	potential_hydrogen_id := "90469cd0-c309-4998-b25e-5b94c259e7d1"
+	potential_hydrogen_id := "4d7d43b4-67d6-499f-9f90-976012e33f0d"
 
 	req, err := http.NewRequest("DELETE", "/api/user/health_status/potential_hydrogen/"+potential_hydrogen_id, nil)
 
@@ -1113,7 +1113,7 @@ func TestUpdateHemoglobin_Success(t *testing.T) {
 
 	router.PUT("/api/user/health_status/hemoglobin/:hemoglobin_id", middleware.RequireAuth, controllers.UpdateHemoglobin)
 
-	hemoglobin_id := "a93592d0-a02c-4be8-8bb7-da1a92f0113e"
+	hemoglobin_id := "05dd5b96-46e2-4da5-9996-9fe507a18bfa"
 
 	reqBody := models.Hemoglobin{
 		Data:  1.2,
@@ -1156,7 +1156,7 @@ func TestUpdateHemoglobin_Failed(t *testing.T) {
 
 	router.PUT("/api/user/health_status/hemoglobin/:hemoglobin_id", middleware.RequireAuth, controllers.UpdateHemoglobin)
 
-	hemoglobin_id := "a93592d0-a02c-4be8-8bb7-da1a92f0113e"
+	hemoglobin_id := "05dd5b96-46e2-4da5-9996-9fe507a18bfa"
 
 	reqBody := models.Hemoglobin{
 		Data:  1.2,
@@ -1200,7 +1200,7 @@ func TestDeleteHemoglobin_Success(t *testing.T) {
 
 	router.DELETE("/api/user/health_status/hemoglobin/:hemoglobin_id", middleware.RequireAuth, controllers.DeleteHemoglobin)
 
-	hemoglobin_id := "77082cda-5f2a-4ae1-ae56-586dc1d24a08"
+	hemoglobin_id := "05dd5b96-46e2-4da5-9996-9fe507a18bfa"
 
 	req, err := http.NewRequest("DELETE", "/api/user/health_status/hemoglobin/"+hemoglobin_id, nil)
 
@@ -1512,7 +1512,7 @@ func TestDeleteHeartRate_Success(t *testing.T) {
 
 	router.DELETE("/api/user/health_status/heart_rate/:heart_rate_id", middleware.RequireAuth, controllers.DeleteHeartRate)
 
-	heart_rate_id := "8a42b0b7-940f-44c6-b727-71f7a5e1354f"
+	heart_rate_id := "aa85f80b-59c0-4323-918e-ce6618068555"
 
 	req, err := http.NewRequest("DELETE", "/api/user/health_status/heart_rate/"+heart_rate_id, nil)
 
@@ -1739,7 +1739,7 @@ func TestUpdateBloodPressure_Success(t *testing.T) {
 
 	router.PUT("/api/user/health_status/blood_pressure/:blood_pressure_id", middleware.RequireAuth, controllers.UpdateBloodPressure)
 
-	blood_pressure_id := "46142432-36bc-4fd2-8f56-aa5d9804bfdd"
+	blood_pressure_id := "aa0e2319-b7a3-4e45-bbd5-ed6aa322c60d"
 
 	reqBody := models.BloodPressure{
 		DataSys: 1.2,
@@ -1783,7 +1783,7 @@ func TestUpdateBloodPressure_Failed(t *testing.T) {
 
 	router.PUT("/api/user/health_status/blood_pressure/:blood_pressure_id", middleware.RequireAuth, controllers.UpdateBloodPressure)
 
-	blood_pressure_id := "be622800-dbe1-42ec-a53e-c0179175aa7c"
+	blood_pressure_id := "aa0e2319-b7a3-4e45-bbd5-ed6aa322c60d"
 
 	reqBody := models.BloodPressure{
 		DataSys: 7.2,
@@ -1828,7 +1828,7 @@ func TestDeleteBloodPressure_Success(t *testing.T) {
 
 	router.DELETE("/api/user/health_status/blood_pressure/:blood_pressure_id", middleware.RequireAuth, controllers.DeleteBloodPressure)
 
-	blood_pressure_id := "34004c60-3a2e-41a6-825a-55c788f9365e"
+	blood_pressure_id := "aa0e2319-b7a3-4e45-bbd5-ed6aa322c60d"
 
 	req, err := http.NewRequest("DELETE", "/api/user/health_status/blood_pressure/"+blood_pressure_id, nil)
 
@@ -1869,6 +1869,630 @@ func TestDeleteBloodPressure_Failed(t *testing.T) {
 	blood_pressure_id := "92e66f76-332e-45a8-a9d3-a919f01abde6"
 
 	req, err := http.NewRequest("DELETE", "/api/user/health_status/blood_pressure/"+blood_pressure_id, nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+
+	var expectedBody ExpectedFailedResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Record Not Found" {
+		t.Errorf("expected message body %s but got %s", "Record Not Found", expectedBody.ErrorMessage)
+	}
+}
+
+// Hematokrit
+
+func TestCreateHematokrit_Success(t *testing.T) {
+
+	router := gin.Default()
+
+	router.POST("/api/user/health_status/hematokrit", middleware.RequireAuth, controllers.CreateHematokrit)
+
+	reqBody := models.Hematokrit{
+		Data:  7.2,
+		Notes: "tes",
+		Date:  "2024-02-23",
+	}
+
+	reqJSON, _ := json.Marshal(reqBody)
+
+	req, err := http.NewRequest("POST", "/api/user/health_status/hematokrit", bytes.NewBuffer(reqJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusCreated {
+		t.Errorf("expected status code %d but got %d", http.StatusCreated, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success Create Data" {
+		t.Errorf("expected message body %s but got %s", "Success Create Data", expectedBody.Message)
+	}
+}
+
+func TestCreateHematokrit_Failed(t *testing.T) {
+
+	router := gin.Default()
+
+	router.POST("/api/user/health_status/hematokrit", middleware.RequireAuth, controllers.CreateHematokrit)
+
+	reqBody := models.Hematokrit{
+		Data:  7.2,
+		Notes: "",
+		Date:  "2024-02-23",
+	}
+
+	reqJSON, _ := json.Marshal(reqBody)
+
+	req, err := http.NewRequest("POST", "/api/user/health_status/hematokrit", bytes.NewBuffer(reqJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+
+	var expectedBody ExpectedFailedResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Field 'Notes' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'Notes' is required.", expectedBody.ErrorMessage)
+	}
+}
+
+func TestGetHematokrit_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/user/health_status/hematokrit", middleware.RequireAuth, controllers.GetHematokrit)
+
+	req, err := http.NewRequest("GET", "/api/user/health_status/hematokrit", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success Get Data" {
+		t.Errorf("expected message body %s but got %s", "Success Get Data", expectedBody.Message)
+	}
+}
+
+func TestGetHematokrit_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/user/health_status/hematokrit", middleware.RequireAuth, controllers.GetHematokrit)
+
+	req, err := http.NewRequest("GET", "/api/user/health_status/hematokrit", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	expiresTime, _ := time.Parse(time.RFC1123, "Mon, 15 Apr 2024 17:00:20 GMT")
+	req.AddCookie(&http.Cookie{
+		Name:     "Authorization",
+		Value:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ8.eyJleHAiOjE3MTMyMDA0MjAsInN1YiI6IjE0YzlhNDQzLTAzZTUtNGJhNi05NjY0LTBmODIwYjE5ZDhhYiJ9.L9z84gPX0l_O3GeyRi0ZAhMGxoWzXVV7k9fXw6KpEo4",
+		Path:     "/",
+		HttpOnly: true,
+		Expires:  expiresTime,
+	},
+	)
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+}
+
+func TestUpdateHematokrit_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.PUT("/api/user/health_status/hematokrit/:hematokrit_id", middleware.RequireAuth, controllers.UpdateHematokrit)
+
+	hematokrit_id := "05dd5b96-46e2-4da5-9996-9fe507a18bfa"
+
+	reqBody := models.Hematokrit{
+		Data:  1.2,
+		Notes: "Halo",
+		Date:  "2024-02-22",
+	}
+
+	reqJSON, _ := json.Marshal(reqBody)
+
+	req, err := http.NewRequest("PUT", "/api/user/health_status/hematokrit/"+hematokrit_id, bytes.NewBuffer(reqJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success Update Data" {
+		t.Errorf("expected message body %s but got %s", "Success Update Data", expectedBody.Message)
+	}
+}
+
+func TestUpdateHematokrit_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.PUT("/api/user/health_status/hematokrit/:hematokrit_id", middleware.RequireAuth, controllers.UpdateHematokrit)
+
+	hematokrit_id := "05dd5b96-46e2-4da5-9996-9fe507a18bfa"
+
+	reqBody := models.Hematokrit{
+		Data:  7.2,
+		Notes: "",
+		Date:  "2024-02-22",
+	}
+
+	reqJSON, _ := json.Marshal(reqBody)
+
+	req, err := http.NewRequest("PUT", "/api/user/health_status/hematokrit/"+hematokrit_id, bytes.NewBuffer(reqJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+
+	var expectedBody ExpectedFailedResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Field 'Notes' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'Notes' is required.", expectedBody.ErrorMessage)
+	}
+}
+
+func TestDeleteHematokrit_Success(t *testing.T) {
+
+	router := gin.Default()
+
+	router.DELETE("/api/user/health_status/hematokrit/:hematokrit_id", middleware.RequireAuth, controllers.DeleteHematokrit)
+
+	hematokrit_id := "05dd5b96-46e2-4da5-9996-9fe507a18bfa"
+
+	req, err := http.NewRequest("DELETE", "/api/user/health_status/hematokrit/"+hematokrit_id, nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success Delete Data" {
+		t.Errorf("expected message body %s but got %s", "Success Delete Data", expectedBody.Message)
+	}
+}
+
+func TestDeleteHematokrit_Failed(t *testing.T) {
+
+	router := gin.Default()
+
+	router.DELETE("/api/user/health_status/hematokrit/:hematokrit_id", middleware.RequireAuth, controllers.DeleteHematokrit)
+
+	hematokrit_id := "92e66f76-332e-45a8-a9d3-a919f01abde6"
+
+	req, err := http.NewRequest("DELETE", "/api/user/health_status/hematokrit/"+hematokrit_id, nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+
+	var expectedBody ExpectedFailedResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Record Not Found" {
+		t.Errorf("expected message body %s but got %s", "Record Not Found", expectedBody.ErrorMessage)
+	}
+}
+
+// Trombosit
+
+func TestCreateTrombosit_Success(t *testing.T) {
+
+	router := gin.Default()
+
+	router.POST("/api/user/health_status/trombosit", middleware.RequireAuth, controllers.CreateTrombosit)
+
+	reqBody := models.Trombosit{
+		Data:  7.2,
+		Notes: "tes",
+		Date:  "2024-02-23",
+	}
+
+	reqJSON, _ := json.Marshal(reqBody)
+
+	req, err := http.NewRequest("POST", "/api/user/health_status/trombosit", bytes.NewBuffer(reqJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusCreated {
+		t.Errorf("expected status code %d but got %d", http.StatusCreated, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success Create Data" {
+		t.Errorf("expected message body %s but got %s", "Success Create Data", expectedBody.Message)
+	}
+}
+
+func TestCreateTrombosit_Failed(t *testing.T) {
+
+	router := gin.Default()
+
+	router.POST("/api/user/health_status/trombosit", middleware.RequireAuth, controllers.CreateTrombosit)
+
+	reqBody := models.Trombosit{
+		Data:  7.2,
+		Notes: "",
+		Date:  "2024-02-23",
+	}
+
+	reqJSON, _ := json.Marshal(reqBody)
+
+	req, err := http.NewRequest("POST", "/api/user/health_status/trombosit", bytes.NewBuffer(reqJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+
+	var expectedBody ExpectedFailedResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Field 'Notes' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'Notes' is required.", expectedBody.ErrorMessage)
+	}
+}
+
+func TestGetTrombosit_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/user/health_status/trombosit", middleware.RequireAuth, controllers.GetTrombosit)
+
+	req, err := http.NewRequest("GET", "/api/user/health_status/trombosit", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success Get Data" {
+		t.Errorf("expected message body %s but got %s", "Success Get Data", expectedBody.Message)
+	}
+}
+
+func TestGetTrombosit_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.GET("/api/user/health_status/trombosit", middleware.RequireAuth, controllers.GetTrombosit)
+
+	req, err := http.NewRequest("GET", "/api/user/health_status/trombosit", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	expiresTime, _ := time.Parse(time.RFC1123, "Mon, 15 Apr 2024 17:00:20 GMT")
+	req.AddCookie(&http.Cookie{
+		Name:     "Authorization",
+		Value:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ8.eyJleHAiOjE3MTMyMDA0MjAsInN1YiI6IjE0YzlhNDQzLTAzZTUtNGJhNi05NjY0LTBmODIwYjE5ZDhhYiJ9.L9z84gPX0l_O3GeyRi0ZAhMGxoWzXVV7k9fXw6KpEo4",
+		Path:     "/",
+		HttpOnly: true,
+		Expires:  expiresTime,
+	},
+	)
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+}
+
+func TestUpdateTrombosit_Success(t *testing.T) {
+	router := gin.Default()
+
+	router.PUT("/api/user/health_status/trombosit/:trombosit_id", middleware.RequireAuth, controllers.UpdateTrombosit)
+
+	trombosit_id := "077a0e36-9ec7-4050-ae40-0c0af7245e7e"
+
+	reqBody := models.Trombosit{
+		Data:  1.2,
+		Notes: "Halo",
+		Date:  "2024-02-22",
+	}
+
+	reqJSON, _ := json.Marshal(reqBody)
+
+	req, err := http.NewRequest("PUT", "/api/user/health_status/trombosit/"+trombosit_id, bytes.NewBuffer(reqJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success Update Data" {
+		t.Errorf("expected message body %s but got %s", "Success Update Data", expectedBody.Message)
+	}
+}
+
+func TestUpdateTrombosit_Failed(t *testing.T) {
+	router := gin.Default()
+
+	router.PUT("/api/user/health_status/trombosit/:trombosit_id", middleware.RequireAuth, controllers.UpdateTrombosit)
+
+	trombosit_id := "077a0e36-9ec7-4050-ae40-0c0af7245e7e"
+
+	reqBody := models.Trombosit{
+		Data:  7.2,
+		Notes: "",
+		Date:  "2024-02-22",
+	}
+
+	reqJSON, _ := json.Marshal(reqBody)
+
+	req, err := http.NewRequest("PUT", "/api/user/health_status/trombosit/"+trombosit_id, bytes.NewBuffer(reqJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
+	}
+
+	var expectedBody ExpectedFailedResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.ErrorMessage != "Field 'Notes' is required." {
+		t.Errorf("expected message body %s but got %s", "Field 'Notes' is required.", expectedBody.ErrorMessage)
+	}
+}
+
+func TestDeleteTrombosit_Success(t *testing.T) {
+
+	router := gin.Default()
+
+	router.DELETE("/api/user/health_status/trombosit/:trombosit_id", middleware.RequireAuth, controllers.DeleteTrombosit)
+
+	trombosit_id := "077a0e36-9ec7-4050-ae40-0c0af7245e7e"
+
+	req, err := http.NewRequest("DELETE", "/api/user/health_status/trombosit/"+trombosit_id, nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.AddCookie(CookieConfiguration())
+
+	rec := httptest.NewRecorder()
+
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected status code %d but got %d", http.StatusOK, rec.Code)
+	}
+
+	var expectedBody ExpectedSuccessResponse
+	err = json.Unmarshal(rec.Body.Bytes(), &expectedBody)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if expectedBody.Message != "Success Delete Data" {
+		t.Errorf("expected message body %s but got %s", "Success Delete Data", expectedBody.Message)
+	}
+}
+
+func TestDeleteTrombosit_Failed(t *testing.T) {
+
+	router := gin.Default()
+
+	router.DELETE("/api/user/health_status/trombosit/:trombosit_id", middleware.RequireAuth, controllers.DeleteTrombosit)
+
+	trombosit_id := "92e66f76-332e-45a8-a9d3-a919f01abde6"
+
+	req, err := http.NewRequest("DELETE", "/api/user/health_status/trombosit/"+trombosit_id, nil)
 
 	if err != nil {
 		t.Fatal(err)

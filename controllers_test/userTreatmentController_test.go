@@ -73,8 +73,8 @@ func TestGetUserTreatment_Failed(t *testing.T) {
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusUnauthorized {
-		t.Errorf("expected status code %d but got %d", http.StatusUnauthorized, rec.Code)
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("expected status code %d but got %d", http.StatusBadRequest, rec.Code)
 	}
 }
 

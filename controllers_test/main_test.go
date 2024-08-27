@@ -33,10 +33,10 @@ func TestMain(m *testing.M) {
 }
 
 func CookieConfiguration() *http.Cookie {
-	expiresTime, _ := time.Parse(time.RFC1123, "Tue, 13 Aug 2024 04:56:45 GMT")
+	expiresTime, _ := time.Parse(time.RFC1123, "Tue, 24 Sep 2024 10:06:58 GMT")
 	return &http.Cookie{
 		Name:     "Authorization",
-		Value:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjM1MjUwMDUsInN1YiI6IjE0YzlhNDQzLTAzZTUtNGJhNi05NjY0LTBmODIwYjE5ZDhhYiJ9.jup1OSNfhknfKIFm2vpv1jqRCycocL4YxoKUwQODCiA",
+		Value:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjcxNzI0OTgsInN1YiI6IjE0YzlhNDQzLTAzZTUtNGJhNi05NjY0LTBmODIwYjE5ZDhhYiJ9.D7O2iFUpbd9OkpT-leVCx0_A_fGIgrHkp6JLtg6NW0w",
 		Path:     "/",
 		HttpOnly: true,
 		Expires:  expiresTime,

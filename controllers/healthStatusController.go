@@ -112,6 +112,14 @@ func CreateBcrAbl(c *gin.Context) {
 		Date:   body.Date,
 	}
 
+	var bcr_abl_val models.BCR_ABL
+	result := initializers.DB.Where("date = ?", body.Date).First(&bcr_abl_val)
+
+	if result.RowsAffected > 0 {
+		healthstatusresponse.BcrAblFailedResponse(c, "Duplicate Date", bcr_abl_data, "Create BCR-ABL", "http://localhost:3000/api/user/health_status/bcr_abl", http.StatusBadRequest)
+		return
+	}
+
 	if err := initializers.DB.Create(&bcr_abl).Error; err != nil {
 		healthstatusresponse.BcrAblFailedResponse(c, strings.Title(err.Error()), bcr_abl_data, "Create BCR-ABL", "http://localhost:3000/api/user/health_status/bcr_abl", http.StatusBadRequest)
 	}
@@ -278,6 +286,14 @@ func CreateLeukocytes(c *gin.Context) {
 		Data:   body.Data,
 		Notes:  body.Notes,
 		Date:   body.Date,
+	}
+
+	var leukocytes_val models.Leukocytes
+	result := initializers.DB.Where("date = ?", body.Date).First(&leukocytes_val)
+
+	if result.RowsAffected > 0 {
+		healthstatusresponse.LeukocytesFailedResponse(c, "Duplicate Date", leukocytesData, "Create Leukocytes", "http://localhost:3000/api/user/health_status/leukocytes", http.StatusBadRequest)
+		return
 	}
 
 	if err := initializers.DB.Create(&leukocytes).Error; err != nil {
@@ -447,6 +463,14 @@ func CreatePotentialHydrogen(c *gin.Context) {
 		Date:   body.Date,
 	}
 
+	var potential_hydrogen_val models.PotentialHydrogen
+	result := initializers.DB.Where("date = ?", body.Date).First(&potential_hydrogen_val)
+
+	if result.RowsAffected > 0 {
+		healthstatusresponse.PotentialHydrogenFailedResponse(c, "Duplicate Date", potentialHydrogen, "Create Potential Hydrogen", "http://localhost:3000/api/user/health_status/potential_hydrogen", http.StatusBadRequest)
+		return
+	}
+
 	if err := initializers.DB.Create(&potentialHydrogen).Error; err != nil {
 		healthstatusresponse.PotentialHydrogenFailedResponse(c, strings.Title(err.Error()), potentialHydrogenData, "Create Potential Hydrogen", "http://localhost:3000/api/user/health_status/potential_hydrogen", http.StatusBadRequest)
 	}
@@ -614,6 +638,14 @@ func CreateHemoglobin(c *gin.Context) {
 		Date:   body.Date,
 	}
 
+	var hemoglobin_val models.Hemoglobin
+	result := initializers.DB.Where("date = ?", body.Date).First(&hemoglobin_val)
+
+	if result.RowsAffected > 0 {
+		healthstatusresponse.HemoglobinFailedResponse(c, "Duplicate Date", hemoglobinData, "Create Hemoglobin", "http://localhost:3000/api/user/health_status/hemoglobin", http.StatusBadRequest)
+		return
+	}
+
 	if err := initializers.DB.Create(&hemoglobin).Error; err != nil {
 		healthstatusresponse.HemoglobinFailedResponse(c, strings.Title(err.Error()), hemoglobinData, "Create Hemoglobin", "http://localhost:3000/api/user/health_status/hemoglobin", http.StatusBadRequest)
 	}
@@ -779,6 +811,14 @@ func CreateHeartRate(c *gin.Context) {
 		Data:   body.Data,
 		Notes:  body.Notes,
 		Date:   body.Date,
+	}
+
+	var heartrate_val models.HeartRate
+	result := initializers.DB.Where("date = ?", body.Date).First(&heartrate_val)
+
+	if result.RowsAffected > 0 {
+		healthstatusresponse.HeartRateFailedResponse(c, "Duplicate Date", heartRateData, "Create Heart Rate", "http://localhost:3000/api/user/health_status/heart_rate", http.StatusBadRequest)
+		return
 	}
 
 	if err := initializers.DB.Create(&heartRate).Error; err != nil {
@@ -949,6 +989,14 @@ func CreateBloodPressure(c *gin.Context) {
 		DataDia: body.DataDia,
 		Notes:   body.Notes,
 		Date:    body.Date,
+	}
+
+	var blood_pressure_val models.BloodPressure
+	result := initializers.DB.Where("date = ?", body.Date).First(&blood_pressure_val)
+
+	if result.RowsAffected > 0 {
+		healthstatusresponse.BloodPressureFailedResponse(c, "Duplicate Date", bloodPressureData, "Create Blood Pressure", "http://localhost:3000/api/user/health_status/blood_pressure", http.StatusBadRequest)
+		return
 	}
 
 	if err := initializers.DB.Create(&bloodPressure).Error; err != nil {
@@ -1126,6 +1174,14 @@ func CreateHematokrit(c *gin.Context) {
 		Date:   body.Date,
 	}
 
+	var hematokrit_val models.Hematokrit
+	result := initializers.DB.Where("date = ?", body.Date).First(&hematokrit_val)
+
+	if result.RowsAffected > 0 {
+		healthstatusresponse.HematokritFailedResponse(c, "Duplicate Date", hematokrit_data, "Create Hematokrit", "http://localhost:3000/api/user/health_status/hematokrit", http.StatusBadRequest)
+		return
+	}
+
 	if err := initializers.DB.Create(&hematokrit).Error; err != nil {
 		healthstatusresponse.HematokritFailedResponse(c, strings.Title(err.Error()), hematokrit_data, "Create Hematokrit", "http://localhost:3000/api/user/health_status/hematokrit", http.StatusBadRequest)
 	}
@@ -1293,6 +1349,14 @@ func CreateTrombosit(c *gin.Context) {
 		Data:   body.Data,
 		Notes:  body.Notes,
 		Date:   body.Date,
+	}
+
+	var trombosit_val models.Trombosit
+	result := initializers.DB.Where("date = ?", body.Date).First(&trombosit_val)
+
+	if result.RowsAffected > 0 {
+		healthstatusresponse.TrombositFailedResponse(c, "Duplicate Date", trombosit_data, "Create Trombosit", "http://localhost:3000/api/user/health_status/trombosit", http.StatusBadRequest)
+		return
 	}
 
 	if err := initializers.DB.Create(&trombosit).Error; err != nil {
